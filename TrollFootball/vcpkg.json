@@ -1,0 +1,10 @@
+{
+	"name": "trollfootball",
+	"version": "1.0.0",
+	"dependencies": [
+		{
+			"name": "sfml",
+			"version>=": "3.1.0"
+		}
+	]
+}

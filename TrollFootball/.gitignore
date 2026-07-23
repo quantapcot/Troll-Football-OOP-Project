@@ -1,0 +1,29 @@
+# Visual Studio
+.vs/
+
+# CMake build
+out/
+build/
+cmake-build-*/
+
+# Build output
+Debug/
+Release/
+x64/
+x86/
+
+# Executables
+*.exe
+*.dll
+*.obj
+*.pdb
+*.ilk
+*.ipch
+
+# CMake cache
+CMakeCache.txt
+CMakeFiles/
+
+# Ninja
+.ninja_deps
+.ninja_log
