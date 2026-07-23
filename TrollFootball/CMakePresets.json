@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Đường dẫn tới SFMLConfig.cmake
-set(SFML_DIR "D:/Libraries/SFML-3.1.0-windows-vc17-64-bit/SFML-3.1.0/lib/cmake/SFML")
+set(SFML_DIR "$ENV{SFML_DIR}")
 
 find_package(SFML 3 REQUIRED COMPONENTS
     Graphics
@@ -36,7 +36,7 @@ target_link_libraries(TrollFootball PRIVATE
 # Tự động copy DLL của SFML
 # ============================
 
-set(SFML_BIN_DIR "D:/Libraries/SFML-3.1.0-windows-vc17-64-bit/SFML-3.1.0/bin")
+set(SFML_BIN_DIR "$ENV{SFML_DIR}/bin")
 
 add_custom_command(TARGET TrollFootball POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
