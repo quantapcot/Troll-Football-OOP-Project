@@ -1,6 +1,7 @@
 #pragma once
 
 #include "core/GameObject.h"
+#include "core/GameConfig.h"
 
 class Ball : public GameObject
 {
@@ -30,5 +31,5 @@ public:
 private:
     sf::CircleShape shape;
 
-    sf::Vector2f velocity{ 0.f,0.f };
+    sf::Vector2f velocity{ 0.f, 0.f };
 };

@@ -1,13 +1,22 @@
 #include "entities/Ball.h"
+#include "core/GameConfig.h"
 #include <cmath>
 
 Ball::Ball()
 {
-    shape.setRadius(15.f);
-    shape.setOrigin({ 15.f, 15.f });
+    shape.setRadius(Config::BALL_RADIUS);
+
+    shape.setOrigin({
+        Config::BALL_RADIUS,
+        Config::BALL_RADIUS
+        });
+
     shape.setFillColor(sf::Color::White);
 
-    position = { 512.f, 200.f };
+    position = {
+        Config::WINDOW_WIDTH / 2.f,
+        200.f
+    };
 
     shape.setPosition(position);
 }
@@ -15,23 +24,9 @@ Ball::Ball()
 void Ball::update(float deltaTime)
 {
     // =========================
-    // CONSTANTS
-    // =========================
-    const float WINDOW_WIDTH = 1024.f;
-    const float WINDOW_HEIGHT = 768.f;
-
-    const float BALL_RADIUS = 15.f;
-
-    const float gravity = 1200.f;
-
-    const float groundY = WINDOW_HEIGHT - BALL_RADIUS;
-
-    const float bounce = 0.65f;
-
-    // =========================
     // GRAVITY
     // =========================
-    velocity.y += gravity * deltaTime;
+    velocity.y += Config::GRAVITY * deltaTime;
 
     // =========================
     // UPDATE POSITION
@@ -39,32 +34,37 @@ void Ball::update(float deltaTime)
     position += velocity * deltaTime;
 
     // =========================
-    // TƯỜNG TRÁI / PHẢI
+    // WALL COLLISION
     // =========================
-    if (position.x < BALL_RADIUS)
+    if (position.x < Config::BALL_RADIUS)
     {
-        position.x = BALL_RADIUS;
-        velocity.x *= -bounce;
+        position.x = Config::BALL_RADIUS;
+        velocity.x *= -Config::BALL_BOUNCE;
     }
 
-    if (position.x > WINDOW_WIDTH - BALL_RADIUS)
+    if (position.x > Config::WINDOW_WIDTH - Config::BALL_RADIUS)
     {
-        position.x = WINDOW_WIDTH - BALL_RADIUS;
-        velocity.x *= -bounce;
+        position.x = Config::WINDOW_WIDTH - Config::BALL_RADIUS;
+        velocity.x *= -Config::BALL_BOUNCE;
     }
 
     // =========================
-    // MẶT ĐẤT
+    // GROUND COLLISION
     // =========================
+    const float groundY =
+        Config::GROUND_Y - Config::BALL_RADIUS;
+
     if (position.y >= groundY)
     {
         position.y = groundY;
 
-        velocity.y *= -bounce;
+        velocity.y *= -Config::BALL_BOUNCE;
 
         // Nếu nảy quá nhỏ thì dừng luôn
         if (std::abs(velocity.y) < 30.f)
+        {
             velocity.y = 0.f;
+        }
     }
 
     // =========================

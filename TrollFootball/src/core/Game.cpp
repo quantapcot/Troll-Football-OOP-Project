@@ -1,14 +1,25 @@
 #include "core/Game.h"
+#include "core/GameConfig.h"
 #include <cmath>
 
 Game::Game()
-    : window(sf::VideoMode({ 1024u, 768u }), "TrollFootball")
+    : window(
+        sf::VideoMode(
+            {
+                static_cast<unsigned>(Config::WINDOW_WIDTH),
+                static_cast<unsigned>(Config::WINDOW_HEIGHT)
+            }),
+        "TrollFootball")
 {
     window.setFramerateLimit(60);
 
     player = std::make_unique<Player>();
     ball = std::make_unique<Ball>();
     ground = std::make_unique<Ground>();
+    leftGoal = std::make_unique<Goal>(0.f);
+    rightGoal = std::make_unique<Goal>(
+        Config::WINDOW_WIDTH - Config::GOAL_WIDTH
+    );
 }
 
 void Game::run()
@@ -39,6 +50,8 @@ void Game::update(float deltaTime)
     player->update(deltaTime);
     ball->update(deltaTime);
     ground->update(deltaTime);
+    leftGoal->update(deltaTime);
+    rightGoal->update(deltaTime);
 
     // =========================
     // PLAYER - BALL COLLISION
@@ -69,8 +82,13 @@ void Game::render()
     window.clear(sf::Color(30, 120, 30));
 
     ground->render(window);
-    player->render(window);
+
+    leftGoal->render(window);
+    rightGoal->render(window);
+
     ball->render(window);
+
+    player->render(window);
 
     window.display();
 }

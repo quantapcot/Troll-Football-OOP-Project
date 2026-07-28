@@ -6,6 +6,8 @@
 #include "entities/Player.h"
 #include "entities/Ball.h"
 #include "entities/Ground.h"
+#include "entities/Goal.h"
+
 
 class Game
 {
@@ -23,4 +25,7 @@ private:
     std::unique_ptr<Player> player;
     std::unique_ptr<Ball> ball;
     std::unique_ptr<Ground> ground;
+
+    std::unique_ptr<Goal> leftGoal;
+    std::unique_ptr<Goal> rightGoal;
 };

@@ -1,12 +1,19 @@
 #include "entities/Ground.h"
+#include "core/GameConfig.h"
 
 Ground::Ground()
 {
-    shape.setSize({ 1024.f, 35.f });
+    shape.setSize({
+    Config::WINDOW_WIDTH,
+    Config::GROUND_HEIGHT
+        });
 
     shape.setFillColor(sf::Color(80, 180, 80));
 
-    shape.setPosition({ 0.f, 733.f });
+    shape.setPosition({
+    0.f,
+    Config::GROUND_Y
+        });
 }
 
 void Ground::update(float deltaTime)

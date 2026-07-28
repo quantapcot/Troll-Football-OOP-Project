@@ -1,12 +1,21 @@
 #include "entities/Player.h"
+#include "core/GameConfig.h"
 
 Player::Player()
 {
-    shape.setSize({ 50.f, 70.f });
-    shape.setOrigin({ 25.f, 35.f });
+    shape.setSize({
+        Config::PLAYER_WIDTH,
+        Config::PLAYER_HEIGHT
+        });
+
+    shape.setOrigin({
+        Config::PLAYER_HALF_WIDTH,
+        Config::PLAYER_HALF_HEIGHT
+        });
+
     shape.setFillColor(sf::Color::Red);
 
-    // Vị trí ban đầu (cao hơn mặt đất để thấy hiệu ứng rơi)
+    // Vị trí ban đầu
     position = { 100.f, 650.f };
 
     shape.setPosition(position);
@@ -47,36 +56,33 @@ void Player::update(float deltaTime)
     position += velocity * deltaTime;
 
     // =========================
-    // GIỚI HẠN TRONG MÀN HÌNH
-    // =========================
-    const float WINDOW_WIDTH = 1024.f;
-    const float WINDOW_HEIGHT = 768.f;
-
-    const float PLAYER_HALF_WIDTH = 25.f;
-    const float PLAYER_HALF_HEIGHT = 35.f;
-
-    // Không cho đi ra bên trái
-    if (position.x < PLAYER_HALF_WIDTH)
-    {
-        position.x = PLAYER_HALF_WIDTH;
-    }
-
-    // Không cho đi ra bên phải
-    if (position.x > WINDOW_WIDTH - PLAYER_HALF_WIDTH)
-    {
-        position.x = WINDOW_WIDTH - PLAYER_HALF_WIDTH;
-    }
-
-    // =========================
     // GROUND COLLISION
     // =========================
-    const float groundY = WINDOW_HEIGHT - PLAYER_HALF_HEIGHT;
+    const float groundY =
+        Config::GROUND_Y - Config::PLAYER_HALF_HEIGHT;
 
     if (position.y >= groundY)
     {
         position.y = groundY;
         velocity.y = 0.f;
         onGround = true;
+    }
+    else
+    {
+        onGround = false;
+    }
+
+    // =========================
+    // WALL COLLISION
+    // =========================
+    if (position.x < Config::PLAYER_HALF_WIDTH)
+    {
+        position.x = Config::PLAYER_HALF_WIDTH;
+    }
+
+    if (position.x > Config::WINDOW_WIDTH - Config::PLAYER_HALF_WIDTH)
+    {
+        position.x = Config::WINDOW_WIDTH - Config::PLAYER_HALF_WIDTH;
     }
 
     // =========================
