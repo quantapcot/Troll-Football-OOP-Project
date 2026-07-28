@@ -28,8 +28,16 @@ public:
         velocity = v;
     }
 
+    // ===== THÊM =====
+    void reset(const sf::Vector2f& pos)
+    {
+        position = pos;
+        velocity = { 0.f,0.f };
+        shape.setPosition(position);
+    }
+
 private:
     sf::CircleShape shape;
 
-    sf::Vector2f velocity{ 0.f, 0.f };
+    sf::Vector2f velocity{ 0.f,0.f };
 };

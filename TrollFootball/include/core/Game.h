@@ -8,7 +8,6 @@
 #include "entities/Ground.h"
 #include "entities/Goal.h"
 
-
 class Game
 {
 public:
@@ -19,6 +18,8 @@ private:
     void processEvents();
     void update(float deltaTime);
     void render();
+
+    void resetAfterGoal();      
 
     sf::RenderWindow window;
 

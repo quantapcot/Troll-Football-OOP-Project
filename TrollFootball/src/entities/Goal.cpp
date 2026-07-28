@@ -1,5 +1,6 @@
 #include "entities/Goal.h"
 #include "core/GameConfig.h"
+#include "entities/Ball.h"
 
 Goal::Goal(float x)
 {
@@ -24,4 +25,9 @@ void Goal::update(float deltaTime)
 void Goal::render(sf::RenderWindow& window)
 {
     window.draw(shape);
+}
+
+bool Goal::contains(const Ball& ball) const
+{
+    return shape.getGlobalBounds().contains(ball.getPosition());
 }

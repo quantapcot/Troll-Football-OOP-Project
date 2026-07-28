@@ -1,3 +1,4 @@
+#include <iostream>
 #include "core/Game.h"
 #include "core/GameConfig.h"
 #include <cmath>
@@ -59,7 +60,7 @@ void Game::update(float deltaTime)
 
     sf::Vector2f playerPos = player->getPosition();
     sf::Vector2f ballPos = ball->getPosition();
-
+      
     float dx = playerPos.x - ballPos.x;
     float dy = playerPos.y - ballPos.y;
 
@@ -74,6 +75,24 @@ void Game::update(float deltaTime)
             ball->setVelocity({ 450.f,-250.f });
         else
             ball->setVelocity({ -450.f,-250.f });
+    }
+
+    if (leftGoal->contains(*ball))
+    {
+        std::cout << "Right Player Scores!\n";
+
+        resetAfterGoal();
+
+        return;
+    }
+
+    if (rightGoal->contains(*ball))
+    {
+        std::cout << "Left Player Scores!\n";
+
+        resetAfterGoal();
+
+        return;
     }
 }
 
@@ -91,4 +110,17 @@ void Game::render()
     player->render(window);
 
     window.display();
+}
+
+void Game::resetAfterGoal()
+{
+    player->reset({
+        100.f,
+        Config::GROUND_Y - Config::PLAYER_HALF_HEIGHT
+        });
+
+    ball->reset({
+        Config::WINDOW_WIDTH / 2.f,
+        200.f
+        });
 }
