@@ -8,6 +8,7 @@ Game::Game()
 
     player = std::make_unique<Player>();
     ball = std::make_unique<Ball>();
+    ground = std::make_unique<Ground>();
 }
 
 void Game::run()
@@ -37,6 +38,7 @@ void Game::update(float deltaTime)
 {
     player->update(deltaTime);
     ball->update(deltaTime);
+    ground->update(deltaTime);
 
     // =========================
     // PLAYER - BALL COLLISION
@@ -66,6 +68,7 @@ void Game::render()
 {
     window.clear(sf::Color(30, 120, 30));
 
+    ground->render(window);
     player->render(window);
     ball->render(window);
 
