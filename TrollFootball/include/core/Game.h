@@ -19,7 +19,7 @@ private:
     void update(float deltaTime);
     void render();
 
-    void resetAfterGoal();      
+    void resetAfterGoal();
 
     sf::RenderWindow window;
 

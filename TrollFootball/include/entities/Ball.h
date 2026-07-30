@@ -11,7 +11,10 @@ public:
     void update(float deltaTime) override;
     void render(sf::RenderWindow& window) override;
 
-    // ===== Getter =====
+    // =========================
+    // GETTER
+    // =========================
+
     const sf::Vector2f& getPosition() const
     {
         return position;
@@ -22,22 +25,35 @@ public:
         return shape.getRadius();
     }
 
-    // ===== Setter =====
+    // =========================
+    // SETTER
+    // =========================
+
     void setVelocity(const sf::Vector2f& v)
     {
         velocity = v;
     }
 
-    // ===== THÊM =====
+    const sf::Vector2f& getVelocity() const
+    {
+        return velocity;
+    }
+
+    void setPosition(const sf::Vector2f& pos)
+    {
+        position = pos;
+        shape.setPosition(position);
+    }
+
     void reset(const sf::Vector2f& pos)
     {
         position = pos;
-        velocity = { 0.f,0.f };
+        velocity = { 0.f, 0.f };
         shape.setPosition(position);
     }
 
 private:
     sf::CircleShape shape;
 
-    sf::Vector2f velocity{ 0.f,0.f };
+    sf::Vector2f velocity{ 0.f, 0.f };
 };

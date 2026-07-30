@@ -51,6 +51,7 @@ void Game::update(float deltaTime)
     player->update(deltaTime);
     ball->update(deltaTime);
     ground->update(deltaTime);
+
     leftGoal->update(deltaTime);
     rightGoal->update(deltaTime);
 
@@ -60,7 +61,7 @@ void Game::update(float deltaTime)
 
     sf::Vector2f playerPos = player->getPosition();
     sf::Vector2f ballPos = ball->getPosition();
-      
+
     float dx = playerPos.x - ballPos.x;
     float dy = playerPos.y - ballPos.y;
 
@@ -72,30 +73,29 @@ void Game::update(float deltaTime)
     if (distance <= playerRadius + ballRadius)
     {
         if (dx < 0)
-            ball->setVelocity({ 450.f,-250.f });
+            ball->setVelocity({ 450.f, -250.f });
         else
-            ball->setVelocity({ -450.f,-250.f });
+            ball->setVelocity({ -450.f, -250.f });
     }
+
+    // =========================
+    // GOAL
+    // =========================
 
     if (leftGoal->contains(*ball))
     {
         std::cout << "Right Player Scores!\n";
-
         resetAfterGoal();
-
         return;
     }
 
     if (rightGoal->contains(*ball))
     {
         std::cout << "Left Player Scores!\n";
-
         resetAfterGoal();
-
         return;
     }
 }
-
 void Game::render()
 {
     window.clear(sf::Color(30, 120, 30));

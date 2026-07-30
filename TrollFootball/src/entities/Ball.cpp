@@ -13,7 +13,8 @@ Ball::Ball()
 
     shape.setFillColor(sf::Color::White);
 
-    position = {
+    position =
+    {
         Config::WINDOW_WIDTH / 2.f,
         200.f
     };
@@ -26,16 +27,19 @@ void Ball::update(float deltaTime)
     // =========================
     // GRAVITY
     // =========================
+
     velocity.y += Config::GRAVITY * deltaTime;
 
     // =========================
     // UPDATE POSITION
     // =========================
+
     position += velocity * deltaTime;
 
     // =========================
     // WALL COLLISION
     // =========================
+
     if (position.x < Config::BALL_RADIUS)
     {
         position.x = Config::BALL_RADIUS;
@@ -51,6 +55,7 @@ void Ball::update(float deltaTime)
     // =========================
     // GROUND COLLISION
     // =========================
+
     const float groundY =
         Config::GROUND_Y - Config::BALL_RADIUS;
 
@@ -60,7 +65,6 @@ void Ball::update(float deltaTime)
 
         velocity.y *= -Config::BALL_BOUNCE;
 
-        // Nếu nảy quá nhỏ thì dừng luôn
         if (std::abs(velocity.y) < 30.f)
         {
             velocity.y = 0.f;
@@ -68,8 +72,18 @@ void Ball::update(float deltaTime)
     }
 
     // =========================
+    // STOP SMALL HORIZONTAL SPEED
+    // =========================
+
+    if (std::abs(velocity.x) < 1.f)
+    {
+        velocity.x = 0.f;
+    }
+
+    // =========================
     // UPDATE GRAPHICS
     // =========================
+
     shape.setPosition(position);
 }
 
