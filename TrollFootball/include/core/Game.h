@@ -8,6 +8,8 @@
 #include "entities/Ground.h"
 #include "entities/Goal.h"
 
+#include <optional>
+
 class Game
 {
 public:
@@ -23,10 +25,21 @@ private:
 
     sf::RenderWindow window;
 
-    std::unique_ptr<Player> player;
+    std::unique_ptr<Player> player1;
+    std::unique_ptr<Player> player2;
     std::unique_ptr<Ball> ball;
     std::unique_ptr<Ground> ground;
 
     std::unique_ptr<Goal> leftGoal;
     std::unique_ptr<Goal> rightGoal;
+
+    // =========================
+    // SCORE
+    // =========================
+
+    int leftScore{ 0 };
+    int rightScore{ 0 };
+
+    std::optional<sf::Font> font;
+    std::optional<sf::Text> scoreText;
 };

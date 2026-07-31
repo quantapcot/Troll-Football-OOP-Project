@@ -1,7 +1,7 @@
 #include <iostream>
 #include "core/Game.h"
 #include "core/GameConfig.h"
-#include <cmath>
+#include "physics/Collision.h"
 
 Game::Game()
     : window(
@@ -14,13 +14,48 @@ Game::Game()
 {
     window.setFramerateLimit(60);
 
-    player = std::make_unique<Player>();
+    // =========================
+    // PLAYER 1
+    // =========================
+
+    ControlScheme p1Controls{
+        sf::Keyboard::Key::A,
+        sf::Keyboard::Key::D,
+        sf::Keyboard::Key::Space,
+        sf::Keyboard::Key::J
+    };
+
+    // =========================
+    // PLAYER 2
+    // =========================
+
+    ControlScheme p2Controls{
+        sf::Keyboard::Key::Left,
+        sf::Keyboard::Key::Right,
+        sf::Keyboard::Key::Up,
+        sf::Keyboard::Key::Numpad0
+    };
+
+    player1 = std::make_unique<Player>(p1Controls, sf::Color::Red);
+    player2 = std::make_unique<Player>(p2Controls, sf::Color::Blue);
+
+    player1->reset({
+        150.f,
+        Config::GROUND_Y - Config::PLAYER_HALF_HEIGHT
+        });
+
+    player2->reset({
+        Config::WINDOW_WIDTH - 150.f,
+        Config::GROUND_Y - Config::PLAYER_HALF_HEIGHT
+        });
+
     ball = std::make_unique<Ball>();
     ground = std::make_unique<Ground>();
+
     leftGoal = std::make_unique<Goal>(0.f);
+
     rightGoal = std::make_unique<Goal>(
-        Config::WINDOW_WIDTH - Config::GOAL_WIDTH
-    );
+        Config::WINDOW_WIDTH - Config::GOAL_WIDTH);
 }
 
 void Game::run()
@@ -48,7 +83,9 @@ void Game::processEvents()
 
 void Game::update(float deltaTime)
 {
-    player->update(deltaTime);
+    player1->update(deltaTime);
+    player2->update(deltaTime);
+
     ball->update(deltaTime);
     ground->update(deltaTime);
 
@@ -56,38 +93,24 @@ void Game::update(float deltaTime)
     rightGoal->update(deltaTime);
 
     // =========================
-    // PLAYER - BALL COLLISION
+    // COLLISION PLAYER 1
     // =========================
 
-    sf::Vector2f playerPos = player->getPosition();
-    sf::Vector2f ballPos = ball->getPosition();
+    Collision::handlePlayerBall(*player1, *ball);
+    Collision::handleKick(*player1, *ball);
 
-    float dx = playerPos.x - ballPos.x;
-    float dy = playerPos.y - ballPos.y;
+    // =========================
+    // COLLISION PLAYER 2
+    // =========================
 
-    float distance = std::sqrt(dx * dx + dy * dy);
+    Collision::handlePlayerBall(*player2, *ball);
+    Collision::handleKick(*player2, *ball);
 
-    const float playerRadius = 35.f;
-    const float ballRadius = ball->getRadius();
+    // =========================
+    // COLLISION PLAYER 1 VS PLAYER 2
+    // =========================
 
-    // ===== Kick ưu tiên =====
-    if (player->isKicking() &&
-        !player->hasKickHit() &&
-        player->getKickHitbox().contains(ballPos))
-    {
-        // Lực sút mạnh
-        ball->setVelocity({ 1100.f, -550.f });
-
-        player->markKickHit();
-    }
-    // ===== Collision bình thường =====
-    else if (distance <= playerRadius + ballRadius)
-    {
-        if (dx < 0)
-            ball->setVelocity({ 450.f, -250.f });
-        else
-            ball->setVelocity({ -450.f, -250.f });
-    }
+    Collision::handlePlayerPlayer(*player1, *player2);
 
     // =========================
     // GOAL
@@ -121,15 +144,21 @@ void Game::render()
 
     ball->render(window);
 
-    player->render(window);
+    player1->render(window);
+    player2->render(window);
 
     window.display();
 }
 
 void Game::resetAfterGoal()
 {
-    player->reset({
-        100.f,
+    player1->reset({
+        150.f,
+        Config::GROUND_Y - Config::PLAYER_HALF_HEIGHT
+        });
+
+    player2->reset({
+        Config::WINDOW_WIDTH - 150.f,
         Config::GROUND_Y - Config::PLAYER_HALF_HEIGHT
         });
 

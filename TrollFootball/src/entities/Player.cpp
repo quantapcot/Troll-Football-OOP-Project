@@ -3,7 +3,10 @@
 #include <algorithm>
 #include <cstdint>
 
-Player::Player()
+Player::Player(const ControlScheme& controls,
+    const sf::Color& color)
+    : controls(controls),
+      playerColor(color)
 {
     shape.setSize({
         Config::PLAYER_WIDTH,
@@ -15,7 +18,7 @@ Player::Player()
         Config::PLAYER_HALF_HEIGHT
         });
 
-    shape.setFillColor(sf::Color::Red);
+    shape.setFillColor(color);
 
     position = { 100.f, 650.f };
 
@@ -141,35 +144,51 @@ void Player::handleMovementInput()
 {
     float direction = 0.f;
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
+    if (sf::Keyboard::isKeyPressed(controls.left))
         direction -= 1.f;
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
+    if (sf::Keyboard::isKeyPressed(controls.right))
         direction += 1.f;
 
+    // cập nhật hướng nhìn
+    if (direction > 0.f)
+        facingRight = true;
+    else if (direction < 0.f)
+        facingRight = false;
+
     if (dashing)
-    {
         velocity.x = dashDirection * dashSpeed;
-    }
     else
-    {
         velocity.x = direction * moveSpeed;
+}
+
+void Player::handleKickInput()
+{
+    if (sf::Keyboard::isKeyPressed(controls.kick))
+    {
+        if (!kicking && kickCooldown <= 0.f)
+        {
+            kicking = true;
+            kickHit = false;
+            kickTimer = kickDuration;
+            kickCooldown = kickCooldownTime;
+        }
     }
 }
 
 void Player::handleDashInput()
 {
-    bool currentA = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A);
-    bool currentD = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D);
+    bool currentLeft = sf::Keyboard::isKeyPressed(controls.left);
+    bool currentRight = sf::Keyboard::isKeyPressed(controls.right);
 
-    bool pressA = currentA && !lastAPressed;
-    bool pressD = currentD && !lastDPressed;
+    bool pressLeft = currentLeft && !lastAPressed;
+    bool pressRight = currentRight && !lastDPressed;
 
     // =========================
     // DOUBLE TAP LEFT
     // =========================
 
-    if (pressA)
+    if (pressLeft)
     {
         if (waitingSecondLeft)
         {
@@ -190,7 +209,7 @@ void Player::handleDashInput()
     // DOUBLE TAP RIGHT
     // =========================
 
-    if (pressD)
+    if (pressRight)
     {
         if (waitingSecondRight)
         {
@@ -207,27 +226,13 @@ void Player::handleDashInput()
         }
     }
 
-    lastAPressed = currentA;
-    lastDPressed = currentD;
-}
-
-void Player::handleKickInput()
-{
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::J))
-    {
-        if (!kicking && kickCooldown <= 0.f)
-        {
-            kicking = true;
-            kickHit = false;
-            kickTimer = kickDuration;
-            kickCooldown = kickCooldownTime;
-        }
-    }
+    lastAPressed = currentLeft;
+    lastDPressed = currentRight;
 }
 
 void Player::handleJumpInput()
 {
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space) && onGround)
+    if (sf::Keyboard::isKeyPressed(controls.jump) && onGround)
     {
         velocity.y = jumpForce;
         onGround = false;
@@ -289,12 +294,10 @@ void Player::render(sf::RenderWindow& window)
         auto alpha = static_cast<std::uint8_t>(
             255.f * (trail.life / 0.15f));
 
-        ghost.setFillColor(
-            sf::Color(
-                255,
-                0,
-                0,
-                alpha));
+        sf::Color trailColor = playerColor;
+        trailColor.a = alpha;
+
+        ghost.setFillColor(trailColor);
 
         window.draw(ghost);
     }
@@ -330,14 +333,27 @@ sf::FloatRect Player::getKickHitbox() const
     if (!kicking)
         return sf::FloatRect();
 
+    constexpr float width = 45.f;
+    constexpr float height = 50.f;
+
+    float x;
+
+    if (facingRight)
+    {
+        x = position.x + Config::PLAYER_HALF_WIDTH;
+    }
+    else
+    {
+        x = position.x - Config::PLAYER_HALF_WIDTH - width;
+    }
+
     return sf::FloatRect(
         {
-            position.x + Config::PLAYER_HALF_WIDTH,
+            x,
             position.y - Config::PLAYER_HALF_HEIGHT + 10.f
         },
         {
-            45.f,
-            50.f
-        }
-    );
+            width,
+            height
+        });
 }

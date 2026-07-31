@@ -4,11 +4,21 @@
 #include "core/GameConfig.h"
 
 #include <vector>
+#include <optional>
+
+struct ControlScheme
+{
+    sf::Keyboard::Key left;
+    sf::Keyboard::Key right;
+    sf::Keyboard::Key jump;
+    sf::Keyboard::Key kick;
+};
 
 class Player : public GameObject
 {
 public:
-    Player();
+    Player(const ControlScheme& controls,
+        const sf::Color& color);
 
     void update(float deltaTime) override;
     void render(sf::RenderWindow& window) override;
@@ -24,6 +34,26 @@ public:
     void setVelocity(const sf::Vector2f& v)
     {
         velocity = v;
+    }
+
+    sf::Vector2f getVelocity() const
+    {
+        return velocity;
+    }
+
+    void addPosition(const sf::Vector2f& offset)
+    {
+        position += offset;
+    }
+
+    const ControlScheme& getControls() const
+    {
+        return controls;
+    }
+
+    bool isFacingRight() const
+    {
+        return facingRight;
     }
 
     // =========================
@@ -75,6 +105,7 @@ private:
     // =========================
 
     sf::RectangleShape shape;
+    sf::Color playerColor;
 
     // =========================
     // MOVEMENT
@@ -87,7 +118,7 @@ private:
     float gravity{ Config::GRAVITY };
 
     bool onGround{ false };
-
+    bool facingRight{ true };
     // =========================
     // KICK
     // =========================
@@ -139,4 +170,10 @@ private:
 
     float trailSpawnTimer{ 0.f };
     float trailSpawnInterval{ 0.025f };
+
+    // =========================
+    // CONTROLS
+    // =========================
+
+    ControlScheme controls;
 };

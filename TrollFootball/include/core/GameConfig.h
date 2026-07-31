@@ -30,6 +30,22 @@ namespace Config
     constexpr float PLAYER_JUMP_FORCE = -500.f;
 
     // =====================================================
+    // PLAYER COLLISION
+    // =====================================================
+
+    constexpr float PLAYER_COLLISION_RADIUS = 35.f;
+
+    // =====================================================
+    // PLAYER ATTACK
+    // =====================================================
+
+    constexpr float PLAYER_BUMP_FORCE_X = 450.f;
+    constexpr float PLAYER_BUMP_FORCE_Y = -250.f;
+
+    constexpr float PLAYER_KICK_FORCE_X = 1100.f;
+    constexpr float PLAYER_KICK_FORCE_Y = -550.f;
+
+    // =====================================================
     // BALL
     // =====================================================
 
