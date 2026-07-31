@@ -70,7 +70,18 @@ void Game::update(float deltaTime)
     const float playerRadius = 35.f;
     const float ballRadius = ball->getRadius();
 
-    if (distance <= playerRadius + ballRadius)
+    // ===== Kick ưu tiên =====
+    if (player->isKicking() &&
+        !player->hasKickHit() &&
+        player->getKickHitbox().contains(ballPos))
+    {
+        // Lực sút mạnh
+        ball->setVelocity({ 1100.f, -550.f });
+
+        player->markKickHit();
+    }
+    // ===== Collision bình thường =====
+    else if (distance <= playerRadius + ballRadius)
     {
         if (dx < 0)
             ball->setVelocity({ 450.f, -250.f });
@@ -85,6 +96,7 @@ void Game::update(float deltaTime)
     if (leftGoal->contains(*ball))
     {
         std::cout << "Right Player Scores!\n";
+
         resetAfterGoal();
         return;
     }
@@ -92,10 +104,12 @@ void Game::update(float deltaTime)
     if (rightGoal->contains(*ball))
     {
         std::cout << "Left Player Scores!\n";
+
         resetAfterGoal();
         return;
     }
 }
+
 void Game::render()
 {
     window.clear(sf::Color(30, 120, 30));
