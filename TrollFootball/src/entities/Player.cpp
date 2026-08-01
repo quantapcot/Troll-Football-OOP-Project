@@ -1,5 +1,6 @@
 #include "entities/Player.h"
 #include "core/GameConfig.h"
+#include "audio/AudioManager.h"
 #include <algorithm>
 #include <cstdint>
 
@@ -236,6 +237,7 @@ void Player::handleJumpInput()
     {
         velocity.y = jumpForce;
         onGround = false;
+        AudioManager::getInstance().playSound("jump");
     }
 }
 

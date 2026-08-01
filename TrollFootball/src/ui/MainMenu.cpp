@@ -24,7 +24,7 @@ MainMenu::MainMenu(const sf::Font& font, sf::Vector2u windowSize)
     m_playButton.setFillColor(sf::Color(30, 150, 30));
     m_playButton.setPosition({ (windowSize.x - 220.f) / 2.f, 300.f });
 
-    m_playText.setString("CHOI NGAY");
+    m_playText.setString("PLAY");
     m_playText.setCharacterSize(24);
     m_playText.setFillColor(sf::Color::White);
     m_playText.setPosition({
@@ -37,7 +37,7 @@ MainMenu::MainMenu(const sf::Font& font, sf::Vector2u windowSize)
     m_exitButton.setFillColor(sf::Color(150, 30, 30));
     m_exitButton.setPosition({ (windowSize.x - 220.f) / 2.f, 390.f });
 
-    m_exitText.setString("THOAT");
+    m_exitText.setString("EXIT");
     m_exitText.setCharacterSize(24);
     m_exitText.setFillColor(sf::Color::White);
     m_exitText.setPosition({

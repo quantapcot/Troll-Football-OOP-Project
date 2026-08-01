@@ -2,13 +2,26 @@
 
 #include <SFML/Graphics.hpp>
 #include <memory>
-
+#include <ui/MainMenu.h>
+#include <ui/PauseMenu.h>
+#include <ui/GameOver.h>
+#include <ui/WinScreen.h>
+#include <ui/Timer.h>
 #include "entities/Player.h"
 #include "entities/Ball.h"
 #include "entities/Ground.h"
 #include "entities/Goal.h"
 
 #include <optional>
+
+enum class GameState
+{
+    MainMenu,
+    Playing,
+    GameOver,
+    WinScreen,
+    PauseMenu
+};
 
 class Game
 {
@@ -23,13 +36,28 @@ private:
 
     void resetAfterGoal();
 
+    void startNewMatch();
+
+    // MOI: goi khi het gio, kiem tra va chuyen sang WinScreen
+    void checkMatchEnd();
+
     sf::RenderWindow window;
+    GameState m_currentState{ GameState::MainMenu };
+
+    std::unique_ptr<MainMenu> mainMenu;
+
+    // MOI: 3 man hinh UI con lai
+    std::unique_ptr<PauseMenu> pauseMenu;
+    std::unique_ptr<GameOver> gameOverScreen;
+    std::unique_ptr<WinScreen> winScreen;
+
+    // MOI: dong ho dem nguoc, dung de xac dinh luc nao tran dau ket thuc
+    std::unique_ptr<Timer> timer;
 
     std::unique_ptr<Player> player1;
     std::unique_ptr<Player> player2;
     std::unique_ptr<Ball> ball;
     std::unique_ptr<Ground> ground;
-
     std::unique_ptr<Goal> leftGoal;
     std::unique_ptr<Goal> rightGoal;
 

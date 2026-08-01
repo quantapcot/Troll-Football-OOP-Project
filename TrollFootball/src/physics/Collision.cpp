@@ -1,5 +1,5 @@
 #include "physics/Collision.h"
-
+#include "audio/AudioManager.h"
 #include "entities/Player.h"
 #include "entities/Ball.h"
 #include "core/GameConfig.h"
@@ -63,6 +63,8 @@ void Collision::handleKick(Player& player, Ball& ball)
             Config::PLAYER_KICK_FORCE_Y
             });
     }
+
+	AudioManager::getInstance().playSound("kick");
 
     player.markKickHit();
 }

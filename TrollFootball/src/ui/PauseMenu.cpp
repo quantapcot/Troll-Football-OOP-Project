@@ -29,7 +29,7 @@ PauseMenu::PauseMenu(const sf::Font& font, sf::Vector2u windowSize)
     m_overlay.setSize(sf::Vector2f(static_cast<float>(windowSize.x), static_cast<float>(windowSize.y)));
     m_overlay.setFillColor(sf::Color(0, 0, 0, 180));
 
-    m_titleText.setString("TAM DUNG");
+    m_titleText.setString("PAUSE");
     m_titleText.setCharacterSize(48);
     m_titleText.setFillColor(sf::Color::White);
     float titleWidth = m_titleText.getLocalBounds().size.x; // .size.x thay cho .width
@@ -37,9 +37,9 @@ PauseMenu::PauseMenu(const sf::Font& font, sf::Vector2u windowSize)
 
     float centerX = (windowSize.x - 260.f) / 2.f;
 
-    setupButton(m_resumeButton, m_resumeText, "TIEP TUC", centerX, 250.f, sf::Color(30, 150, 30));
-    setupButton(m_restartButton, m_restartText, "CHOI LAI", centerX, 320.f, sf::Color(150, 130, 30));
-    setupButton(m_mainMenuButton, m_mainMenuText, "MAN HINH CHINH", centerX, 390.f, sf::Color(150, 30, 30));
+    setupButton(m_resumeButton, m_resumeText, "RESUME", centerX, 250.f, sf::Color(30, 150, 30));
+    setupButton(m_restartButton, m_restartText, "RESTART", centerX, 320.f, sf::Color(150, 130, 30));
+    setupButton(m_mainMenuButton, m_mainMenuText, "MAIN MENU", centerX, 390.f, sf::Color(150, 30, 30));
 }
 
 void PauseMenu::updateHover(sf::Vector2f mousePos)

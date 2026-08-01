@@ -26,7 +26,7 @@ WinScreen::WinScreen(const sf::Font& font, sf::Vector2u windowSize)
     m_overlay.setSize(sf::Vector2f(static_cast<float>(windowSize.x), static_cast<float>(windowSize.y)));
     m_overlay.setFillColor(sf::Color(0, 0, 0, 200));
 
-    m_titleText.setString("CHIEN THANG!");
+    m_titleText.setString("VICTORY!");
     m_titleText.setCharacterSize(52);
     m_titleText.setFillColor(sf::Color::Yellow);
     float titleWidth = m_titleText.getLocalBounds().size.x;
@@ -37,13 +37,13 @@ WinScreen::WinScreen(const sf::Font& font, sf::Vector2u windowSize)
     m_scoreText.setPosition({ (windowSize.x - 100.f) / 2.f, 210.f });
 
     float centerX = (windowSize.x - 260.f) / 2.f;
-    setupButton(m_restartButton, m_restartText, "CHOI LAI", centerX, 300.f, sf::Color(30, 150, 30));
-    setupButton(m_mainMenuButton, m_mainMenuText, "MAN HINH CHINH", centerX, 370.f, sf::Color(60, 60, 150));
+    setupButton(m_restartButton, m_restartText, "PLAY AGAIN", centerX, 300.f, sf::Color(30, 150, 30));
+    setupButton(m_mainMenuButton, m_mainMenuText, "MAIN MENU", centerX, 370.f, sf::Color(60, 60, 150));
 }
 
 void WinScreen::setFinalScore(int myScore, int opponentScore)
 {
-    std::string display = "TI SO: " + std::to_string(myScore) + " - " + std::to_string(opponentScore);
+    std::string display = "Score: " + std::to_string(myScore) + " - " + std::to_string(opponentScore);
     m_scoreText.setString(display);
 
     float textWidth = m_scoreText.getLocalBounds().size.x;
