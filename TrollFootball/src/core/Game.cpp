@@ -6,8 +6,6 @@
 #include <cmath>
 #include <audio/AudioManager.h>
 
-// MOI: so giay 1 tran dau - doi so nay theo y ban, hoac chuyen vao GameConfig.h neu muon
-static constexpr float MATCH_SECONDS = 90.f;
 
 Game::Game()
     : window(
@@ -69,9 +67,8 @@ Game::Game()
     pauseMenu = std::make_unique<PauseMenu>(*font, window.getSize());
     gameOverScreen = std::make_unique<GameOver>(*font, window.getSize());
     winScreen = std::make_unique<WinScreen>(*font, window.getSize());
-    timer = std::make_unique<Timer>(*font, MATCH_SECONDS);
+    timer = std::make_unique<Timer>(*font, Config::MATCH_SECONDS);
 
-    AudioManager::getInstance().loadAll();
 
     // =========================
     // PLAYER 1
