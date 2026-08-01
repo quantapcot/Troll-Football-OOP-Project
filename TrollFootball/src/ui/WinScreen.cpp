@@ -43,11 +43,21 @@ WinScreen::WinScreen(const sf::Font& font, sf::Vector2u windowSize)
 
 void WinScreen::setFinalScore(int myScore, int opponentScore)
 {
-    std::string display = "Score: " + std::to_string(myScore) + " - " + std::to_string(opponentScore);
+    std::string display = "TI SO: " + std::to_string(myScore) + " - " + std::to_string(opponentScore);
     m_scoreText.setString(display);
 
     float textWidth = m_scoreText.getLocalBounds().size.x;
     m_scoreText.setPosition({ (m_overlay.getSize().x - textWidth) / 2.f, 210.f });
+}
+
+void WinScreen::setWinnerLabel(const std::string& label)
+{
+    // MOI: thay noi dung tieu de bang ten nguoi thang cu the, thay vi luon la "CHIEN THANG!" chung chung
+    m_titleText.setString(label);
+
+    // Can lai giua man hinh vi do dai chuoi thay doi tuy label ("PLAYER 1 THANG!" khac do dai voi "HOA!")
+    float titleWidth = m_titleText.getLocalBounds().size.x;
+    m_titleText.setPosition({ (m_overlay.getSize().x - titleWidth) / 2.f, 130.f });
 }
 
 void WinScreen::updateHover(sf::Vector2f mousePos)

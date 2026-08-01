@@ -1,37 +1,46 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <optional>
+#include <string>
 
-// Enum liệt kê các lựa chọn người chơi có thể bấm trên MainMenu
-// Dùng enum class thay vì enum thường để tránh xung đột tên với các enum khác trong project
+// SUA: them 2 lua chon rieng cho che do choi, thay vi chi co "Play" chung chung
 enum class MainMenuAction
 {
-    None,   // Chưa bấm gì cả
-    Play,   // Bấm nút "Chơi ngay"
-    Exit    // Bấm nút "Thoát"
+    None,        // Chua bam gi ca
+    PlayVsBot,   // Bam nut "VS BOT" - CHUA CO CO CHE, Game.cpp se tam thoi bo qua hanh dong nay
+    PlayVsPlayer,// Bam nut "VS PLAYER" - co che 2 nguoi choi da lam tu truoc, hoat dong binh thuong
+    Exit         // Bam nut "THOAT"
 };
 
 class MainMenu
 {
 public:
-    MainMenu(const sf::Font& font, sf::Vector2u windowSize);
+    // MOI: backgroundImagePath - duong dan anh nen (vd "assets/images/menu_bg.png")
+    // Truyen chuoi rong "" neu khong muon dung anh nen (menu se chi co mau nen mac dinh cua window)
+    MainMenu(const sf::Font& font, sf::Vector2u windowSize, const std::string& backgroundImagePath = "");
 
-    // Xử lý sự kiện chuột (di chuyển để đổi màu nút khi hover, click để chọn)
-    // event: sự kiện SFML lấy được từ window.pollEvent(event) trong vòng lặp game
-    // Trả về hành động tương ứng nếu người chơi vừa click 1 nút, ngược lại trả về None
     MainMenuAction handleEvent(const sf::Event& event, const sf::RenderWindow& window);
 
-    // Vẽ toàn bộ MainMenu: tiêu đề game + 2 nút bấm
     void draw(sf::RenderWindow& window);
 
 private:
-    // Đổi màu nút khi con trỏ chuột đang ở trong vùng nút (hiệu ứng hover)
     void updateHover(sf::Vector2f mousePos);
 
-    sf::Text m_title;         // Tiêu đề "HEAD FOOTBALL"
+    // MOI: anh nen - Texture giu du lieu anh, Sprite la doi tuong ve len man hinh tu Texture do
+    // std::optional vi sf::Sprite (SFML 3) khong co constructor mac dinh, phai co Texture truoc
+    sf::Texture m_backgroundTexture;
+    std::optional<sf::Sprite> m_backgroundSprite;
 
-    sf::RectangleShape m_playButton; // Hình chữ nhật làm nền cho nút Play
-    sf::Text m_playText;             // Chữ "CHOI NGAY" nằm trên nút
+    sf::Text m_title;
 
-    sf::RectangleShape m_exitButton; // Hình chữ nhật làm nền cho nút Exit
-    sf::Text m_exitText;             // Chữ "THOAT" nằm trên nút
+    // SUA: doi ten m_playButton/m_playText thanh m_vsPlayerButton/m_vsPlayerText cho ro nghia,
+    // va them cap nut moi cho che do Vs Bot
+    sf::RectangleShape m_vsBotButton;
+    sf::Text m_vsBotText;
+
+    sf::RectangleShape m_vsPlayerButton;
+    sf::Text m_vsPlayerText;
+
+    sf::RectangleShape m_exitButton;
+    sf::Text m_exitText;
 };

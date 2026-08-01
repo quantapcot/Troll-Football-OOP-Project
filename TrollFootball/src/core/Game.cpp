@@ -38,9 +38,29 @@ Game::Game()
     scoreText->setPosition({ 20.f, 20.f });
 
     // =========================
-    // MAIN MENU (da co tu truoc)
+    // MOI: ANH NEN LUC DANG THI DAU
+    // Sua duong dan nay theo ten file that cua ban trong assets/images/
+    // Neu load loi, se chi in canh bao ra console va game van chay binh thuong
+    // (khong co anh nen, giu mau nen mac dinh sf::Color(30,120,30) trong render())
     // =========================
-    mainMenu = std::make_unique<MainMenu>(*font, window.getSize());
+    if (m_pitchTexture.loadFromFile("assets/images/pitch_bg.png"))
+    {
+        m_pitchSprite.emplace(m_pitchTexture);
+        sf::Vector2u texSize = m_pitchTexture.getSize();
+        float scaleX = static_cast<float>(window.getSize().x) / static_cast<float>(texSize.x);
+        float scaleY = static_cast<float>(window.getSize().y) / static_cast<float>(texSize.y);
+        m_pitchSprite->setScale({ scaleX, scaleY });
+    }
+    else
+    {
+        std::cerr << "[Game] Khong the load anh nen san co: assets/images/pitch_bg.png\n";
+    }
+
+    // =========================
+    // MAIN MENU (da co tu truoc)
+    // MOI: truyen them duong dan anh nen cho MainMenu - sua ten file neu ban dat ten khac
+    // =========================
+    mainMenu = std::make_unique<MainMenu>(*font, window.getSize(), "assets/images/menu_bg.png");
 
     // =========================
     // MOI: 3 MAN HINH UI CON LAI + TIMER
@@ -138,12 +158,20 @@ void Game::processEvents()
         {
             MainMenuAction action = mainMenu->handleEvent(*event, window);
 
-
-            if (action == MainMenuAction::Play)
+            // SUA: tach rieng 2 che do thay vi 1 action "Play" chung chung
+            if (action == MainMenuAction::PlayVsPlayer)
             {
                 startNewMatch();
                 m_currentState = GameState::Playing;
-                AudioManager::getInstance().playMusic("match");
+            }
+            else if (action == MainMenuAction::PlayVsBot)
+            {
+                // MOI: che do Vs Bot CHUA CO CO CHE - tam thoi chi bao console,
+                // KHONG chuyen trang thai, nguoi choi van dung yen tai MainMenu.
+                // Khi ban lam xong AI cho Player 2, thay doan nay bang startNewMatch()
+                // + mot co (bool) danh dau "dang choi voi bot" de Player2 nhan lenh tu AI
+                // thay vi tu ban phim.
+                std::cout << "[MainMenu] Che do VS BOT chua duoc ho tro.\n";
             }
             else if (action == MainMenuAction::Exit)
             {
@@ -161,13 +189,11 @@ void Game::processEvents()
             {
                 timer->resume();
                 m_currentState = GameState::Playing;
-				AudioManager::getInstance().playMusic("match");
             }
             else if (action == PauseMenuAction::Restart)
             {
                 startNewMatch();
                 m_currentState = GameState::Playing;
-				AudioManager::getInstance().playMusic("match");
             }
             else if (action == PauseMenuAction::MainMenu)
             {
@@ -302,6 +328,18 @@ void Game::checkMatchEnd()
 
     AudioManager::getInstance().stopMusic();
 
+    // MOI: xac dinh ten nguoi thang cu the dua tren ti so 2 ben
+    // (Player 1 dieu khien phia trai/leftScore, Player 2 dieu khien phia phai/rightScore,
+    // khop voi ControlScheme p1Controls/p2Controls va vi tri reset({150.f, ...}) o tren)
+    std::string winnerLabel;
+    if (leftScore > rightScore)
+        winnerLabel = "PLAYER 1 WIN!";
+    else if (rightScore > leftScore)
+        winnerLabel = "PLAYER 2 WIN!";
+    else
+        winnerLabel = "DRAW!";
+
+    winScreen->setWinnerLabel(winnerLabel);
     winScreen->setFinalScore(leftScore, rightScore);
     AudioManager::getInstance().playMusic("victory");
     m_currentState = GameState::WinScreen;
@@ -315,6 +353,11 @@ void Game::render()
     // (Playing, PauseMenu, GameOver, WinScreen deu can san lam nen phia sau lop UI phu)
     if (m_currentState != GameState::MainMenu)
     {
+        // MOI: ve anh nen san TRUOC TIEN, moi thu con lai (san, khung thanh, cau thu, bong)
+        // se duoc ve DE LEN TREN anh nen nay
+        if (m_pitchSprite.has_value())
+            window.draw(*m_pitchSprite);
+
         ground->render(window);
 
         leftGoal->render(window);

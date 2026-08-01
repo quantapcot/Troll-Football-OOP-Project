@@ -70,4 +70,9 @@ private:
 
     std::optional<sf::Font> font;
     std::optional<sf::Text> scoreText;
+
+    // MOI: anh nen luc dang thi dau (ve phia sau san/cau thu/bong)
+    // std::optional vi sf::Sprite khong co constructor mac dinh (SFML 3), phai co Texture truoc
+    sf::Texture m_pitchTexture;
+    std::optional<sf::Sprite> m_pitchSprite;
 };

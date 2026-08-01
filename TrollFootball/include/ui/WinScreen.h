@@ -21,6 +21,10 @@ public:
 
     void setFinalScore(int myScore, int opponentScore);
 
+    // MOI: dat noi dung tieu de theo TEN NGUOI THANG CU THE, vd "PLAYER 1 THANG!"
+    // Goi ham nay TRUOC hoac SAU setFinalScore deu duoc, khong anh huong lan nhau
+    void setWinnerLabel(const std::string& label);
+
     WinScreenAction handleEvent(const sf::Event& event, const sf::RenderWindow& window);
     void draw(sf::RenderWindow& window);
 
