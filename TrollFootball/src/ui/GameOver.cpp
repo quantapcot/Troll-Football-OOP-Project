@@ -1,0 +1,106 @@
+#include "ui/GameOver.h"
+#include "audio/AudioManager.h"
+
+static void setupButton(sf::RectangleShape& box, sf::Text& text, const std::string& label,
+    float x, float y, sf::Color color)
+{
+    box.setSize(sf::Vector2f(260.f, 55.f));
+    box.setFillColor(color);
+    box.setPosition({ x, y });
+
+    text.setString(label);
+    text.setCharacterSize(22);
+    text.setFillColor(sf::Color::White);
+    text.setPosition({
+        x + (box.getSize().x - text.getLocalBounds().size.x) / 2.f,
+        y + (box.getSize().y - text.getLocalBounds().size.y) / 2.f - 5.f
+        });
+}
+
+GameOver::GameOver(const sf::Font& font, sf::Vector2u windowSize)
+    : m_titleText(font)
+    , m_scoreText(font)
+    , m_restartText(font)
+    , m_mainMenuText(font)
+{
+    m_overlay.setSize(sf::Vector2f(static_cast<float>(windowSize.x), static_cast<float>(windowSize.y)));
+    m_overlay.setFillColor(sf::Color(0, 0, 0, 200));
+
+    m_titleText.setString("BAN THUA CUOC");
+    m_titleText.setCharacterSize(52);
+    m_titleText.setFillColor(sf::Color::Red);
+    float titleWidth = m_titleText.getLocalBounds().size.x;
+    m_titleText.setPosition({ (windowSize.x - titleWidth) / 2.f, 130.f });
+
+    m_scoreText.setCharacterSize(30);
+    m_scoreText.setFillColor(sf::Color::White);
+    m_scoreText.setPosition({ (windowSize.x - 100.f) / 2.f, 210.f });
+
+    float centerX = (windowSize.x - 260.f) / 2.f;
+    setupButton(m_restartButton, m_restartText, "CHOI LAI", centerX, 300.f, sf::Color(150, 130, 30));
+    setupButton(m_mainMenuButton, m_mainMenuText, "MAN HINH CHINH", centerX, 370.f, sf::Color(150, 30, 30));
+}
+
+void GameOver::setFinalScore(int myScore, int opponentScore)
+{
+    std::string display = "TI SO: " + std::to_string(myScore) + " - " + std::to_string(opponentScore);
+    m_scoreText.setString(display);
+
+    float textWidth = m_scoreText.getLocalBounds().size.x;
+    m_scoreText.setPosition({ (m_overlay.getSize().x - textWidth) / 2.f, 210.f });
+}
+
+void GameOver::updateHover(sf::Vector2f mousePos)
+{
+    auto hoverColor = [&](sf::RectangleShape& box, sf::Color base)
+        {
+            if (box.getGlobalBounds().contains(mousePos))
+                box.setFillColor(sf::Color(base.r + 20, base.g + 20, base.b + 20));
+            else
+                box.setFillColor(base);
+        };
+
+    hoverColor(m_restartButton, sf::Color(150, 130, 30));
+    hoverColor(m_mainMenuButton, sf::Color(150, 30, 30));
+}
+
+GameOverAction GameOver::handleEvent(const sf::Event& event, const sf::RenderWindow& window)
+{
+    sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+
+    if (event.is<sf::Event::MouseMoved>())
+    {
+        updateHover(mousePos);
+        return GameOverAction::None;
+    }
+
+    if (const auto* mousePressed = event.getIf<sf::Event::MouseButtonPressed>())
+    {
+        if (mousePressed->button == sf::Mouse::Button::Left)
+        {
+            if (m_restartButton.getGlobalBounds().contains(mousePos))
+            {
+                AudioManager::getInstance().playSound("button");
+                return GameOverAction::Restart;
+            }
+            if (m_mainMenuButton.getGlobalBounds().contains(mousePos))
+            {
+                AudioManager::getInstance().playSound("button");
+                return GameOverAction::MainMenu;
+            }
+        }
+    }
+
+    return GameOverAction::None;
+}
+
+void GameOver::draw(sf::RenderWindow& window)
+{
+    window.draw(m_overlay);
+    window.draw(m_titleText);
+    window.draw(m_scoreText);
+    window.draw(m_restartButton);
+    window.draw(m_restartText);
+    window.draw(m_mainMenuButton);
+    window.draw(m_mainMenuText);
+}

@@ -1,0 +1,101 @@
+#include "audio/AudioManager.h"
+#include <iostream>
+
+bool AudioManager::loadAll()
+{
+    bool allOk = true;
+
+    std::unordered_map<std::string, std::string> soundFiles = {
+        {"kick",      "assets/sounds/kick.wav"},
+        {"jump",      "assets/sounds/jump.wav"},
+        {"goal",      "assets/sounds/goal.wav"},
+        {"whistle",   "assets/sounds/whistle.wav"},
+        {"button",    "assets/sounds/button.wav"},
+        {"countdown", "assets/sounds/countdown.wav"}
+    };
+
+    for (auto& pair : soundFiles)
+    {
+        sf::SoundBuffer buffer;
+
+        // sf::SoundBuffer::loadFromFile giữ nguyên tên hàm ở SFML 3 (không đổi thành open...)
+        // vì SoundBuffer nạp TOÀN BỘ dữ liệu âm thanh vào RAM ngay lập tức, không phải stream.
+        if (!buffer.loadFromFile(pair.second))
+        {
+            std::cerr << "[AudioManager] Khong the load file: " << pair.second << std::endl;
+            allOk = false;
+            continue;
+        }
+
+        // Bước 1: chuyển buffer vào map lưu trữ TRƯỚC (dùng std::move để tránh copy thừa).
+        // emplace() trả về std::pair<iterator, bool> -> .first là iterator trỏ tới phần tử vừa thêm
+        auto insertedBuffer = m_soundBuffers.emplace(pair.first, std::move(buffer));
+
+        // Bước 2: tạo sf::Sound RIÊNG cho hiệu ứng này, bắt buộc truyền buffer ngay lúc tạo
+        // vì SFML 3 đã bỏ constructor mặc định của sf::Sound.
+        // insertedBuffer.first->second là tham chiếu tới SoundBuffer vừa lưu trong map ở bước 1
+        // (tham chiếu này ổn định lâu dài vì unordered_map không di chuyển dữ liệu phần tử khi rehash).
+        m_sounds.emplace(pair.first, sf::Sound(insertedBuffer.first->second));
+    }
+
+    m_musicPaths = {
+        {"menu",    "assets/music/menu.mp3"},
+        {"match",   "assets/music/match.mp3"},
+        {"victory", "assets/music/victory.mp3"}
+    };
+
+    return allOk;
+}
+
+void AudioManager::playSound(const std::string& soundName)
+{
+    auto it = m_sounds.find(soundName);
+    if (it == m_sounds.end())
+    {
+        std::cerr << "[AudioManager] Khong tim thay sound: " << soundName << std::endl;
+        return;
+    }
+
+    // Gọi play() trực tiếp trên sf::Sound riêng của hiệu ứng này
+    // (khác bản 2.x: trước đây phải setBuffer() rồi mới play() trên 1 biến dùng chung)
+    it->second.play();
+}
+
+void AudioManager::playMusic(const std::string& musicName, bool loop)
+{
+    auto it = m_musicPaths.find(musicName);
+    if (it == m_musicPaths.end())
+    {
+        std::cerr << "[AudioManager] Khong tim thay music: " << musicName << std::endl;
+        return;
+    }
+
+    // sf::Music::openFromFile giữ nguyên tên ở cả 2 bản (Music luôn "open" để stream)
+    if (!m_music.openFromFile(it->second))
+    {
+        std::cerr << "[AudioManager] Loi mo file nhac: " << it->second << std::endl;
+        return;
+    }
+
+    // ĐỔI TÊN HÀM: setLoop() (SFML 2.x) -> setLooping() (SFML 3.1.0)
+    m_music.setLooping(loop);
+    m_music.play();
+}
+
+void AudioManager::stopMusic()
+{
+    m_music.stop();
+}
+
+void AudioManager::setSoundVolume(float volume)
+{
+    // Áp dụng âm lượng cho TẤT CẢ hiệu ứng đã nạp, vì giờ mỗi hiệu ứng có 1 sf::Sound riêng
+    // (khác bản cũ chỉ cần setVolume() trên 1 biến sound dùng chung)
+    for (auto& pair : m_sounds)
+        pair.second.setVolume(volume);
+}
+
+void AudioManager::setMusicVolume(float volume)
+{
+    m_music.setVolume(volume);
+}

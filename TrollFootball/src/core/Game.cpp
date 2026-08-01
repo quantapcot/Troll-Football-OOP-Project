@@ -2,6 +2,8 @@
 #include "core/Game.h"
 #include "core/GameConfig.h"
 #include "physics/Collision.h"
+#include <cmath>
+#include <audio/AudioManager.h>
 
 Game::Game()
     : window(
@@ -120,6 +122,8 @@ void Game::update(float deltaTime)
     {
         std::cout << "Right Player Scores!\n";
 
+		AudioManager::getInstance().playSound("goal");
+
         resetAfterGoal();
         return;
     }
@@ -127,6 +131,8 @@ void Game::update(float deltaTime)
     if (rightGoal->contains(*ball))
     {
         std::cout << "Left Player Scores!\n";
+        
+		AudioManager::getInstance().playSound("goal");
 
         resetAfterGoal();
         return;

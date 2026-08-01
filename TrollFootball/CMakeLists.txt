@@ -46,6 +46,16 @@ foreach(DLL ${SFML_DLLS})
     add_custom_command(TARGET TrollFootball POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
             "${DLL}"
-            $<TARGET_FILE_DIR:TrollFootball>
+            "$<TARGET_FILE_DIR:TrollFootball>"
     )
 endforeach()
+
+# ============================
+# Tự động copy thư mục assets
+# ============================
+
+add_custom_command(TARGET TrollFootball POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CMAKE_SOURCE_DIR}/assets"
+        "$<TARGET_FILE_DIR:TrollFootball>/assets"
+)
