@@ -138,10 +138,12 @@ void Game::processEvents()
         {
             MainMenuAction action = mainMenu->handleEvent(*event, window);
 
+
             if (action == MainMenuAction::Play)
             {
                 startNewMatch();
                 m_currentState = GameState::Playing;
+                AudioManager::getInstance().playMusic("match");
             }
             else if (action == MainMenuAction::Exit)
             {
@@ -159,11 +161,13 @@ void Game::processEvents()
             {
                 timer->resume();
                 m_currentState = GameState::Playing;
+				AudioManager::getInstance().playMusic("match");
             }
             else if (action == PauseMenuAction::Restart)
             {
                 startNewMatch();
                 m_currentState = GameState::Playing;
+				AudioManager::getInstance().playMusic("match");
             }
             else if (action == PauseMenuAction::MainMenu)
             {
