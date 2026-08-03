@@ -19,7 +19,7 @@ file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS
     "src/*.cpp"
 )
 
-add_executable(TrollFootball ${SOURCES})
+add_executable(TrollFootball ${SOURCES} "src/core/AssetManager.cpp"  "include/core/Assetmanager.h")
 
 target_include_directories(TrollFootball PRIVATE
     ${CMAKE_SOURCE_DIR}/include

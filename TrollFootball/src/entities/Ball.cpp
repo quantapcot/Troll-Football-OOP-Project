@@ -1,9 +1,12 @@
 #include "entities/Ball.h"
 #include "core/GameConfig.h"
+#include "core/AssetManager.h"
 #include <cmath>
+#include <iostream>
 
 Ball::Ball()
 {
+    // Collision vẫn dùng bán kính
     shape.setRadius(Config::BALL_RADIUS);
 
     shape.setOrigin({
@@ -11,7 +14,23 @@ Ball::Ball()
         Config::BALL_RADIUS
         });
 
-    shape.setFillColor(sf::Color::White);
+    // Load sprite
+    sprite.emplace(
+        AssetManager::get().getTexture("ball"));
+
+    auto size = sprite->getTexture().getSize();
+
+    std::cout << "Ball texture: "
+        << size.x << " x "
+        << size.y << std::endl;
+
+    sprite->setOrigin({
+        size.x / 2.f,
+        size.y / 2.f
+        });
+
+    // Scale tạm, lát sẽ chỉnh nếu cần
+    sprite->setScale({ 0.08f, 0.08f });
 
     position =
     {
@@ -19,7 +38,7 @@ Ball::Ball()
         200.f
     };
 
-    shape.setPosition(position);
+    sprite->setPosition(position);
 }
 
 void Ball::update(float deltaTime)
@@ -85,9 +104,15 @@ void Ball::update(float deltaTime)
     // =========================
 
     shape.setPosition(position);
+
+    if (sprite)
+        sprite->setPosition(position);
 }
 
 void Ball::render(sf::RenderWindow& window)
 {
-    window.draw(shape);
+    if (sprite)
+        window.draw(*sprite);
+    else
+        window.draw(shape);
 }

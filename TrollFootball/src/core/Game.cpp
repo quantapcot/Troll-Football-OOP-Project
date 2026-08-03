@@ -5,6 +5,7 @@
 #include "physics/Collision.h"
 #include <cmath>
 #include <audio/AudioManager.h>
+#include "core/AssetManager.h"
 
 
 Game::Game()
@@ -17,6 +18,34 @@ Game::Game()
         "TrollFootball")
 {
     window.setFramerateLimit(60);
+
+    // =========================
+    // LOAD TEXTURES
+    // =========================
+    AssetManager::get().loadTexture(
+        "player1",
+        "assets/textures/players/player1.png");
+
+    AssetManager::get().loadTexture(
+        "player2",
+        "assets/textures/players/player2.png");
+
+    AssetManager::get().loadTexture(
+        "ball",
+        "assets/textures/balls/ball.png");
+
+    AssetManager::get().loadTexture(
+        "stadium",
+        "assets/textures/stadium/background.png"
+    );
+    auto& tex = AssetManager::get().getTexture("stadium");
+
+    std::cout << "Background: "
+        << tex.getSize().x
+        << " x "
+        << tex.getSize().y
+        << std::endl;
+
 
     // =========================
     // LOAD FONT
@@ -35,30 +64,16 @@ Game::Game()
     scoreText->setFillColor(sf::Color::White);
     scoreText->setPosition({ 20.f, 20.f });
 
-    // =========================
-    // MOI: ANH NEN LUC DANG THI DAU
-    // Sua duong dan nay theo ten file that cua ban trong assets/images/
-    // Neu load loi, se chi in canh bao ra console va game van chay binh thuong
-    // (khong co anh nen, giu mau nen mac dinh sf::Color(30,120,30) trong render())
-    // =========================
-    if (m_pitchTexture.loadFromFile("assets/images/pitch_bg.png"))
-    {
-        m_pitchSprite.emplace(m_pitchTexture);
-        sf::Vector2u texSize = m_pitchTexture.getSize();
-        float scaleX = static_cast<float>(window.getSize().x) / static_cast<float>(texSize.x);
-        float scaleY = static_cast<float>(window.getSize().y) / static_cast<float>(texSize.y);
-        m_pitchSprite->setScale({ scaleX, scaleY });
-    }
-    else
-    {
-        std::cerr << "[Game] Khong the load anh nen san co: assets/images/pitch_bg.png\n";
-    }
+   
 
     // =========================
     // MAIN MENU (da co tu truoc)
     // MOI: truyen them duong dan anh nen cho MainMenu - sua ten file neu ban dat ten khac
     // =========================
-    mainMenu = std::make_unique<MainMenu>(*font, window.getSize(), "assets/images/menu_bg.png");
+    mainMenu = std::make_unique<MainMenu>(
+        *font,
+        window.getSize(),
+        "assets/textures/ui/menu.png");
 
     // =========================
     // MOI: 3 MAN HINH UI CON LAI + TIMER
@@ -352,8 +367,14 @@ void Game::render()
     {
         // MOI: ve anh nen san TRUOC TIEN, moi thu con lai (san, khung thanh, cau thu, bong)
         // se duoc ve DE LEN TREN anh nen nay
-        if (m_pitchSprite.has_value())
-            window.draw(*m_pitchSprite);
+        sf::Sprite stadium(
+            AssetManager::get().getTexture("stadium")
+        );
+
+        stadium.setPosition({ 0.f, 0.f });
+        stadium.setScale({ 1.f, 1.f });
+
+        window.draw(stadium);
 
         ground->render(window);
 

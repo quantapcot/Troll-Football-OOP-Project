@@ -9,7 +9,8 @@ Goal::Goal(float x)
         Config::GOAL_HEIGHT
         });
 
-    shape.setFillColor(sf::Color::White);
+    // Hitbox vô hình
+    shape.setFillColor(sf::Color::Transparent);
 
     shape.setPosition({
         x,
@@ -19,12 +20,14 @@ Goal::Goal(float x)
 
 void Goal::update(float deltaTime)
 {
-    // Hiện tại chưa cần xử lý gì
+    // Chưa cần xử lý
 }
 
 void Goal::render(sf::RenderWindow& window)
 {
-    window.draw(shape);
+    // Không vẽ gì nữa.
+    // Muốn xem hitbox thì dùng:
+    // window.draw(shape);
 }
 
 bool Goal::contains(const Ball& ball) const

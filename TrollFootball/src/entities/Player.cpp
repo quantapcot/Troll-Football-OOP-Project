@@ -3,27 +3,48 @@
 #include "audio/AudioManager.h"
 #include <algorithm>
 #include <cstdint>
+#include "core/AssetManager.h"
+#include <iostream>
 
 Player::Player(const ControlScheme& controls,
     const sf::Color& color)
     : controls(controls),
-      playerColor(color)
+    playerColor(color)
 {
-    shape.setSize({
-        Config::PLAYER_WIDTH,
-        Config::PLAYER_HEIGHT
+    // Chọn texture theo Player
+    if (playerColor == sf::Color::Red)
+    {
+        sprite.emplace(
+            AssetManager::get().getTexture("player1"));
+    }
+    else
+    {
+        sprite.emplace(
+            AssetManager::get().getTexture("player2"));
+    }
+
+    // Lấy kích thước ảnh
+    auto size = sprite->getTexture().getSize();
+    std::cout << "Player texture size: "
+        << size.x << " x "
+        << size.y << std::endl;
+
+    // Đặt tâm Sprite
+    sprite->setOrigin({
+        size.x / 2.f,
+        size.y / 2.f
         });
 
-    shape.setOrigin({
-        Config::PLAYER_HALF_WIDTH,
-        Config::PLAYER_HALF_HEIGHT
-        });
+    // Scale về đúng kích thước nhân vật trong game
+    sprite->setScale({ 0.18f, 0.18f });
 
-    shape.setFillColor(color);
+    // Vị trí ban đầu
+    position = {
+        100.f,
+        Config::GROUND_Y - Config::PLAYER_HALF_HEIGHT
+    };
 
-    position = { 100.f, 650.f };
-
-    shape.setPosition(position);
+    sprite->setPosition(position);
 }
 
 void Player::update(float deltaTime)
@@ -46,7 +67,7 @@ void Player::update(float deltaTime)
     handleGroundCollision();
     handleWallCollision();
 
-    shape.setPosition(position);
+    sprite->setPosition(position);
 }
 
 void Player::updateKick(float deltaTime)
@@ -289,7 +310,7 @@ void Player::render(sf::RenderWindow& window)
 
     for (const auto& trail : trails)
     {
-        sf::RectangleShape ghost = shape;
+        sf::Sprite ghost(*sprite);
 
         ghost.setPosition(trail.position);
 
@@ -299,7 +320,7 @@ void Player::render(sf::RenderWindow& window)
         sf::Color trailColor = playerColor;
         trailColor.a = alpha;
 
-        ghost.setFillColor(trailColor);
+        ghost.setColor(trailColor);
 
         window.draw(ghost);
     }
@@ -308,7 +329,10 @@ void Player::render(sf::RenderWindow& window)
     // PLAYER
     // =========================
 
-    window.draw(shape);
+    if (sprite)
+    {
+        window.draw(*sprite);
+    }
 
 #ifdef _DEBUG
 

@@ -26,9 +26,11 @@ public:
     void reset(const sf::Vector2f& pos)
     {
         position = pos;
-        velocity = { 0.f, 0.f };
+        velocity = { 0.f,0.f };
         onGround = true;
-        shape.setPosition(position);
+
+        if (sprite)
+            sprite->setPosition(position);
     }
 
     void setVelocity(const sf::Vector2f& v)
@@ -104,7 +106,7 @@ private:
     // COMPONENT
     // =========================
 
-    sf::RectangleShape shape;
+    std::optional<sf::Sprite> sprite;
     sf::Color playerColor;
 
     // =========================

@@ -6,8 +6,8 @@ namespace Config
     // WINDOW
     // =====================================================
 
-    constexpr float WINDOW_WIDTH = 1024.f;
-    constexpr float WINDOW_HEIGHT = 768.f;
+    constexpr float WINDOW_WIDTH = 1480.f;
+    constexpr float WINDOW_HEIGHT = 744.f;
 
     // =====================================================
     // FIELD
