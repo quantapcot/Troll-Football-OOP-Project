@@ -59,12 +59,20 @@ Game::Game()
     // =========================
     // SCORE TEXT
     // =========================
-    scoreText.emplace(*font);
-    scoreText->setCharacterSize(28);
-    scoreText->setFillColor(sf::Color::White);
-    scoreText->setPosition({ 20.f, 20.f });
+    leftScoreText.emplace(*font);
+    rightScoreText.emplace(*font);
 
-   
+    leftScoreText->setCharacterSize(30);
+    rightScoreText->setCharacterSize(30);
+
+    leftScoreText->setFillColor(sf::Color::White);
+    rightScoreText->setFillColor(sf::Color::White);
+
+    leftScoreText->setString("0");
+    rightScoreText->setString("0");
+
+    leftScoreText->setPosition({ 675.f, 127.f });
+    rightScoreText->setPosition({ 785.f, 127.f });
 
     // =========================
     // MAIN MENU (da co tu truoc)
@@ -303,11 +311,9 @@ void Game::update(float deltaTime)
 
     if (leftGoal->contains(*ball))
     {
-        std::cout << "Right Player Scores!\n";
-
         rightScore++;
-        scoreText->setString(
-            std::to_string(leftScore) + "  -  " + std::to_string(rightScore));
+
+        rightScoreText->setString(std::to_string(rightScore));
 
         AudioManager::getInstance().playSound("goal");
 
@@ -317,11 +323,9 @@ void Game::update(float deltaTime)
 
     if (rightGoal->contains(*ball))
     {
-        std::cout << "Left Player Scores!\n";
-
         leftScore++;
-        scoreText->setString(
-            std::to_string(leftScore) + "  -  " + std::to_string(rightScore));
+        
+        leftScoreText->setString(std::to_string(leftScore));
 
         AudioManager::getInstance().playSound("goal");
 
@@ -386,7 +390,9 @@ void Game::render()
         player1->render(window);
         player2->render(window);
 
-        window.draw(*scoreText);
+        window.draw(*leftScoreText);
+        window.draw(*rightScoreText);
+
         timer->draw(window); // MOI: ve dong ho dem nguoc
     }
 
@@ -434,7 +440,9 @@ void Game::startNewMatch()
 {
     leftScore = 0;
     rightScore = 0;
-    scoreText->setString("0  -  0");
+
+    leftScoreText->setString("0");
+    rightScoreText->setString("0");
 
     timer->reset(); // MOI: reset dong ho ve MATCH_SECONDS moi khi bat dau tran
 
