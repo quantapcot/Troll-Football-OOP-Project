@@ -17,7 +17,7 @@ Timer::Timer(const sf::Font& font, float totalSeconds)
 
     // setPosition ở SFML 3 CHỈ nhận 1 tham số kiểu sf::Vector2f, không còn overload (x, y) nữa
     // => truyền dạng brace-init {x, y} để trình biên dịch tự tạo Vector2f
-    m_text.setPosition({ 460.f, 20.f });
+    m_text.setPosition({ 690.f, 45.f });
 
     updateDisplayText();
 }

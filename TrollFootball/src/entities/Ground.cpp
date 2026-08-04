@@ -23,5 +23,5 @@ void Ground::update(float deltaTime)
 
 void Ground::render(sf::RenderWindow& window)
 {
-    window.draw(shape);
+    
 }

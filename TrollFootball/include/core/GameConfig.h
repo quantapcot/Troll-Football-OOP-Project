@@ -13,7 +13,7 @@ namespace Config
     // FIELD
     // =====================================================
 
-    constexpr float GROUND_HEIGHT = 35.f;
+    constexpr float GROUND_HEIGHT = 140.f;
     constexpr float GROUND_Y = WINDOW_HEIGHT - GROUND_HEIGHT;
 
     // =====================================================
