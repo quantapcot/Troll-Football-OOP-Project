@@ -51,23 +51,23 @@ MainMenu::MainMenu(const sf::Font& font, sf::Vector2u windowSize, const std::str
     float firstButtonY = windowSize.y * 0.45f;
     float buttonSpacing = 75.f;
 
-    // ----- Nut VS BOT (chua co co che, hien thi dang "sap ra mat") -----
+    //VS BOT BUTTON
     m_vsBotButton.setSize(sf::Vector2f(buttonWidth, buttonHeight));
-    m_vsBotButton.setFillColor(sf::Color(90, 90, 90)); // Mau xam = dang bi vo hieu hoa (disabled)
+    m_vsBotButton.setFillColor(sf::Color(150, 30, 30)); 
     m_vsBotButton.setPosition({ centerX, firstButtonY });
 
-    m_vsBotText.setString("VS BOT (COMING SOON)");
-    m_vsBotText.setCharacterSize(18); // Chu nho hon vi chuoi dai hon cac nut khac
-    m_vsBotText.setFillColor(sf::Color(200, 200, 200));
+    m_vsBotText.setString("VS BOT");
+    m_vsBotText.setCharacterSize(24); 
+    m_vsBotText.setFillColor(sf::Color::White);
     m_vsBotText.setPosition({
         centerX + (buttonWidth - m_vsBotText.getLocalBounds().size.x) / 2.f,
         firstButtonY + 16.f
         });
 
-    // ----- Nut VS PLAYER (co che chinh, da hoat dong tu truoc) -----
+    //VS PLAYER BUTTON
     float secondButtonY = firstButtonY + buttonSpacing;
     m_vsPlayerButton.setSize(sf::Vector2f(buttonWidth, buttonHeight));
-    m_vsPlayerButton.setFillColor(sf::Color(30, 150, 30));
+    m_vsPlayerButton.setFillColor(sf::Color(150, 30, 30));
     m_vsPlayerButton.setPosition({ centerX, secondButtonY });
 
     m_vsPlayerText.setString("VS PLAYER");
@@ -97,11 +97,15 @@ void MainMenu::updateHover(sf::Vector2f mousePos)
 {
     // SUA: nut VS BOT dang disabled => KHONG doi mau khi hover, luon giu mau xam co dinh
     // (khong goi ham doi mau cho no o day nua, chi con 2 nut duoi la co hieu ung hover)
+    if (m_vsBotButton.getGlobalBounds().contains(mousePos))
+        m_vsBotButton.setFillColor(sf::Color(200, 50, 50));
+    else
+        m_vsBotButton.setFillColor(sf::Color(150, 30, 30));
 
     if (m_vsPlayerButton.getGlobalBounds().contains(mousePos))
-        m_vsPlayerButton.setFillColor(sf::Color(50, 200, 50));
+        m_vsPlayerButton.setFillColor(sf::Color(200, 50, 50));
     else
-        m_vsPlayerButton.setFillColor(sf::Color(30, 150, 30));
+        m_vsPlayerButton.setFillColor(sf::Color(150, 30, 30));
 
     if (m_exitButton.getGlobalBounds().contains(mousePos))
         m_exitButton.setFillColor(sf::Color(200, 50, 50));

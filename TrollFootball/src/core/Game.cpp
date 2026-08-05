@@ -81,7 +81,7 @@ Game::Game()
     mainMenu = std::make_unique<MainMenu>(
         *font,
         window.getSize(),
-        "assets/textures/ui/menu.png");
+        "assets/textures/ui/menu.jpg");
 
     // =========================
     // MOI: 3 MAN HINH UI CON LAI + TIMER
@@ -173,14 +173,14 @@ void Game::processEvents()
             }
         }
 
-        // SUA: mo rong switch, moi state co UI rieng xu ly event cua no
+        //EVENT STATE
         switch (m_currentState)
         {
         case GameState::MainMenu:
         {
             MainMenuAction action = mainMenu->handleEvent(*event, window);
 
-            // SUA: tach rieng 2 che do thay vi 1 action "Play" chung chung
+            //MAIN MENU ACTION
             if (action == MainMenuAction::PlayVsPlayer)
             {
                 m_isVsBot = false;
@@ -206,6 +206,9 @@ void Game::processEvents()
                 startNewMatch();
 
                 m_currentState = GameState::Playing;
+
+				
+
             }
             else if (action == MainMenuAction::Exit)
             {
@@ -214,7 +217,7 @@ void Game::processEvents()
             break;
         }
 
-        // MOI: xu ly PauseMenu
+		// PAUSE MENU
         case GameState::PauseMenu:
         {
             PauseMenuAction action = pauseMenu->handleEvent(*event, window);
@@ -238,7 +241,7 @@ void Game::processEvents()
             break;
         }
 
-        // MOI: xu ly WinScreen
+        // WINSCREEN
         case GameState::WinScreen:
         {
             WinScreenAction action = winScreen->handleEvent(*event, window);
