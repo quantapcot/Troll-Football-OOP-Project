@@ -363,3 +363,21 @@ sf::FloatRect Player::getKickHitbox() const
             height
         });
 }
+
+void Player::setSkin(const sf::Texture& texture, bool flipHorizontal, float scale)
+{
+    sprite.emplace(texture);
+
+    auto size = sprite->getTexture().getSize();
+
+    sprite->setOrigin({
+        size.x / 2.f,
+        size.y / 2.f
+        });
+
+    // flipHorizontal = true -> dao scale.x am de lat nguoc anh qua truc doc
+    float scaleX = flipHorizontal ? -scale : scale;
+
+    sprite->setScale({ scaleX, scale });
+    sprite->setPosition(position);
+}

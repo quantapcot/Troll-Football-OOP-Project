@@ -13,10 +13,12 @@
 #include "entities/Goal.h"
 #include <optional>
 #include "ai/BotController.h"
+#include "ui/CharacterSelectMenu.h"
 
 enum class GameState
 {
     MainMenu,
+	CharacterSelect,
     Playing,
     GameOver,
     WinScreen,
@@ -47,7 +49,7 @@ private:
     bool m_isVsBot{ false };
 
     std::unique_ptr<MainMenu> mainMenu;
-
+    std::unique_ptr<CharacterSelectMenu> characterSelectMenu;
     // MOI: 3 man hinh UI con lai
     std::unique_ptr<PauseMenu> pauseMenu;
     std::unique_ptr<GameOver> gameOverScreen;

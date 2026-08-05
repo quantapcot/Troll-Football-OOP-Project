@@ -6,11 +6,10 @@ MainMenu::MainMenu(const sf::Font& font, sf::Vector2u windowSize, const std::str
     : m_title(font)
     , m_vsBotText(font)
     , m_vsPlayerText(font)
+    , m_characterSelectText(font)
     , m_exitText(font)
 {
-    // ----- MOI: Anh nen -----
-    // Chi tao Sprite khi load Texture THANH CONG. Neu duong dan rong hoac load loi,
-    // m_backgroundSprite van la std::nullopt => draw() se tu dong bo qua, khong crash.
+    //BACKGROUND
     if (!backgroundImagePath.empty())
     {
         if (m_backgroundTexture.loadFromFile(backgroundImagePath))
@@ -32,11 +31,11 @@ MainMenu::MainMenu(const sf::Font& font, sf::Vector2u windowSize, const std::str
         }
     }
 
-    // ----- Tieu de -----
+    //TITLE
     m_title.setString("TROLL FOOTBALL");
     m_title.setCharacterSize(64);
     m_title.setFillColor(sf::Color::White);
-    // MOI: them vien den mo phia sau chu de doc duoc ro rang tren anh nen (khong bi chim vao anh)
+    //BORDER
     m_title.setOutlineColor(sf::Color::Black);
     m_title.setOutlineThickness(3.f);
 
@@ -44,20 +43,20 @@ MainMenu::MainMenu(const sf::Font& font, sf::Vector2u windowSize, const std::str
     // SUA: dung ti le theo windowSize.y thay vi so cung 100.f, de menu con dep tren nhieu do phan giai
     m_title.setPosition({ (windowSize.x - titleWidth) / 2.f, windowSize.y * 0.12f });
 
-    // ----- SUA: 3 nut xep doc, vi tri tinh theo ti le chieu cao cua so -----
+	//BUTTON SCALE
     float buttonWidth = 260.f;
     float buttonHeight = 55.f;
     float centerX = (windowSize.x - buttonWidth) / 2.f;
-    float firstButtonY = windowSize.y * 0.45f;
-    float buttonSpacing = 75.f;
+    float firstButtonY = windowSize.y * 0.40f;
+    float buttonSpacing = 68.f;
 
     //VS BOT BUTTON
     m_vsBotButton.setSize(sf::Vector2f(buttonWidth, buttonHeight));
-    m_vsBotButton.setFillColor(sf::Color(150, 30, 30)); 
+    m_vsBotButton.setFillColor(sf::Color(150, 30, 30));
     m_vsBotButton.setPosition({ centerX, firstButtonY });
 
     m_vsBotText.setString("VS BOT");
-    m_vsBotText.setCharacterSize(24); 
+    m_vsBotText.setCharacterSize(24);
     m_vsBotText.setFillColor(sf::Color::White);
     m_vsBotText.setPosition({
         centerX + (buttonWidth - m_vsBotText.getLocalBounds().size.x) / 2.f,
@@ -78,25 +77,36 @@ MainMenu::MainMenu(const sf::Font& font, sf::Vector2u windowSize, const std::str
         secondButtonY + 15.f
         });
 
-    // ----- Nut THOAT -----
+    //CHOOSE CHARACTER
     float thirdButtonY = secondButtonY + buttonSpacing;
+    m_characterSelectButton.setSize(sf::Vector2f(buttonWidth, buttonHeight));
+    m_characterSelectButton.setFillColor(sf::Color(150, 30, 30));
+    m_characterSelectButton.setPosition({ centerX, thirdButtonY });
+    m_characterSelectText.setString("CHARACTERS");
+    m_characterSelectText.setCharacterSize(24);
+    m_characterSelectText.setFillColor(sf::Color::White);
+    m_characterSelectText.setPosition({
+        centerX + (buttonWidth - m_characterSelectText.getLocalBounds().size.x) / 2.f,
+        thirdButtonY + 15.f
+        });
+
+    //EXIT
+    float fourthButtonY = thirdButtonY + buttonSpacing;
     m_exitButton.setSize(sf::Vector2f(buttonWidth, buttonHeight));
     m_exitButton.setFillColor(sf::Color(150, 30, 30));
-    m_exitButton.setPosition({ centerX, thirdButtonY });
+    m_exitButton.setPosition({ centerX, fourthButtonY });
 
     m_exitText.setString("EXIT");
     m_exitText.setCharacterSize(24);
     m_exitText.setFillColor(sf::Color::White);
     m_exitText.setPosition({
         centerX + (buttonWidth - m_exitText.getLocalBounds().size.x) / 2.f,
-        thirdButtonY + 15.f
+        fourthButtonY + 15.f
         });
 }
 
 void MainMenu::updateHover(sf::Vector2f mousePos)
 {
-    // SUA: nut VS BOT dang disabled => KHONG doi mau khi hover, luon giu mau xam co dinh
-    // (khong goi ham doi mau cho no o day nua, chi con 2 nut duoi la co hieu ung hover)
     if (m_vsBotButton.getGlobalBounds().contains(mousePos))
         m_vsBotButton.setFillColor(sf::Color(200, 50, 50));
     else
@@ -106,6 +116,11 @@ void MainMenu::updateHover(sf::Vector2f mousePos)
         m_vsPlayerButton.setFillColor(sf::Color(200, 50, 50));
     else
         m_vsPlayerButton.setFillColor(sf::Color(150, 30, 30));
+
+    if (m_characterSelectButton.getGlobalBounds().contains(mousePos))
+        m_characterSelectButton.setFillColor(sf::Color(200, 50, 50));
+    else
+        m_characterSelectButton.setFillColor(sf::Color(150, 30, 30));
 
     if (m_exitButton.getGlobalBounds().contains(mousePos))
         m_exitButton.setFillColor(sf::Color(200, 50, 50));
@@ -127,9 +142,6 @@ MainMenuAction MainMenu::handleEvent(const sf::Event& event, const sf::RenderWin
     {
         if (mousePressed->button == sf::Mouse::Button::Left)
         {
-            // MOI: nut VS BOT van BAM DUOC (tra ve PlayVsBot), nhung Game.cpp se tu quyet dinh
-            // bo qua hanh dong nay vi che do Vs Bot chua duoc lam. Van phat am thanh click
-            // de nguoi choi biet nut co phan hoi, khong bi "chet" hoan toan.
             if (m_vsBotButton.getGlobalBounds().contains(mousePos))
             {
                 AudioManager::getInstance().playSound("button");
@@ -139,6 +151,12 @@ MainMenuAction MainMenu::handleEvent(const sf::Event& event, const sf::RenderWin
             {
                 AudioManager::getInstance().playSound("button");
                 return MainMenuAction::PlayVsPlayer;
+            }
+
+            if (m_characterSelectButton.getGlobalBounds().contains(mousePos))
+            {
+                AudioManager::getInstance().playSound("button");
+                return MainMenuAction::CharacterSelect;
             }
             if (m_exitButton.getGlobalBounds().contains(mousePos))
             {
@@ -153,7 +171,6 @@ MainMenuAction MainMenu::handleEvent(const sf::Event& event, const sf::RenderWin
 
 void MainMenu::draw(sf::RenderWindow& window)
 {
-    // MOI: ve anh nen TRUOC TIEN de no nam duoi cung, moi thu khac ve sau se nam de len tren
     if (m_backgroundSprite.has_value())
         window.draw(*m_backgroundSprite);
 
@@ -162,6 +179,8 @@ void MainMenu::draw(sf::RenderWindow& window)
     window.draw(m_vsBotText);
     window.draw(m_vsPlayerButton);
     window.draw(m_vsPlayerText);
+    window.draw(m_characterSelectButton);   
+    window.draw(m_characterSelectText);     
     window.draw(m_exitButton);
     window.draw(m_exitText);
 }

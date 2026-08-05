@@ -49,6 +49,18 @@ Game::Game()
         "rightgoal",
         "assets/textures/stadium/rightgoal.png");
 
+    // =========================
+    // MOI: LOAD TEXTURE NHAN VAT CHO MAN HINH CHON NHAN VAT
+    // Moi nhan vat 1 file anh rieng - doi duong dan cho khop file that cua ban.
+    // =========================
+    AssetManager::get().loadTexture(
+        "char_ronaldo",
+        "assets/textures/characters/player1.png");
+
+    AssetManager::get().loadTexture(
+        "char_messi",
+        "assets/textures/characters/player2.png");
+
     std::cout << "Background: "
         << tex.getSize().x
         << " x "
@@ -98,6 +110,19 @@ Game::Game()
     gameOverScreen = std::make_unique<GameOver>(*font, window.getSize());
     winScreen = std::make_unique<WinScreen>(*font, window.getSize());
     timer = std::make_unique<Timer>(*font, Config::MATCH_SECONDS);
+
+    // =========================
+    // CHOOSING CHARACTER MENU
+    // =========================
+    std::vector<CharacterOption> characterOptions = {
+		{ "Ronaldo", "player1", true  },   //Origin player1.png facing RIGHT
+		{ "Messi",   "player2", false }    //origin player2.png facing LEFT
+    };
+
+    characterSelectMenu = std::make_unique<CharacterSelectMenu>(
+        *font,
+        window.getSize(),
+        characterOptions);
 
 
     // =========================
@@ -191,40 +216,60 @@ void Game::processEvents()
         case GameState::MainMenu:
         {
             MainMenuAction action = mainMenu->handleEvent(*event, window);
-
-            //MAIN MENU ACTION
+            //VS PLAYER BUTTON
             if (action == MainMenuAction::PlayVsPlayer)
             {
                 m_isVsBot = false;
-
                 player2->setAIControlled(false);
-
                 botController.reset();
-
                 startNewMatch();
                 m_currentState = GameState::Playing;
             }
+			//VS BOT BUTTON
             else if (action == MainMenuAction::PlayVsBot)
             {
                 m_isVsBot = true;
-
                 player2->setAIControlled(true);
 
-                botController = std::make_unique<BotController>(
-                    *player2,
-                    *ball
-                );
+                botController = std::make_unique<BotController>(*player2, *ball);
 
                 startNewMatch();
-
                 m_currentState = GameState::Playing;
-
-				
-
             }
+			//Character Select Button
+            else if (action == MainMenuAction::CharacterSelect)
+            {
+                m_currentState = GameState::CharacterSelect;
+            }
+			//EXIT BUTTON
             else if (action == MainMenuAction::Exit)
             {
                 window.close();
+            }
+            break;
+        }
+
+		//Character Select Menu
+        case GameState::CharacterSelect:
+        {
+            CharacterSelectAction action = characterSelectMenu->handleEvent(*event, window);
+
+            if (action == CharacterSelectAction::Confirm)
+            {
+                const CharacterOption& mine = characterSelectMenu->getSelectedCharacter();
+                const CharacterOption& opponent = characterSelectMenu->getOpponentCharacter();
+
+                bool flipMine = !mine.defaultFacesRight;
+                player1->setSkin(AssetManager::get().getTexture(mine.textureKey), flipMine);
+
+                bool flipOpponent = opponent.defaultFacesRight;
+                player2->setSkin(AssetManager::get().getTexture(opponent.textureKey), flipOpponent);
+
+                m_currentState = GameState::MainMenu;
+            }
+            else if (action == CharacterSelectAction::Back)
+            {
+                m_currentState = GameState::MainMenu;
             }
             break;
         }
@@ -272,8 +317,7 @@ void Game::processEvents()
             break;
         }
 
-        // MOI: xu ly GameOver (hien khong co gi tu dong kich hoat man hinh nay,
-        // nhung wire san logic bam nut de dung khi ban them dieu kien trigger sau nay)
+		// GAME OVER
         case GameState::GameOver:
         {
             GameOverAction action = gameOverScreen->handleEvent(*event, window);
@@ -368,20 +412,18 @@ void Game::update(float deltaTime)
         return;
     }
 
-    // MOI: kiem tra het gio sau moi frame
+	//Check times up
     checkMatchEnd();
 }
 
 void Game::checkMatchEnd()
 {
     if (!timer->isTimeUp())
-        return; // Chua het gio thi khong lam gi ca
+		return; //if time is not up, do nothing
 
     AudioManager::getInstance().stopMusic();
 
-    // MOI: xac dinh ten nguoi thang cu the dua tren ti so 2 ben
-    // (Player 1 dieu khien phia trai/leftScore, Player 2 dieu khien phia phai/rightScore,
-    // khop voi ControlScheme p1Controls/p2Controls va vi tri reset({150.f, ...}) o tren)
+	// Determine the winner based on the scores
     std::string winnerLabel;
     if (leftScore > rightScore)
         winnerLabel = "PLAYER 1 WIN!";
@@ -400,9 +442,9 @@ void Game::render()
 {
     window.clear(sf::Color(30, 120, 30));
 
-    // SUA: gom dieu kien - ve san/cau thu/bong khi KHONG o MainMenu
-    // (Playing, PauseMenu, GameOver, WinScreen deu can san lam nen phia sau lop UI phu)
-    if (m_currentState != GameState::MainMenu)
+	//doesn't render the game scene if in MainMenu or CharacterSelect state
+    if (m_currentState != GameState::MainMenu
+        && m_currentState != GameState::CharacterSelect)
     {
 		//DRAW STADIUM BACKGROUND, AND FILL THE WINDOW WITH IT (SCALE TO FIT)
         sf::Sprite stadium(AssetManager::get().getTexture("stadium"));
@@ -432,14 +474,17 @@ void Game::render()
         window.draw(*leftScoreText);
         window.draw(*rightScoreText);
 
-        timer->draw(window); // MOI: ve dong ho dem nguoc
+        timer->draw(window);
     }
 
-    // SUA: them cac case moi de ve lop UI phu tuong ung, DE SAU CUNG de nam tren cung
+	//UI LAYER: DRAW THE CURRENT MENU OR SCREEN BASED ON THE GAME STATE
     switch (m_currentState)
     {
     case GameState::MainMenu:
         mainMenu->draw(window);
+        break;
+    case GameState::CharacterSelect:              
+        characterSelectMenu->draw(window);
         break;
     case GameState::PauseMenu:
         pauseMenu->draw(window);
@@ -451,7 +496,7 @@ void Game::render()
         winScreen->draw(window);
         break;
     default:
-        break; // Playing: khong co lop phu nao them
+		break; // Playing: no additional UI overlay
     }
 
     window.display();
@@ -483,7 +528,7 @@ void Game::startNewMatch()
     leftScoreText->setString("0");
     rightScoreText->setString("0");
 
-    timer->reset(); // MOI: reset dong ho ve MATCH_SECONDS moi khi bat dau tran
+	timer->reset(); //reset the timer to the initial match duration
 
     resetAfterGoal();
 
