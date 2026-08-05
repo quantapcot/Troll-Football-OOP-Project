@@ -13,13 +13,13 @@ bool AudioManager::loadAll()
         {"button",    "assets/sounds/button.wav"},
         {"countdown", "assets/sounds/countdown.wav"}
     };
-
+	//FIND THE SOUND FILES IN THE ASSETS FOLDER
     for (auto& pair : soundFiles)
     {
         sf::SoundBuffer buffer;
         if (!buffer.loadFromFile(pair.second))
         {
-            std::cerr << "[AudioManager] Khong the load file: " << pair.second << std::endl;
+            std::cerr << "[AudioManager] Can't load file: " << pair.second << std::endl;
             allOk = false;
             continue;
         }

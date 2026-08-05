@@ -20,7 +20,6 @@ static void setupButton(sf::RectangleShape& box, sf::Text& text, const std::stri
 }
 
 PauseMenu::PauseMenu(const sf::Font& font, sf::Vector2u windowSize)
-// Khởi tạo mọi sf::Text member với Font ngay tại initializer list (bắt buộc ở SFML 3)
     : m_titleText(font)
     , m_resumeText(font)
     , m_restartText(font)
@@ -32,7 +31,7 @@ PauseMenu::PauseMenu(const sf::Font& font, sf::Vector2u windowSize)
     m_titleText.setString("PAUSE");
     m_titleText.setCharacterSize(48);
     m_titleText.setFillColor(sf::Color::White);
-    float titleWidth = m_titleText.getLocalBounds().size.x; // .size.x thay cho .width
+    float titleWidth = m_titleText.getLocalBounds().size.x;
     m_titleText.setPosition({ (windowSize.x - titleWidth) / 2.f, 120.f });
 
     float centerX = (windowSize.x - 260.f) / 2.f;
