@@ -12,6 +12,16 @@ struct ControlScheme
     sf::Keyboard::Key right;
     sf::Keyboard::Key jump;
     sf::Keyboard::Key kick;
+    sf::Keyboard::Key dash;
+};
+
+struct InputCommand
+{
+    bool left = false;
+    bool right = false;
+    bool jump = false;
+    bool kick = false;
+    bool dash = false;
 };
 
 class Player : public GameObject
@@ -27,6 +37,9 @@ public:
     {
         position = pos;
         velocity = { 0.f,0.f };
+        dashing = false;
+        dashTimer = 0.f;
+        dashCooldown = 0.f;
         onGround = true;
 
         if (sprite)
@@ -56,6 +69,36 @@ public:
     bool isFacingRight() const
     {
         return facingRight;
+    }
+
+    void setInput(const InputCommand& input)
+    {
+        currentInput = input;
+    }
+
+    void setAIControlled(bool value)
+    {
+        aiControlled = value;
+    }
+
+    bool isAIControlled() const
+    {
+        return aiControlled;
+    }
+
+    bool isDashing() const
+    {
+        return dashing;
+    }
+
+    bool isTouchingBall() const
+    {
+        return touchingBall;
+    }
+
+    void setTouchingBall(bool value)
+    {
+        touchingBall = value;
     }
 
     // =========================
@@ -147,16 +190,9 @@ private:
 
     float dashSpeed{ 600.f };
 
-    float doubleTapWindow{ 0.25f };
-
-    float leftTapTimer{ 0.f };
-    float rightTapTimer{ 0.f };
-
-    bool waitingSecondLeft{ false };
-    bool waitingSecondRight{ false };
-
-    bool lastAPressed{ false };
-    bool lastDPressed{ false };
+    // Cooldown Dash
+    float dashCooldown{ 0.f };
+    float dashCooldownTime{ 0.5f };
 
     // =========================
     // TRAIL
@@ -178,4 +214,9 @@ private:
     // =========================
 
     ControlScheme controls;
+
+    bool aiControlled{ false };
+    bool touchingBall{ false };
+
+    InputCommand currentInput;
 };

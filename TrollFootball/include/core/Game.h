@@ -11,8 +11,8 @@
 #include "entities/Ball.h"
 #include "entities/Ground.h"
 #include "entities/Goal.h"
-
 #include <optional>
+#include "ai/BotController.h"
 
 enum class GameState
 {
@@ -44,6 +44,8 @@ private:
     sf::RenderWindow window;
     GameState m_currentState{ GameState::MainMenu };
 
+    bool m_isVsBot{ false };
+
     std::unique_ptr<MainMenu> mainMenu;
 
     // MOI: 3 man hinh UI con lai
@@ -56,6 +58,7 @@ private:
 
     std::unique_ptr<Player> player1;
     std::unique_ptr<Player> player2;
+    std::unique_ptr<BotController> botController;
     std::unique_ptr<Ball> ball;
     std::unique_ptr<Ground> ground;
     std::unique_ptr<Goal> leftGoal;

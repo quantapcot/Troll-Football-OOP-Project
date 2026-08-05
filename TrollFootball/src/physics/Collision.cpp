@@ -19,22 +19,74 @@ void Collision::handlePlayerBall(Player& player, Ball& ball)
     const float playerRadius = Config::PLAYER_COLLISION_RADIUS;
     const float ballRadius = ball.getRadius();
 
-    if (distance <= playerRadius + ballRadius)
+    bool touching =
+        distance <= playerRadius + ballRadius;
+
+    // Tránh chia cho 0
+    if (distance <= 0.001f)
+        return;
+
+    // =========================
+    // Không còn chạm
+    // =========================
+
+    if (!touching)
+        return;
+
+    // =========================
+    // POSITIONAL CORRECTION
+    // =========================
+
+    float overlap =
+        playerRadius + ballRadius - distance;
+
+    sf::Vector2f normal(
+        (ballPos.x - playerPos.x) / distance,
+        (ballPos.y - playerPos.y) / distance
+    );
+
+    // Đẩy bóng ra khỏi Player
+    ball.addPosition(normal * (overlap + 1.f));
+
+    // =========================
+    // Bump
+    // =========================
+
+    float bumpX =
+        Config::PLAYER_BUMP_FORCE_X;
+
+    // Player đang Dash thì húc mạnh hơn
+    if (player.isDashing())
     {
-        if (dx < 0)
-        {
-            ball.setVelocity({
-                Config::PLAYER_BUMP_FORCE_X,
-                Config::PLAYER_BUMP_FORCE_Y
-                });
-        }
-        else
-        {
-            ball.setVelocity({
-                -Config::PLAYER_BUMP_FORCE_X,
-                Config::PLAYER_BUMP_FORCE_Y
-                });
-        }
+        bumpX *= 1.6f;
+    }
+
+    // Cộng thêm vận tốc của Player
+    float forceX =
+        bumpX +
+        player.getVelocity().x;
+
+    float forceY =
+        Config::PLAYER_BUMP_FORCE_Y;
+
+    if (player.isDashing())
+    {
+        forceY *= 1.1f;
+    }
+
+    if (dx < 0)
+    {
+        ball.addVelocity({
+            forceX,
+            forceY
+            });
+    }
+    else
+    {
+        ball.addVelocity({
+            -forceX,
+            forceY
+            });
     }
 }
 
@@ -51,14 +103,14 @@ void Collision::handleKick(Player& player, Ball& ball)
 
     if (player.isFacingRight())
     {
-        ball.setVelocity({
+        ball.addVelocity({
             Config::PLAYER_KICK_FORCE_X,
             Config::PLAYER_KICK_FORCE_Y
             });
     }
     else
     {
-        ball.setVelocity({
+        ball.addVelocity({
             -Config::PLAYER_KICK_FORCE_X,
             Config::PLAYER_KICK_FORCE_Y
             });

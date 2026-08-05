@@ -11,6 +11,9 @@ Player::Player(const ControlScheme& controls,
     : controls(controls),
     playerColor(color)
 {
+
+    facingRight = (playerColor == sf::Color::Red);
+
     // Chọn texture theo Player
     if (playerColor == sf::Color::Red)
     {
@@ -49,6 +52,24 @@ Player::Player(const ControlScheme& controls,
 
 void Player::update(float deltaTime)
 {
+    if (!aiControlled)
+    {
+        currentInput.left =
+            sf::Keyboard::isKeyPressed(controls.left);
+
+        currentInput.right =
+            sf::Keyboard::isKeyPressed(controls.right);
+
+        currentInput.jump =
+            sf::Keyboard::isKeyPressed(controls.jump);
+
+        currentInput.kick =
+            sf::Keyboard::isKeyPressed(controls.kick);
+
+        currentInput.dash =
+            sf::Keyboard::isKeyPressed(controls.dash);
+    }
+
     updateKick(deltaTime);
     updateDash(deltaTime);
 
@@ -91,6 +112,13 @@ void Player::updateKick(float deltaTime)
 
 void Player::updateDash(float deltaTime)
 {
+    // Giảm cooldown
+    if (dashCooldown > 0.f)
+    {
+        dashCooldown -= deltaTime;
+    }
+
+    // Dash đang diễn ra
     if (dashing)
     {
         dashTimer -= deltaTime;
@@ -98,26 +126,6 @@ void Player::updateDash(float deltaTime)
         if (dashTimer <= 0.f)
         {
             dashing = false;
-        }
-    }
-
-    if (waitingSecondLeft)
-    {
-        leftTapTimer -= deltaTime;
-
-        if (leftTapTimer <= 0.f)
-        {
-            waitingSecondLeft = false;
-        }
-    }
-
-    if (waitingSecondRight)
-    {
-        rightTapTimer -= deltaTime;
-
-        if (rightTapTimer <= 0.f)
-        {
-            waitingSecondRight = false;
         }
     }
 }
@@ -166,17 +174,11 @@ void Player::handleMovementInput()
 {
     float direction = 0.f;
 
-    if (sf::Keyboard::isKeyPressed(controls.left))
+    if (currentInput.left)
         direction -= 1.f;
 
-    if (sf::Keyboard::isKeyPressed(controls.right))
+    if (currentInput.right)
         direction += 1.f;
-
-    // cập nhật hướng nhìn
-    if (direction > 0.f)
-        facingRight = true;
-    else if (direction < 0.f)
-        facingRight = false;
 
     if (dashing)
         velocity.x = dashDirection * dashSpeed;
@@ -186,7 +188,7 @@ void Player::handleMovementInput()
 
 void Player::handleKickInput()
 {
-    if (sf::Keyboard::isKeyPressed(controls.kick))
+    if (currentInput.kick)
     {
         if (!kicking && kickCooldown <= 0.f)
         {
@@ -200,61 +202,39 @@ void Player::handleKickInput()
 
 void Player::handleDashInput()
 {
-    bool currentLeft = sf::Keyboard::isKeyPressed(controls.left);
-    bool currentRight = sf::Keyboard::isKeyPressed(controls.right);
+    if (dashing)
+        return;
 
-    bool pressLeft = currentLeft && !lastAPressed;
-    bool pressRight = currentRight && !lastDPressed;
+    if (dashCooldown > 0.f)
+        return;
 
-    // =========================
-    // DOUBLE TAP LEFT
-    // =========================
+    if (!currentInput.dash)
+        return;
 
-    if (pressLeft)
+    dashing = true;
+    dashTimer = dashDuration;
+
+    // Bắt đầu hồi chiêu
+    dashCooldown = dashCooldownTime;
+
+    if (currentInput.left)
     {
-        if (waitingSecondLeft)
-        {
-            dashing = true;
-            dashDirection = -1;
-            dashTimer = dashDuration;
-
-            waitingSecondLeft = false;
-        }
-        else
-        {
-            waitingSecondLeft = true;
-            leftTapTimer = doubleTapWindow;
-        }
+        dashDirection = -1;
     }
-
-    // =========================
-    // DOUBLE TAP RIGHT
-    // =========================
-
-    if (pressRight)
+    else if (currentInput.right)
     {
-        if (waitingSecondRight)
-        {
-            dashing = true;
-            dashDirection = 1;
-            dashTimer = dashDuration;
-
-            waitingSecondRight = false;
-        }
-        else
-        {
-            waitingSecondRight = true;
-            rightTapTimer = doubleTapWindow;
-        }
+        dashDirection = 1;
     }
-
-    lastAPressed = currentLeft;
-    lastDPressed = currentRight;
+    else
+    {
+        // Nếu không bấm hướng thì dash theo hướng nhìn
+        dashDirection = facingRight ? 1 : -1;
+    }
 }
 
 void Player::handleJumpInput()
 {
-    if (sf::Keyboard::isKeyPressed(controls.jump) && onGround)
+    if (currentInput.jump && onGround)
     {
         velocity.y = jumpForce;
         onGround = false;

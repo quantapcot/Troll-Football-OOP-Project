@@ -101,7 +101,8 @@ Game::Game()
         sf::Keyboard::Key::A,
         sf::Keyboard::Key::D,
         sf::Keyboard::Key::W,
-        sf::Keyboard::Key::J
+        sf::Keyboard::Key::J,
+        sf::Keyboard::Key::C
     };
 
     // =========================
@@ -112,7 +113,8 @@ Game::Game()
         sf::Keyboard::Key::Left,
         sf::Keyboard::Key::Right,
         sf::Keyboard::Key::Up,
-        sf::Keyboard::Key::Numpad0
+        sf::Keyboard::Key::Numpad0,
+        sf::Keyboard::Key::Numpad1
     };
 
     player1 = std::make_unique<Player>(p1Controls, sf::Color::Red);
@@ -181,17 +183,29 @@ void Game::processEvents()
             // SUA: tach rieng 2 che do thay vi 1 action "Play" chung chung
             if (action == MainMenuAction::PlayVsPlayer)
             {
+                m_isVsBot = false;
+
+                player2->setAIControlled(false);
+
+                botController.reset();
+
                 startNewMatch();
                 m_currentState = GameState::Playing;
             }
             else if (action == MainMenuAction::PlayVsBot)
             {
-                // MOI: che do Vs Bot CHUA CO CO CHE - tam thoi chi bao console,
-                // KHONG chuyen trang thai, nguoi choi van dung yen tai MainMenu.
-                // Khi ban lam xong AI cho Player 2, thay doan nay bang startNewMatch()
-                // + mot co (bool) danh dau "dang choi voi bot" de Player2 nhan lenh tu AI
-                // thay vi tu ban phim.
-                std::cout << "[MainMenu] Che do VS BOT chua duoc ho tro.\n";
+                m_isVsBot = true;
+
+                player2->setAIControlled(true);
+
+                botController = std::make_unique<BotController>(
+                    *player2,
+                    *ball
+                );
+
+                startNewMatch();
+
+                m_currentState = GameState::Playing;
             }
             else if (action == MainMenuAction::Exit)
             {
@@ -277,6 +291,12 @@ void Game::update(float deltaTime)
     timer->update(deltaTime); // MOI: dem nguoc dong ho
 
     player1->update(deltaTime);
+
+    if (m_isVsBot)
+    {
+        botController->update(deltaTime);
+    }
+
     player2->update(deltaTime);
 
     ball->update(deltaTime);

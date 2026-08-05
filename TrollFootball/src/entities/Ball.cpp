@@ -32,6 +32,10 @@ Ball::Ball()
     // Scale tạm, lát sẽ chỉnh nếu cần
     sprite->setScale({ 0.08f, 0.08f });
 
+    sprite->setRotation(
+        sf::degrees(0.f)
+    );
+
     position =
     {
         Config::WINDOW_WIDTH / 2.f,
@@ -48,6 +52,13 @@ void Ball::update(float deltaTime)
     // =========================
 
     velocity.y += Config::GRAVITY * deltaTime;
+
+    // =========================
+    // AIR DRAG
+    // =========================
+
+    velocity.x *= 0.998f;
+    velocity.y *= 0.9995f;
 
     // =========================
     // UPDATE POSITION
@@ -82,11 +93,13 @@ void Ball::update(float deltaTime)
     {
         position.y = groundY;
 
-        velocity.y *= -Config::BALL_BOUNCE;
+        velocity.y *= -(Config::BALL_BOUNCE * 0.92f);
 
         if (std::abs(velocity.y) < 30.f)
         {
             velocity.y = 0.f;
+            // Ma sát khi bóng nằm trên mặt đất
+            velocity.x *= 0.985f;
         }
     }
 
@@ -94,7 +107,7 @@ void Ball::update(float deltaTime)
     // STOP SMALL HORIZONTAL SPEED
     // =========================
 
-    if (std::abs(velocity.x) < 1.f)
+    if (std::abs(velocity.x) < 5.f)
     {
         velocity.x = 0.f;
     }
@@ -106,7 +119,19 @@ void Ball::update(float deltaTime)
     shape.setPosition(position);
 
     if (sprite)
+    {
         sprite->setPosition(position);
+
+        // =========================
+        // ROTATION
+        // =========================
+
+        rotation += velocity.x * rotationFactor * deltaTime;
+
+        sprite->setRotation(
+            sf::degrees(rotation)
+        );
+    }
 }
 
 void Ball::render(sf::RenderWindow& window)
