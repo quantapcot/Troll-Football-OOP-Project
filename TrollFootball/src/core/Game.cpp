@@ -38,7 +38,16 @@ Game::Game()
         "stadium",
         "assets/textures/stadium/background.png"
     );
+
     auto& tex = AssetManager::get().getTexture("stadium");
+
+    AssetManager::get().loadTexture(
+        "leftgoal",
+        "assets/textures/stadium/leftgoal.png");
+
+    AssetManager::get().loadTexture(
+        "rightgoal",
+        "assets/textures/stadium/rightgoal.png");
 
     std::cout << "Background: "
         << tex.getSize().x
@@ -53,7 +62,7 @@ Game::Game()
     font.emplace();
     if (!font->openFromFile("assets/fonts/minecraft.ttf"))
     {
-        throw std::runtime_error("Khong the load font: assets/fonts/minecraft.ttf");
+        throw std::runtime_error("Can't load fonts: assets/fonts/minecraft.ttf");
     }
 
     // =========================
@@ -75,8 +84,7 @@ Game::Game()
     rightScoreText->setPosition({ 785.f, 127.f });
 
     // =========================
-    // MAIN MENU (da co tu truoc)
-    // MOI: truyen them duong dan anh nen cho MainMenu - sua ten file neu ban dat ten khac
+    // MAIN MENU 
     // =========================
     mainMenu = std::make_unique<MainMenu>(
         *font,
@@ -84,8 +92,7 @@ Game::Game()
         "assets/textures/ui/menu.jpg");
 
     // =========================
-    // MOI: 3 MAN HINH UI CON LAI + TIMER
-    // Tat ca deu can (const sf::Font&, sf::Vector2u), tao SAU khi font da load xong
+    // UI Menu 
     // =========================
     pauseMenu = std::make_unique<PauseMenu>(*font, window.getSize());
     gameOverScreen = std::make_unique<GameOver>(*font, window.getSize());
@@ -133,10 +140,15 @@ Game::Game()
     ball = std::make_unique<Ball>();
     ground = std::make_unique<Ground>();
 
-    leftGoal = std::make_unique<Goal>(0.f);
+    leftGoal = std::make_unique<Goal>(
+        60.f,
+        false,
+        AssetManager::get().getTexture("leftgoal"));
 
     rightGoal = std::make_unique<Goal>(
-        Config::WINDOW_WIDTH - Config::GOAL_WIDTH);
+        Config::WINDOW_WIDTH - Config::GOAL_WIDTH,
+        true,
+        AssetManager::get().getTexture("rightgoal"));
 
     AudioManager::getInstance().playMusic("menu");
 }
@@ -162,7 +174,7 @@ void Game::processEvents()
         if (event->is<sf::Event::Closed>())
             window.close();
 
-        // MOI: bam ESC trong luc dang thi dau => mo PauseMenu
+		// ESC Press while playing: pause the game and show pause menu
         if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>())
         {
             if (keyPressed->code == sf::Keyboard::Key::Escape
@@ -281,7 +293,7 @@ void Game::processEvents()
         }
 
         default:
-            break; // Playing: ESC da xu ly rieng o tren, khong can gi them
+            break;
         }
     }
 }
@@ -291,7 +303,7 @@ void Game::update(float deltaTime)
     if (m_currentState != GameState::Playing)
         return;
 
-    timer->update(deltaTime); // MOI: dem nguoc dong ho
+    timer->update(deltaTime);
 
     player1->update(deltaTime);
 
@@ -392,11 +404,15 @@ void Game::render()
     // (Playing, PauseMenu, GameOver, WinScreen deu can san lam nen phia sau lop UI phu)
     if (m_currentState != GameState::MainMenu)
     {
-        // MOI: ve anh nen san TRUOC TIEN, moi thu con lai (san, khung thanh, cau thu, bong)
-        // se duoc ve DE LEN TREN anh nen nay
-        sf::Sprite stadium(
-            AssetManager::get().getTexture("stadium")
-        );
+		//DRAW STADIUM BACKGROUND, AND FILL THE WINDOW WITH IT (SCALE TO FIT)
+        sf::Sprite stadium(AssetManager::get().getTexture("stadium"));
+        auto texSize = AssetManager::get().getTexture("stadium").getSize();
+        stadium.setScale({
+            Config::WINDOW_WIDTH / static_cast<float>(texSize.x),
+            Config::WINDOW_HEIGHT / static_cast<float>(texSize.y)
+            });
+        stadium.setPosition({ 0.f, 0.f });
+        window.draw(stadium);
 
         stadium.setPosition({ 0.f, 0.f });
         stadium.setScale({ 1.f, 1.f });

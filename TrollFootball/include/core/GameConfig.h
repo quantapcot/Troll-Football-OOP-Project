@@ -59,6 +59,7 @@ namespace Config
 
     constexpr float GOAL_WIDTH = 40.f;
     constexpr float GOAL_HEIGHT = 150.f;
+    constexpr float GOAL_VISUAL_HEIGHT = 260.f; // height visual (change it for beauty like me)
 
     // =====================================================
     // PHYSICS
