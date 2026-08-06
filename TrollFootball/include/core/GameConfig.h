@@ -58,7 +58,7 @@ namespace Config
     // =====================================================
 
     constexpr float GOAL_WIDTH = 40.f;
-    constexpr float GOAL_HEIGHT = 150.f;
+    constexpr float GOAL_HEIGHT = 130.f;
     constexpr float GOAL_VISUAL_HEIGHT = 260.f; // height visual (change it for beauty like me)
 
     // =====================================================
@@ -70,4 +70,10 @@ namespace Config
 	// TIMER
 	// =====================================================
     constexpr float MATCH_SECONDS = 90.f;
+
+    constexpr float LEFT_GOAL_OFFSET_X = 0.f;
+    constexpr float LEFT_GOAL_OFFSET_Y = 53.f;
+
+    constexpr float RIGHT_GOAL_OFFSET_X = 0.f;
+    constexpr float RIGHT_GOAL_OFFSET_Y = 53.f;
 }

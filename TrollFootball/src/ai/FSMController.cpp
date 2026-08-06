@@ -144,7 +144,7 @@ void FSMController::updateChaseBall()
 
     if (distance > DASH_DISTANCE &&
         std::abs(dy) < 80.f &&
-        std::abs(ballVel.x) > 60.f &&
+        std::abs(ballVel.x) > 30.f &&
         m_state != BotState::Defend)
     {
         m_input.dash = true;

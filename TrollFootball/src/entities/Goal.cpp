@@ -2,42 +2,153 @@
 #include "core/GameConfig.h"
 #include "entities/Ball.h"
 
-Goal::Goal(float x, bool isRightSide, const sf::Texture& texture)
+Goal::Goal(float x,
+    bool isRightSide,
+    const sf::Texture& texture)
 {
-    // Hitbox: giữ nguyên kích thước/vị trí như cũ, dùng để check ghi bàn
-    shape.setSize({
+    //=========================
+    // GOAL TRIGGER
+    //=========================
+
+    goalTrigger.setSize({
         Config::GOAL_WIDTH,
         Config::GOAL_HEIGHT
         });
-    shape.setFillColor(sf::Color::Transparent);
-    shape.setPosition({
+
+#ifdef _DEBUG
+    goalTrigger.setFillColor(
+        sf::Color(0, 255, 0, 60));
+#else
+    goalTrigger.setFillColor(
+        sf::Color::Transparent);
+#endif
+
+    goalTrigger.setPosition({
         x,
         Config::GROUND_Y - Config::GOAL_HEIGHT
         });
 
-    // Sprite: scale theo chiều cao riêng, giữ đúng tỉ lệ ảnh gốc (không méo)
+    //=========================
+    // SPRITE
+    //=========================
+
     sprite.emplace(texture);
 
     auto texSize = texture.getSize();
-    float scale = Config::GOAL_VISUAL_HEIGHT / static_cast<float>(texSize.y);
-    sprite->setScale({ scale, scale });
 
-    float visualWidth = static_cast<float>(texSize.x) * scale;
+    float scale =
+        Config::GOAL_VISUAL_HEIGHT /
+        static_cast<float>(texSize.y);
 
-    if (isRightSide)
+    sprite->setScale({
+        scale,
+        scale
+        });
+
+    if (!isRightSide)
     {
-        // Neo mép PHẢI của ảnh trùng mép phải cửa sổ, đáy trùng mặt đất
+        sprite->setOrigin({
+            204.f,                    // đúng bằng mép cột trước trong PNG
+            static_cast<float>(texSize.y)
+            });
+
         sprite->setPosition({
-            x + Config::GOAL_WIDTH - visualWidth,
-            Config::GROUND_Y - Config::GOAL_VISUAL_HEIGHT
+            x,
+            Config::GROUND_Y + 53.f
             });
     }
     else
     {
-        // Neo mép TRÁI của ảnh trùng mép trái cửa sổ (x = 0), đáy trùng mặt đất
+        sprite->setOrigin({
+            906.f,                    // đúng bằng mép cột trước trong PNG
+            static_cast<float>(texSize.y)
+            });
+
         sprite->setPosition({
             x,
-            Config::GROUND_Y - Config::GOAL_VISUAL_HEIGHT
+            Config::GROUND_Y + 53.f
+            });
+    }
+
+    sprite->setPosition({
+        x,
+        Config::GROUND_Y + 53.f
+        });
+
+    //-------------------------------------------------
+    // Từ đây trở đi collider sẽ căn theo Sprite
+    //-------------------------------------------------
+
+    auto bounds = sprite->getGlobalBounds();
+
+    //=========================
+    // CROSSBAR
+    //=========================
+
+    crossbar.setSize({
+        bounds.size.x * 0.38f,
+        8.f
+        });
+
+#ifdef _DEBUG
+    crossbar.setFillColor(
+        sf::Color(255, 0, 0, 120));
+#else
+    crossbar.setFillColor(
+        sf::Color::Transparent);
+#endif
+
+    if (isRightSide)
+    {
+        crossbar.setPosition({
+            bounds.position.x + 8.f,
+            bounds.position.y + 6.f
+            });
+    }
+    else
+    {
+        crossbar.setPosition({
+            bounds.position.x +
+            bounds.size.x * 0.55f,
+
+            bounds.position.y + 6.f
+            });
+    }
+
+    //=========================
+    // BACK WALL
+    //=========================
+
+    backWall.setSize({
+        8.f,
+        Config::GOAL_HEIGHT
+        });
+
+#ifdef _DEBUG
+    backWall.setFillColor(
+        sf::Color(0, 0, 255, 120));
+#else
+    backWall.setFillColor(
+        sf::Color::Transparent);
+#endif
+
+    if (isRightSide)
+    {
+        backWall.setPosition({
+            bounds.position.x +
+            bounds.size.x - 10.f,
+
+            Config::GROUND_Y -
+            Config::GOAL_HEIGHT
+            });
+    }
+    else
+    {
+        backWall.setPosition({
+            bounds.position.x + 8.f,
+
+            Config::GROUND_Y -
+            Config::GOAL_HEIGHT
             });
     }
 }
@@ -49,14 +160,27 @@ void Goal::update(float deltaTime)
 
 void Goal::render(sf::RenderWindow& window)
 {
+    goalTrigger.setFillColor(sf::Color(0, 255, 0, 80));
+    crossbar.setFillColor(sf::Color(255, 0, 0, 120));
+    backWall.setFillColor(sf::Color(0, 0, 255, 120));
+
+    window.draw(goalTrigger);
+    window.draw(crossbar);
+    window.draw(backWall);
+
     if (sprite)
         window.draw(*sprite);
-
-    // Debug hitbox nếu cần:
-    // window.draw(shape);
 }
 
 bool Goal::contains(const Ball& ball) const
 {
-    return shape.getGlobalBounds().contains(ball.getPosition());
+    return goalTrigger
+        .getGlobalBounds()
+        .contains(ball.getPosition());
 }
+
+void Goal::handleCollision(Ball& ball)
+{
+
+}
+

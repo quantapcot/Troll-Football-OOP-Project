@@ -456,10 +456,7 @@ void Game::render()
         stadium.setPosition({ 0.f, 0.f });
         window.draw(stadium);
 
-        stadium.setPosition({ 0.f, 0.f });
-        stadium.setScale({ 1.f, 1.f });
-
-        window.draw(stadium);
+        
 
         ground->render(window);
 
