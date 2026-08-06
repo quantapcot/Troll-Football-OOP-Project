@@ -14,7 +14,6 @@ Goal::Goal(float x,
         Config::GOAL_WIDTH,
         Config::GOAL_HEIGHT
         });
-
 #ifdef _DEBUG
     goalTrigger.setFillColor(
         sf::Color(0, 255, 0, 60));
@@ -23,10 +22,7 @@ Goal::Goal(float x,
         sf::Color::Transparent);
 #endif
 
-    goalTrigger.setPosition({
-        x,
-        Config::GROUND_Y - Config::GOAL_HEIGHT
-        });
+    /*    goalTrigger.setPosition({        x,        Config::GROUND_Y - Config::GOAL_HEIGHT        });    */
 
     //=========================
     // SPRITE
@@ -81,6 +77,26 @@ Goal::Goal(float x,
 
     auto bounds = sprite->getGlobalBounds();
 
+    // =========================
+    // CẬP NHẬT VỊ TRÍ GOAL TRIGGER
+    // =========================
+    if (!isRightSide)
+    {
+        // Bên trái giữ nguyên gốc x (vẽ từ x sang phải)
+        goalTrigger.setPosition({
+            x,
+            Config::GROUND_Y - Config::GOAL_HEIGHT
+            });
+    }
+    else
+    {
+        // Bên phải: lùi sang trái 1 khoảng bằng GOAL_WIDTH rồi vẽ sang phải (vào trong lưới)
+        goalTrigger.setPosition({
+            x - Config::GOAL_WIDTH,
+            Config::GROUND_Y - Config::GOAL_HEIGHT
+            });
+    }
+
     //=========================
     // CROSSBAR
     //=========================
@@ -89,7 +105,6 @@ Goal::Goal(float x,
         bounds.size.x * 0.38f,
         8.f
         });
-
 #ifdef _DEBUG
     crossbar.setFillColor(
         sf::Color(255, 0, 0, 120));
@@ -100,9 +115,10 @@ Goal::Goal(float x,
 
     if (isRightSide)
     {
+        // Lùi tương tự, cộng thêm 8.f để xà ngang khớp với độ dày của cột
         crossbar.setPosition({
-            bounds.position.x + 8.f,
-            bounds.position.y + 6.f
+            x - Config::GOAL_WIDTH + 8.f,
+            Config::GROUND_Y - Config::GOAL_HEIGHT + 6.f
             });
     }
     else
@@ -123,7 +139,6 @@ Goal::Goal(float x,
         8.f,
         Config::GOAL_HEIGHT
         });
-
 #ifdef _DEBUG
     backWall.setFillColor(
         sf::Color(0, 0, 255, 120));
@@ -134,10 +149,9 @@ Goal::Goal(float x,
 
     if (isRightSide)
     {
+        // Chặn bóng ở ngay vạch đuôi lưới (x)
         backWall.setPosition({
-            bounds.position.x +
-            bounds.size.x - 10.f,
-
+            x - 8.f,
             Config::GROUND_Y -
             Config::GOAL_HEIGHT
             });
@@ -183,4 +197,3 @@ void Goal::handleCollision(Ball& ball)
 {
 
 }
-

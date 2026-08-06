@@ -171,7 +171,7 @@ Game::Game()
         AssetManager::get().getTexture("leftgoal"));
 
     rightGoal = std::make_unique<Goal>(
-        Config::WINDOW_WIDTH - Config::GOAL_WIDTH,
+        Config::WINDOW_WIDTH - Config::GOAL_WIDTH - 10.f,
         true,
         AssetManager::get().getTexture("rightgoal"));
 
