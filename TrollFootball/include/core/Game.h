@@ -85,4 +85,10 @@ private:
     // std::optional vi sf::Sprite khong co constructor mac dinh (SFML 3), phai co Texture truoc
     sf::Texture m_pitchTexture;
     std::optional<sf::Sprite> m_pitchSprite;
+
+    // GOAL celebration effect
+    bool isGoalCelebrating{ false };
+    float goalTimer{ 0.f };
+    const float GOAL_DURATION{ 1.0f };
+    std::optional<sf::Sprite> goalSprite;
 };

@@ -377,7 +377,7 @@ sf::FloatRect Player::getKickHitbox() const
     return sf::FloatRect(
         {
             x,
-            position.y - Config::PLAYER_HALF_HEIGHT + 35.f
+            position.y - Config::PLAYER_HALF_HEIGHT + 45.f
         },
         {
             width,
@@ -406,7 +406,7 @@ void Player::setSkin(const sf::Texture& texture, bool flipHorizontal, float scal
 sf::FloatRect Player::getBodyHitbox() const
 {
     constexpr float width = 75.f;
-    constexpr float height = 120.f;
+    constexpr float height = 160.f;
 
     return
     {

@@ -61,6 +61,26 @@ Game::Game()
         "char_messi",
         "assets/textures/characters/player2.png");
 
+    // =========================
+    // GOAL CELEBRATION TEXTURE
+    // =========================
+    try
+    {
+        AssetManager::get().loadTexture(
+            "goalScreen",
+            "assets/textures/goalScreen/goalScreen.png");
+
+        auto& goalTex = AssetManager::get().getTexture("goalScreen");
+        goalSprite.emplace(goalTex);
+        auto texSize = static_cast<sf::Vector2f>(goalTex.getSize());
+        goalSprite->setOrigin({ texSize.x / 2.f, texSize.y / 2.f });
+        goalSprite->setPosition({ Config::WINDOW_WIDTH / 2.f, Config::WINDOW_HEIGHT / 2.f });
+    }
+    catch (...)
+    {
+        std::cout << "[Game] Warning: Could not load goalScreen texture!" << std::endl;
+    }
+
     std::cout << "Background: "
         << tex.getSize().x
         << " x "
@@ -352,6 +372,33 @@ void Game::update(float deltaTime)
     if (m_currentState != GameState::Playing)
         return;
 
+    // ===================================
+    // GOAL CELEBRATION EFFECT (PAUSE GAME)
+    // ===================================
+    if (isGoalCelebrating)
+    {
+        goalTimer += deltaTime;
+
+        // Pop / scale animation (0.0 to 1.0 scale over first 0.2s)
+        float popProgress = std::min(1.0f, goalTimer / 0.2f);
+        float scale = std::sin(popProgress * 1.5707963f);
+        if (goalSprite.has_value())
+        {
+            goalSprite->setScale({ scale, scale });
+        }
+
+        // Exactly 1 second duration
+        if (goalTimer >= GOAL_DURATION)
+        {
+            isGoalCelebrating = false;
+            goalTimer = 0.f;
+            resetAfterGoal();
+        }
+
+        // Pause players, ball, physics and game logic completely during celebration
+        return;
+    }
+
     timer->update(deltaTime);
 
     player1->update(deltaTime);
@@ -409,7 +456,12 @@ void Game::update(float deltaTime)
 
         AudioManager::getInstance().playSound("goal");
 
-        resetAfterGoal();
+        isGoalCelebrating = true;
+        goalTimer = 0.f;
+        if (goalSprite.has_value())
+        {
+            goalSprite->setScale({ 0.f, 0.f });
+        }
         return;
     }
 
@@ -421,7 +473,12 @@ void Game::update(float deltaTime)
 
         AudioManager::getInstance().playSound("goal");
 
-        resetAfterGoal();
+        isGoalCelebrating = true;
+        goalTimer = 0.f;
+        if (goalSprite.has_value())
+        {
+            goalSprite->setScale({ 0.f, 0.f });
+        }
         return;
     }
 
@@ -485,6 +542,12 @@ void Game::render()
         window.draw(*rightScoreText);
 
         timer->draw(window);
+
+        // Draw GOAL celebration effect overlay
+        if (isGoalCelebrating && goalSprite.has_value())
+        {
+            window.draw(*goalSprite);
+        }
     }
 
 	//UI LAYER: DRAW THE CURRENT MENU OR SCREEN BASED ON THE GAME STATE
