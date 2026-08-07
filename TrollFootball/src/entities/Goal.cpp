@@ -22,8 +22,6 @@ Goal::Goal(float x,
         sf::Color::Transparent);
 #endif
 
-    /*    goalTrigger.setPosition({        x,        Config::GROUND_Y - Config::GOAL_HEIGHT        });    */
-
     //=========================
     // SPRITE
     //=========================
@@ -101,10 +99,12 @@ Goal::Goal(float x,
     // CROSSBAR
     //=========================
 
-    crossbar.setSize({
-        bounds.size.x * 0.38f,
-        8.f
-        });
+    // THÊM BIẾN NÀY ĐỂ TỰ DO KÉO DÀI THANH ĐỎ
+    // Tăng số 140.f lên nếu muốn thanh đỏ dài ra thêm, giảm đi nếu nó bị lố ra ngoài
+    float crossbarWidth = 100.f;
+
+    crossbar.setSize({ crossbarWidth, 8.f });
+
 #ifdef _DEBUG
     crossbar.setFillColor(
         sf::Color(255, 0, 0, 120));
@@ -115,19 +115,18 @@ Goal::Goal(float x,
 
     if (isRightSide)
     {
-        // Lùi tương tự, cộng thêm 8.f để xà ngang khớp với độ dày của cột
+        // Khung thành phải (Messi): Mỏ neo lùi ra tận mép ngoài xà ngang, rồi vẽ dài vào tới đuôi lưới (x)
         crossbar.setPosition({
-            x - Config::GOAL_WIDTH + 8.f,
-            Config::GROUND_Y - Config::GOAL_HEIGHT + 6.f
+            x - crossbarWidth,
+            Config::GROUND_Y - Config::GOAL_HEIGHT - 65.f
             });
     }
     else
     {
+        // Khung thành trái (CR7): Mỏ neo ở đuôi lưới (x), vẽ dài ra tận mép ngoài xà ngang
         crossbar.setPosition({
-            bounds.position.x +
-            bounds.size.x * 0.55f,
-
-            bounds.position.y + 6.f
+            x,
+            Config::GROUND_Y - Config::GOAL_HEIGHT - 65.f
             });
     }
 
@@ -149,7 +148,6 @@ Goal::Goal(float x,
 
     if (isRightSide)
     {
-        // Chặn bóng ở ngay vạch đuôi lưới (x)
         backWall.setPosition({
             x - 8.f,
             Config::GROUND_Y -
@@ -158,9 +156,9 @@ Goal::Goal(float x,
     }
     else
     {
+        // Đồng thời sửa luôn lưới xanh dương bên CR7 cho nó chặn đúng vạch lưới
         backWall.setPosition({
-            bounds.position.x + 8.f,
-
+            x,
             Config::GROUND_Y -
             Config::GOAL_HEIGHT
             });
