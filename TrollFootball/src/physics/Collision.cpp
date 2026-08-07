@@ -2,6 +2,7 @@
 #include "audio/AudioManager.h"
 #include "entities/Player.h"
 #include "entities/Ball.h"
+#include "entities/Wall.h"
 #include "core/GameConfig.h"
 
 #include <cmath>
@@ -153,4 +154,46 @@ void Collision::handlePlayerPlayer(Player& p1, Player& p2)
 
     p1.setVelocity(v1);
     p2.setVelocity(v2);
+}
+
+void Collision::handleBallWall(
+    Ball& ball,
+    const Wall& wall)
+{
+    auto wallRect = wall.getBounds();
+
+    sf::Vector2f pos = ball.getPosition();
+
+    float r = ball.getRadius();
+
+    if (!wallRect.findIntersection(
+        sf::FloatRect(
+            {
+                pos.x - r,
+                pos.y - r
+            },
+            {
+                r * 2.f,
+                r * 2.f
+            })))
+    {
+        return;
+    }
+
+    auto vel = ball.getVelocity();
+
+    if (vel.x < 0)
+    {
+        pos.x = wallRect.position.x +
+            wallRect.size.x + r;
+    }
+    else
+    {
+        pos.x = wallRect.position.x - r;
+    }
+
+    vel.x *= -Config::BALL_BOUNCE;
+
+    ball.setPosition(pos);
+    ball.setVelocity(vel);
 }

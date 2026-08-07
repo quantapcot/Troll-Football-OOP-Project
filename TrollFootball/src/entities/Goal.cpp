@@ -14,13 +14,7 @@ Goal::Goal(float x,
         Config::GOAL_WIDTH,
         Config::GOAL_HEIGHT
         });
-#ifdef _DEBUG
-    goalTrigger.setFillColor(
-        sf::Color(0, 255, 0, 60));
-#else
-    goalTrigger.setFillColor(
-        sf::Color::Transparent);
-#endif
+
 
     //=========================
     // SPRITE
@@ -42,58 +36,54 @@ Goal::Goal(float x,
     if (!isRightSide)
     {
         sprite->setOrigin({
-            204.f,                    // đúng bằng mép cột trước trong PNG
+            204.f,
             static_cast<float>(texSize.y)
-            });
-
-        sprite->setPosition({
-            x,
-            Config::GROUND_Y + 53.f
             });
     }
     else
     {
         sprite->setOrigin({
-            906.f,                    // đúng bằng mép cột trước trong PNG
+            906.f,
             static_cast<float>(texSize.y)
-            });
-
-        sprite->setPosition({
-            x,
-            Config::GROUND_Y + 53.f
             });
     }
 
-    sprite->setPosition({
+    
+    spritePosition =
+    {
         x,
         Config::GROUND_Y + 53.f
-        });
+    };
+
+    sprite->setPosition(spritePosition);
 
     //-------------------------------------------------
     // Từ đây trở đi collider sẽ căn theo Sprite
     //-------------------------------------------------
 
-    auto bounds = sprite->getGlobalBounds();
+    
 
     // =========================
     // CẬP NHẬT VỊ TRÍ GOAL TRIGGER
     // =========================
     if (!isRightSide)
     {
-        // Bên trái giữ nguyên gốc x (vẽ từ x sang phải)
-        goalTrigger.setPosition({
-            x,
+        triggerPosition =
+        {
+            x + 40.f,
             Config::GROUND_Y - Config::GOAL_HEIGHT
-            });
+        };
     }
     else
     {
-        // Bên phải: lùi sang trái 1 khoảng bằng GOAL_WIDTH rồi vẽ sang phải (vào trong lưới)
-        goalTrigger.setPosition({
-            x - Config::GOAL_WIDTH,
+        triggerPosition =
+        {
+            x - Config::GOAL_WIDTH - 40,
             Config::GROUND_Y - Config::GOAL_HEIGHT
-            });
+        };
     }
+
+    goalTrigger.setPosition(triggerPosition);
 
     //=========================
     // CROSSBAR
@@ -105,13 +95,7 @@ Goal::Goal(float x,
 
     crossbar.setSize({ crossbarWidth, 8.f });
 
-#ifdef _DEBUG
-    crossbar.setFillColor(
-        sf::Color(255, 0, 0, 120));
-#else
-    crossbar.setFillColor(
-        sf::Color::Transparent);
-#endif
+
 
     if (isRightSide)
     {
@@ -138,13 +122,7 @@ Goal::Goal(float x,
         8.f,
         Config::GOAL_HEIGHT
         });
-#ifdef _DEBUG
-    backWall.setFillColor(
-        sf::Color(0, 0, 255, 120));
-#else
-    backWall.setFillColor(
-        sf::Color::Transparent);
-#endif
+
 
     if (isRightSide)
     {
@@ -172,13 +150,7 @@ void Goal::update(float deltaTime)
 
 void Goal::render(sf::RenderWindow& window)
 {
-    goalTrigger.setFillColor(sf::Color(0, 255, 0, 80));
-    crossbar.setFillColor(sf::Color(255, 0, 0, 120));
-    backWall.setFillColor(sf::Color(0, 0, 255, 120));
-
-    window.draw(goalTrigger);
-    window.draw(crossbar);
-    window.draw(backWall);
+    
 
     if (sprite)
         window.draw(*sprite);

@@ -67,22 +67,6 @@ void Ball::update(float deltaTime)
     position += velocity * deltaTime;
 
     // =========================
-    // WALL COLLISION
-    // =========================
-
-    if (position.x < Config::BALL_RADIUS)
-    {
-        position.x = Config::BALL_RADIUS;
-        velocity.x *= -Config::BALL_BOUNCE;
-    }
-
-    if (position.x > Config::WINDOW_WIDTH - Config::BALL_RADIUS)
-    {
-        position.x = Config::WINDOW_WIDTH - Config::BALL_RADIUS;
-        velocity.x *= -Config::BALL_BOUNCE;
-    }
-
-    // =========================
     // GROUND COLLISION
     // =========================
 

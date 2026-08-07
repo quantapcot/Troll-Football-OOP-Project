@@ -130,7 +130,7 @@ public:
     }
 
     sf::FloatRect getKickHitbox() const;
-
+    sf::FloatRect getBodyHitbox() const;
 private:
 
     // =========================
@@ -228,4 +228,5 @@ private:
     bool touchingBall{ false };
 
     InputCommand currentInput;
+
 };

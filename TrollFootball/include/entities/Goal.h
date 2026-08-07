@@ -23,16 +23,25 @@ public:
     void handleCollision(Ball& ball);
 
 private:
+private:
 
-    // Trigger ghi bàn
+    //-------------------------
+    // VISUAL
+    //-------------------------
+
+    std::optional<sf::Sprite> sprite;
+
+    sf::Vector2f spritePosition;
+
+    //-------------------------
+    // PHYSICS
+    //-------------------------
+
     sf::RectangleShape goalTrigger;
-
-    // Xà ngang
     sf::RectangleShape crossbar;
-
-    // Chặn bóng bay ra sau Goal
     sf::RectangleShape backWall;
 
-    // Hình ảnh Goal
-    std::optional<sf::Sprite> sprite;
+    sf::Vector2f triggerPosition;
+    sf::Vector2f crossbarPosition;
+    sf::Vector2f backWallPosition;
 };

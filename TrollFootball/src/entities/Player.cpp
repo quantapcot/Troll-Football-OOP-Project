@@ -19,11 +19,13 @@ Player::Player(const ControlScheme& controls,
     {
         sprite.emplace(
             AssetManager::get().getTexture("player1"));
+       
     }
     else
     {
         sprite.emplace(
             AssetManager::get().getTexture("player2"));
+        
     }
 
     // Lấy kích thước ảnh
@@ -36,7 +38,7 @@ Player::Player(const ControlScheme& controls,
     sprite->setOrigin({
         size.x / 2.f,
         size.y / 2.f
-        });
+    });
 
     // Scale về đúng kích thước nhân vật trong game
     sprite->setScale({ 0.18f, 0.18f });
@@ -48,6 +50,7 @@ Player::Player(const ControlScheme& controls,
     };
 
     sprite->setPosition(position);
+    
 }
 
 void Player::update(float deltaTime)
@@ -89,6 +92,7 @@ void Player::update(float deltaTime)
     handleWallCollision();
 
     sprite->setPosition(position);
+    
 }
 
 void Player::updateKick(float deltaTime)
@@ -316,6 +320,23 @@ void Player::render(sf::RenderWindow& window)
 
 #ifdef _DEBUG
 
+    auto body = getBodyHitbox();
+
+    sf::RectangleShape rect;
+
+    rect.setPosition(body.position);
+
+    rect.setSize(body.size);
+
+    rect.setFillColor(
+        sf::Color(0, 255, 0, 80));
+
+    window.draw(rect);
+
+#endif
+
+#ifdef _DEBUG
+
     if (kicking)
     {
         sf::RectangleShape hitbox;
@@ -340,7 +361,7 @@ sf::FloatRect Player::getKickHitbox() const
         return sf::FloatRect();
 
     constexpr float width = 45.f;
-    constexpr float height = 50.f;
+    constexpr float height = 40.f;
 
     float x;
 
@@ -356,7 +377,7 @@ sf::FloatRect Player::getKickHitbox() const
     return sf::FloatRect(
         {
             x,
-            position.y - Config::PLAYER_HALF_HEIGHT + 10.f
+            position.y - Config::PLAYER_HALF_HEIGHT + 35.f
         },
         {
             width,
@@ -380,4 +401,22 @@ void Player::setSkin(const sf::Texture& texture, bool flipHorizontal, float scal
 
     sprite->setScale({ scaleX, scale });
     sprite->setPosition(position);
+}
+
+sf::FloatRect Player::getBodyHitbox() const
+{
+    constexpr float width = 75.f;
+    constexpr float height = 120.f;
+
+    return
+    {
+        {
+            position.x - width * 0.5f,
+            position.y - height * 0.5f
+        },
+        {
+            width,
+            height
+        }
+    };
 }

@@ -11,6 +11,7 @@
 #include "entities/Ball.h"
 #include "entities/Ground.h"
 #include "entities/Goal.h"
+#include "entities/Wall.h"
 #include <optional>
 #include "ai/BotController.h"
 #include "ui/CharacterSelectMenu.h"
@@ -65,6 +66,8 @@ private:
     std::unique_ptr<Ground> ground;
     std::unique_ptr<Goal> leftGoal;
     std::unique_ptr<Goal> rightGoal;
+    std::unique_ptr<Wall> leftWall;
+    std::unique_ptr<Wall> rightWall;
 
     // =========================
     // SCORE

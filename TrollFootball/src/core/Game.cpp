@@ -175,6 +175,11 @@ Game::Game()
         true,
         AssetManager::get().getTexture("rightgoal"));
 
+    leftWall = std::make_unique<Wall>(60.f);
+
+    rightWall = std::make_unique<Wall>(
+        Config::WINDOW_WIDTH - 60.f);
+
     AudioManager::getInstance().playMusic("menu");
 }
 
@@ -360,6 +365,14 @@ void Game::update(float deltaTime)
 
     ball->update(deltaTime);
     ground->update(deltaTime);
+
+    Collision::handleBallWall(
+        *ball,
+        *leftWall);
+
+    Collision::handleBallWall(
+        *ball,
+        *rightWall);
 
     leftGoal->update(deltaTime);
     rightGoal->update(deltaTime);
