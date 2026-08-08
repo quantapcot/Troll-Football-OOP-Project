@@ -27,7 +27,7 @@ namespace Config
     constexpr float PLAYER_HALF_HEIGHT = PLAYER_HEIGHT / 2.f;
 
     constexpr float PLAYER_SPEED = 200.f;
-    constexpr float PLAYER_JUMP_FORCE = -500.f;
+    constexpr float PLAYER_JUMP_FORCE = -615.f;
 
     // =====================================================
     // PLAYER COLLISION
@@ -58,7 +58,7 @@ namespace Config
     // =====================================================
 
     constexpr float GOAL_WIDTH = 40.f;
-    constexpr float GOAL_HEIGHT = 130.f;
+    constexpr float GOAL_HEIGHT = 190.f;
     constexpr float GOAL_VISUAL_HEIGHT = 260.f; // height visual (change it for beauty like me)
 
     // =====================================================
@@ -66,9 +66,9 @@ namespace Config
     // =====================================================
 
     constexpr float GRAVITY = 1200.f;
-	// =====================================================
-	// TIMER
-	// =====================================================
+    // =====================================================
+    // TIMER
+    // =====================================================
     constexpr float MATCH_SECONDS = 90.f;
 
     constexpr float LEFT_GOAL_OFFSET_X = 0.f;
@@ -79,7 +79,12 @@ namespace Config
 
     constexpr float WALL_THICKNESS = 10.f;
 
-
+    // BODY HITBOX
     constexpr float WIDTH_BODY_HITBOX = 75.f;
     constexpr float HEIGHT_BODY_HITBOX = 160.f;
+
+    // KICK HITBOX
+    constexpr float WIDTH_KICK_HITBOX = 45.f;
+    constexpr float HEIGHT_KICK_HITBOX = 40.f;
 }
+

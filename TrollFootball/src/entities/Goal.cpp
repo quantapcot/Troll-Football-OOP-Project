@@ -30,20 +30,20 @@ Goal::Goal(float x,
 
     sprite->setScale({
         scale,
-        scale
+        scale + 1/50.f
         });
 
     if (!isRightSide)
     {
         sprite->setOrigin({
-            204.f,
+            213.f,
             static_cast<float>(texSize.y)
             });
     }
     else
     {
         sprite->setOrigin({
-            906.f,
+            925.f,
             static_cast<float>(texSize.y)
             });
     }
@@ -52,7 +52,7 @@ Goal::Goal(float x,
     spritePosition =
     {
         x,
-        Config::GROUND_Y + 53.f
+        Config::GROUND_Y + 62.f
     };
 
     sprite->setPosition(spritePosition);
@@ -93,7 +93,7 @@ Goal::Goal(float x,
     // Tăng số 140.f lên nếu muốn thanh đỏ dài ra thêm, giảm đi nếu nó bị lố ra ngoài
     float crossbarWidth = 100.f;
 
-    crossbar.setSize({ crossbarWidth, 8.f });
+    crossbar.setSize({ crossbarWidth, 14.f });
 
 
 
@@ -102,7 +102,7 @@ Goal::Goal(float x,
         // Khung thành phải (Messi): Mỏ neo lùi ra tận mép ngoài xà ngang, rồi vẽ dài vào tới đuôi lưới (x)
         crossbar.setPosition({
             x - crossbarWidth,
-            Config::GROUND_Y - Config::GOAL_HEIGHT - 65.f
+            Config::GROUND_Y - Config::GOAL_HEIGHT - 25.f
             });
     }
     else
@@ -110,50 +110,61 @@ Goal::Goal(float x,
         // Khung thành trái (CR7): Mỏ neo ở đuôi lưới (x), vẽ dài ra tận mép ngoài xà ngang
         crossbar.setPosition({
             x,
-            Config::GROUND_Y - Config::GOAL_HEIGHT - 65.f
-            });
-    }
-
-    //=========================
-    // BACK WALL
-    //=========================
-
-    backWall.setSize({
-        8.f,
-        Config::GOAL_HEIGHT
-        });
-
-
-    if (isRightSide)
-    {
-        backWall.setPosition({
-            x - 8.f,
-            Config::GROUND_Y -
-            Config::GOAL_HEIGHT
-            });
-    }
-    else
-    {
-        // Đồng thời sửa luôn lưới xanh dương bên CR7 cho nó chặn đúng vạch lưới
-        backWall.setPosition({
-            x,
-            Config::GROUND_Y -
-            Config::GOAL_HEIGHT
+            Config::GROUND_Y - Config::GOAL_HEIGHT - 25.f
             });
     }
 }
+
+// =========================
+// UPDATE
+// =========================
 
 void Goal::update(float deltaTime)
 {
-    // Chưa cần xử lý
+    // Goal hiện tại không cần update
 }
 
-void Goal::render(sf::RenderWindow& window)
-{
-    
+// =========================
+// RENDER
+// =========================
 
+
+
+void Goal::render(sf::RenderWindow & window)
+{
+    // =========================
+    // GOAL ASSET
+    // =========================
     if (sprite)
         window.draw(*sprite);
+
+#ifdef _DEBUG
+
+    // =========================
+    // GOAL TRIGGER - XANH LÁ
+    // =========================
+    goalTrigger.setFillColor(
+        sf::Color(0, 255, 0, 80));
+
+    window.draw(goalTrigger);
+
+    // =========================
+    // CROSSBAR - ĐỎ
+    // =========================
+    crossbar.setFillColor(
+        sf::Color(255, 0, 0, 150));
+
+    window.draw(crossbar);
+
+    // =========================
+    // BACK WALL - XANH DƯƠNG
+    // =========================
+    backWall.setFillColor(
+        sf::Color(0, 0, 255, 150));
+
+    window.draw(backWall);
+
+#endif
 }
 
 bool Goal::contains(const Ball& ball) const
@@ -165,5 +176,62 @@ bool Goal::contains(const Ball& ball) const
 
 void Goal::handleCollision(Ball& ball)
 {
+    sf::Vector2f ballPos = ball.getPosition();
+    float radius = ball.getRadius();
 
+    sf::FloatRect ballRect(
+        {
+            ballPos.x - radius,
+            ballPos.y - radius
+        },
+        {
+            radius * 2.f,
+            radius * 2.f
+        });
+
+        auto crossbarBounds = crossbar.getGlobalBounds();
+
+        // Không chạm xà
+        if (!crossbarBounds
+            .findIntersection(ballRect)
+            .has_value())
+        {
+            return;
+        }
+
+        sf::Vector2f velocity = ball.getVelocity();
+
+        // Bóng đang rơi từ trên xuống
+        if (velocity.y > 0.f)
+        {
+            // Đặt bóng lên phía trên xà
+            ball.setPosition({
+                ballPos.x,
+                crossbarBounds.position.y - radius
+                });
+
+            // Bật ngược lên
+            velocity.y =
+                -std::abs(velocity.y) * Config::BALL_BOUNCE;
+
+            ball.setVelocity(velocity);
+        }
+
+        // Bóng đang bay từ dưới lên
+        else if (velocity.y < 0.f)
+        {
+            // Đặt bóng xuống dưới xà
+            ball.setPosition({
+                ballPos.x,
+                crossbarBounds.position.y
+                    + crossbarBounds.size.y
+                    + radius
+                });
+
+            // Bật ngược xuống
+            velocity.y =
+                std::abs(velocity.y) * Config::BALL_BOUNCE;
+
+            ball.setVelocity(velocity);
+        }
 }

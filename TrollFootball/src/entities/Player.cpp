@@ -298,12 +298,15 @@ void Player::render(sf::RenderWindow& window)
 
         ghost.setPosition(trail.position);
 
+        // Trail càng cũ càng trong suốt
         auto alpha = static_cast<std::uint8_t>(
-            255.f * (trail.life / 0.15f));
+            255.f * (trail.life / 0.15f)
+            );
 
-        
+        sf::Color ghostColor = sprite->getColor();
+        ghostColor.a = alpha;
 
-        
+        ghost.setColor(ghostColor);
 
         window.draw(ghost);
     }
@@ -359,9 +362,6 @@ sf::FloatRect Player::getKickHitbox() const
     if (!kicking)
         return sf::FloatRect();
 
-    constexpr float width = 45.f;
-    constexpr float height = 40.f;
-
     float x;
 
     if (facingRight)
@@ -370,7 +370,7 @@ sf::FloatRect Player::getKickHitbox() const
     }
     else
     {
-        x = position.x - Config::PLAYER_HALF_WIDTH - width;
+        x = position.x - Config::PLAYER_HALF_WIDTH - Config::WIDTH_KICK_HITBOX;
     }
 
     return sf::FloatRect(
@@ -379,8 +379,8 @@ sf::FloatRect Player::getKickHitbox() const
             position.y - Config::PLAYER_HALF_HEIGHT + 45.f
         },
         {
-            width,
-            height
+            Config::WIDTH_KICK_HITBOX,
+            Config::HEIGHT_KICK_HITBOX
         });
 }
 
@@ -404,8 +404,6 @@ void Player::setSkin(const sf::Texture& texture, bool flipHorizontal, float scal
 
 sf::FloatRect Player::getBodyHitbox() const
 {
-   
-
     return
     {
         {

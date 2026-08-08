@@ -9,86 +9,179 @@
 
 void Collision::handlePlayerBall(Player& player, Ball& ball)
 {
-    sf::Vector2f playerPos = player.getPosition();
-    sf::Vector2f ballPos = ball.getPosition();
+    // =========================
+    // PLAYER BODY HITBOX
+    // =========================
 
-    float dx = playerPos.x - ballPos.x;
-    float dy = playerPos.y - ballPos.y;
+    sf::FloatRect playerRect =
+        player.getBodyHitbox();
 
-    float distance = std::sqrt(dx * dx + dy * dy);
+    sf::Vector2f ballPos =
+        ball.getPosition();
 
-    const float playerRadius = Config::PLAYER_COLLISION_RADIUS;
-    const float ballRadius = ball.getRadius();
+    float radius =
+        ball.getRadius();
 
-    bool touching =
-        distance <= playerRadius + ballRadius;
+    // =========================
+    // TÌM ĐIỂM GẦN NHẤT
+    // TRÊN RECTANGLE PLAYER
+    // =========================
 
-    // Tránh chia cho 0
-    if (distance <= 0.001f)
+    float closestX =
+        std::clamp(
+            ballPos.x,
+            playerRect.position.x,
+            playerRect.position.x +
+            playerRect.size.x
+        );
+
+    float closestY =
+        std::clamp(
+            ballPos.y,
+            playerRect.position.y,
+            playerRect.position.y +
+            playerRect.size.y
+        );
+
+    float dx =
+        ballPos.x - closestX;
+
+    float dy =
+        ballPos.y - closestY;
+
+    float distanceSquared =
+        dx * dx + dy * dy;
+
+    // =========================
+    // KHÔNG CHẠM
+    // =========================
+
+    if (distanceSquared >
+        radius * radius)
+    {
         return;
+    }
 
     // =========================
-    // Không còn chạm
+    // TRƯỜNG HỢP TÂM BÓNG
+    // NẰM BÊN TRONG PLAYER
     // =========================
 
-    if (!touching)
-        return;
+    if (distanceSquared < 0.0001f)
+    {
+        float playerCenterX =
+            playerRect.position.x +
+            playerRect.size.x * 0.5f;
 
-    // =========================
-    // POSITIONAL CORRECTION
-    // =========================
+        float playerCenterY =
+            playerRect.position.y +
+            playerRect.size.y * 0.5f;
 
-    float overlap =
-        playerRadius + ballRadius - distance;
+        float dirX =
+            ballPos.x - playerCenterX;
 
+        float dirY =
+            ballPos.y - playerCenterY;
+
+        // Chọn hướng đẩy theo phía gần nhất
+        if (std::abs(dirX) > std::abs(dirY))
+        {
+            dx = (dirX >= 0.f) ? 1.f : -1.f;
+            dy = 0.f;
+        }
+        else
+        {
+            dx = 0.f;
+            dy = (dirY >= 0.f) ? 1.f : -1.f;
+        }
+
+        distanceSquared = 1.f;
+    }
+
+    float distance =
+        std::sqrt(distanceSquared);
+
+    // Normal từ Player -> Ball
     sf::Vector2f normal(
-        (ballPos.x - playerPos.x) / distance,
-        (ballPos.y - playerPos.y) / distance
+        dx / distance,
+        dy / distance
     );
 
-    // Đẩy bóng ra khỏi Player
-    ball.addPosition(normal * (overlap + 1.f));
+    // =========================
+    // ĐẨY BÓNG RA KHỎI PLAYER
+    // =========================
+
+    float penetration =
+        radius - distance;
+
+    if (penetration > 0.f)
+    {
+        ball.addPosition(
+            normal *
+            (penetration + 1.f)
+        );
+    }
 
     // =========================
-    // Bump
+    // BUMP
     // =========================
 
     float bumpX =
         Config::PLAYER_BUMP_FORCE_X;
 
-    // Player đang Dash thì húc mạnh hơn
     if (player.isDashing())
     {
         bumpX *= 1.6f;
     }
 
-    // Cộng thêm vận tốc của Player
-    float forceX =
-        bumpX +
-        player.getVelocity().x;
+    // Vận tốc Player truyền sang Ball
+    sf::Vector2f playerVelocity =
+        player.getVelocity();
 
-    float forceY =
-        Config::PLAYER_BUMP_FORCE_Y;
+    sf::Vector2f ballVelocity =
+        ball.getVelocity();
+
+    // =========================
+    // CHỈ ĐẨY NẾU BÓNG ĐANG
+    // ĐI VÀO PLAYER
+    // =========================
+
+    float relativeVelocity =
+        (ballVelocity.x - playerVelocity.x) * normal.x +
+        (ballVelocity.y - playerVelocity.y) * normal.y;
+
+    if (relativeVelocity > 0.f)
+    {
+        return;
+    }
+
+    // =========================
+    // BUMP THEO NORMAL
+    // =========================
+
+    float force =
+        bumpX + std::abs(playerVelocity.x);
 
     if (player.isDashing())
     {
-        forceY *= 1.1f;
+        force *= 1.2f;
     }
 
-    if (dx < 0)
-    {
-        ball.addVelocity({
-            forceX,
-            forceY
-            });
-    }
-    else
-    {
-        ball.addVelocity({
-            -forceX,
-            forceY
-            });
-    }
+    sf::Vector2f newVelocity =
+        ballVelocity;
+
+    // Phản lực theo normal
+    newVelocity.x +=
+        normal.x * force;
+
+    newVelocity.y +=
+        normal.y * force;
+
+    // Thêm một chút lực từ Player
+    newVelocity.x +=
+        playerVelocity.x * 0.35f;
+
+    ball.setVelocity(newVelocity);
 }
 
 void Collision::handleKick(Player& player, Ball& ball)
@@ -124,28 +217,97 @@ void Collision::handleKick(Player& player, Ball& ball)
 
 void Collision::handlePlayerPlayer(Player& p1, Player& p2)
 {
-    sf::Vector2f pos1 = p1.getPosition();
-    sf::Vector2f pos2 = p2.getPosition();
+    sf::FloatRect rect1 = p1.getBodyHitbox();
+    sf::FloatRect rect2 = p2.getBodyHitbox();
 
-    float dx = pos2.x - pos1.x;
-    float dy = pos2.y - pos1.y;
+    auto intersection = rect1.findIntersection(rect2);
 
-    float distance = std::sqrt(dx * dx + dy * dy);
-
-    float minDistance =
-        Config::PLAYER_COLLISION_RADIUS * 2.f;
-
-    if (distance <= 0.f || distance >= minDistance)
+    // Không chạm nhau
+    if (!intersection.has_value())
         return;
 
-    float overlap = minDistance - distance;
+    sf::FloatRect overlap = intersection.value();
 
-    sf::Vector2f normal(
-        dx / distance,
-        dy / distance);
+    // =========================
+    // XÁC ĐỊNH HƯỚNG ĐẨY
+    // =========================
 
-    p1.addPosition(-normal * overlap * 0.5f);
-    p2.addPosition(normal * overlap * 0.5f);
+    float center1 =
+        rect1.position.x + rect1.size.x * 0.5f;
+
+    float center2 =
+        rect2.position.x + rect2.size.x * 0.5f;
+
+    // Hai player chồng lên nhau theo chiều X
+    if (overlap.size.x < overlap.size.y)
+    {
+        // Đẩy theo chiều ngang
+        if (center1 < center2)
+        {
+            p1.addPosition({
+                -overlap.size.x * 0.5f,
+                0.f
+                });
+
+            p2.addPosition({
+                overlap.size.x * 0.5f,
+                0.f
+                });
+        }
+        else
+        {
+            p1.addPosition({
+                overlap.size.x * 0.5f,
+                0.f
+                });
+
+            p2.addPosition({
+                -overlap.size.x * 0.5f,
+                0.f
+                });
+        }
+    }
+    else
+    {
+        // =========================
+        // CHỒNG LÊN NHAU THEO CHIỀU Y
+        // =========================
+
+        float centerY1 =
+            rect1.position.y + rect1.size.y * 0.5f;
+
+        float centerY2 =
+            rect2.position.y + rect2.size.y * 0.5f;
+
+        if (centerY1 < centerY2)
+        {
+            p1.addPosition({
+                0.f,
+                -overlap.size.y * 0.5f
+                });
+
+            p2.addPosition({
+                0.f,
+                overlap.size.y * 0.5f
+                });
+        }
+        else
+        {
+            p1.addPosition({
+                0.f,
+                overlap.size.y * 0.5f
+                });
+
+            p2.addPosition({
+                0.f,
+                -overlap.size.y * 0.5f
+                });
+        }
+    }
+
+    // =========================
+    // ĐỔI VẬN TỐC X
+    // =========================
 
     sf::Vector2f v1 = p1.getVelocity();
     sf::Vector2f v2 = p2.getVelocity();
@@ -163,37 +325,68 @@ void Collision::handleBallWall(
     auto wallRect = wall.getBounds();
 
     sf::Vector2f pos = ball.getPosition();
-
     float r = ball.getRadius();
 
-    if (!wallRect.findIntersection(
-        sf::FloatRect(
+    sf::FloatRect ballRect(
+        {
+            pos.x - r,
+            pos.y - r
+        },
+        {
+            r * 2.f,
+            r * 2.f
+        });
+
+        // Không va chạm
+        if (!wallRect.findIntersection(ballRect))
+        {
+            return;
+        }
+
+        auto vel = ball.getVelocity();
+
+        // =========================
+        // WALL NGANG - TOP / BOTTOM
+        // =========================
+        if (wallRect.size.x > wallRect.size.y)
+        {
+            // Bóng đang bay lên -> đụng mặt dưới của top wall
+            if (vel.y < 0.f)
             {
-                pos.x - r,
-                pos.y - r
-            },
+                pos.y =
+                    wallRect.position.y +
+                    wallRect.size.y +
+                    r;
+
+                vel.y *= -Config::BALL_BOUNCE;
+            }
+            // Nếu bóng đang rơi xuống thì không cần xử lý
+        }
+
+        // =========================
+        // WALL DỌC - LEFT / RIGHT
+        // =========================
+        else
+        {
+            if (vel.x < 0.f)
             {
-                r * 2.f,
-                r * 2.f
-            })))
-    {
-        return;
-    }
+                // Đụng wall bên trái
+                pos.x =
+                    wallRect.position.x +
+                    wallRect.size.x +
+                    r;
+            }
+            else if (vel.x > 0.f)
+            {
+                // Đụng wall bên phải
+                pos.x =
+                    wallRect.position.x -
+                    r;
+            }
 
-    auto vel = ball.getVelocity();
+            vel.x *= -Config::BALL_BOUNCE;
+        }
 
-    if (vel.x < 0)
-    {
-        pos.x = wallRect.position.x +
-            wallRect.size.x + r;
-    }
-    else
-    {
-        pos.x = wallRect.position.x - r;
-    }
-
-    vel.x *= -Config::BALL_BOUNCE;
-
-    ball.setPosition(pos);
-    ball.setVelocity(vel);
+        ball.setPosition(pos);
+        ball.setVelocity(vel);
 }

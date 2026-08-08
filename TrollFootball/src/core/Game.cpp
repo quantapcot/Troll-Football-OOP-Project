@@ -490,15 +490,12 @@ void Game::update(float deltaTime)
     ball->update(deltaTime);
     ground->update(deltaTime);
 
-    Collision::handleBallWall(
-        *ball,
-        *leftWall);
-
-    Collision::handleBallWall(
-        *ball,
-        *rightWall);
-
+    Collision::handleBallWall(*ball, *leftWall);
+    Collision::handleBallWall(*ball, *rightWall);
     Collision::handleBallWall(*ball, *topWall);
+
+    leftGoal->handleCollision(*ball);
+    rightGoal->handleCollision(*ball);
 
     leftGoal->update(deltaTime);
     rightGoal->update(deltaTime);
@@ -547,7 +544,7 @@ void Game::update(float deltaTime)
     if (rightGoal->contains(*ball))
     {
         leftScore++;
-        
+
         leftScoreText->setString(std::to_string(leftScore));
 
         AudioManager::getInstance().playSound("goal");
@@ -561,8 +558,10 @@ void Game::update(float deltaTime)
         return;
     }
 
-	//Check times up
+    //Check times up
     checkMatchEnd();
+
+
 }
 
 void Game::checkMatchEnd()
@@ -611,6 +610,8 @@ void Game::render()
 
         leftGoal->render(window);
         rightGoal->render(window);
+
+        
 
         ball->render(window);
 

@@ -1,29 +1,59 @@
 #include "ai/FSMController.h"
 
 #include <cmath>
+#include <algorithm>
 
-constexpr float KICK_DISTANCE = 45.f;
-constexpr float STOP_DISTANCE = 12.f;
-constexpr float JUMP_HEIGHT = 80.f;
-constexpr float JUMP_DISTANCE = 80.f;
-constexpr float DEFEND_X = Config::WINDOW_WIDTH - 220.f;
-constexpr float DASH_DISTANCE = 280.f;
+constexpr float KICK_DISTANCE = 55.f;
 
-FSMController::FSMController(Player& player,
+// Khoảng cách X mà bot coi như đã đứng đúng vị trí
+constexpr float STOP_DISTANCE = 10.f;
+
+// Jump
+constexpr float JUMP_HEIGHT = 70.f;
+constexpr float JUMP_DISTANCE = 90.f;
+
+// Vị trí phòng thủ
+constexpr float DEFEND_X =
+Config::WINDOW_WIDTH - 220.f;
+
+// =========================
+// DASH
+// =========================
+
+// Không cần đợi tới 280 pixel mới dash.
+// Bot sẽ dash khi thực sự cần tăng tốc.
+constexpr float DASH_DISTANCE = 150.f;
+
+// Khi bóng đang đi nhanh thì dự đoán xa hơn
+constexpr float PREDICT_TIME = 0.18f;
+
+// Khi bóng rất sát người nhưng chưa đá được,
+// bot sẽ cố thoát khỏi trạng thái bị kẹt.
+constexpr float STUCK_DISTANCE = 45.f;
+
+
+FSMController::FSMController(
+    Player& player,
     Ball& ball)
     : m_player(player),
     m_ball(ball)
 {
 }
 
+
 void FSMController::update(float deltaTime)
 {
     m_input = {};
 
-    float ballX = m_ball.getPosition().x;
+    float ballX =
+        m_ball.getPosition().x;
 
-    // Nếu bóng ở gần khung thành mình thì ưu tiên phòng thủ
-    if (ballX > Config::WINDOW_WIDTH * 0.7f)
+    // =====================================================
+    // DEFEND
+    // =====================================================
+
+    // Bóng ở phần sân của Bot -> ưu tiên phòng thủ.
+    if (ballX > Config::WINDOW_WIDTH * 0.70f)
     {
         m_state = BotState::Defend;
     }
@@ -31,6 +61,10 @@ void FSMController::update(float deltaTime)
     {
         m_state = BotState::ChaseBall;
     }
+
+    // =====================================================
+    // FSM
+    // =====================================================
 
     switch (m_state)
     {
@@ -56,66 +90,187 @@ void FSMController::update(float deltaTime)
     }
 }
 
+
 InputCommand FSMController::getInput() const
 {
     return m_input;
 }
 
+
+// =========================================================
+// IDLE
+// =========================================================
+
 void FSMController::updateIdle()
 {
+    // Bot không nên đứng yên quá lâu.
+    // Luôn chuyển sang đuổi bóng.
     m_state = BotState::ChaseBall;
 }
 
+
+// =========================================================
+// CHASE BALL
+// =========================================================
+
 void FSMController::updateChaseBall()
 {
-    float playerX = m_player.getPosition().x;
-    float playerY = m_player.getPosition().y;
+    float playerX =
+        m_player.getPosition().x;
 
-    auto ballPos = m_ball.getPosition();
-    auto ballVel = m_ball.getVelocity();
+    float playerY =
+        m_player.getPosition().y;
+
+    sf::Vector2f ballPos =
+        m_ball.getPosition();
+
+    sf::Vector2f ballVel =
+        m_ball.getVelocity();
+
+    // =====================================================
+    // DỰ ĐOÁN VỊ TRÍ BÓNG
+    // =====================================================
 
     float ballX =
         ballPos.x +
-        ballVel.x * 0.22f;
+        ballVel.x * PREDICT_TIME;
 
     float ballY =
         ballPos.y +
-        ballVel.y * 0.12f;
+        ballVel.y * 0.10f;
 
-    float targetX;
+    // =====================================================
+    // TÍNH KHOẢNG CÁCH
+    // =====================================================
 
-    // Player đỏ luôn nhìn phải
-    if (m_player.isFacingRight())
-    {
-        targetX = ballX - 35.f;
-    }
-    // Player xanh luôn nhìn trái
-    else
-    {
-        targetX = ballX + 35.f;
-    }
+    float dxBall =
+        ballPos.x - playerX;
 
-    float dx = targetX - playerX;
-    float dy = ballY - playerY;
+    float dyBall =
+        ballPos.y - playerY;
 
     float distance =
         std::sqrt(
-            (ballPos.x - playerX) * (ballPos.x - playerX) +
-            (ballPos.y - playerY) * (ballPos.y - playerY));
+            dxBall * dxBall +
+            dyBall * dyBall
+        );
 
-    // =========================
-    // ĐỦ GẦN -> ĐÁ
-    // =========================
+    // =====================================================
+    // XÁC ĐỊNH VỊ TRÍ MUỐN ĐỨNG
+    // =====================================================
 
-    if (distance <= KICK_DISTANCE)
+    float targetX;
+
+    if (m_player.isFacingRight())
+    {
+        // Bot đá về bên phải.
+        // Muốn đứng bên trái bóng một chút.
+        targetX =
+            ballX - 38.f;
+    }
+    else
+    {
+        // Bot đá về bên trái.
+        targetX =
+            ballX + 38.f;
+    }
+
+    float dx =
+        targetX - playerX;
+
+    float dy =
+        ballY - playerY;
+
+    // =====================================================
+    // BÓNG SÁT NGƯỜI
+    // =====================================================
+    //
+    // Đây là phần sửa lỗi bot đứng đơ.
+    //
+    // Không được cứ thấy distance <= KICK_DISTANCE
+    // là chuyển sang KickBall.
+    //
+    // Phải kiểm tra bóng có nằm đúng hướng để đá không.
+    //
+
+    if (distance <= STUCK_DISTANCE)
+    {
+        bool ballInFront;
+
+        if (m_player.isFacingRight())
+        {
+            ballInFront =
+                ballPos.x >= playerX - 5.f;
+        }
+        else
+        {
+            ballInFront =
+                ballPos.x <= playerX + 5.f;
+        }
+
+        // Bóng ở đúng phía trước và khá thấp
+        // -> chuyển sang KickBall.
+        if (ballInFront &&
+            std::abs(dy) < 65.f)
+        {
+            m_state = BotState::KickBall;
+            return;
+        }
+
+        // -------------------------------------------------
+        // Bóng sát nhưng ở phía sau
+        // -------------------------------------------------
+        //
+        // Không được đứng yên.
+        // Cho bot di chuyển về phía bóng.
+        //
+
+        if (m_player.isFacingRight())
+        {
+            if (ballPos.x < playerX)
+            {
+                m_input.left = true;
+            }
+            else
+            {
+                m_input.right = true;
+            }
+        }
+        else
+        {
+            if (ballPos.x > playerX)
+            {
+                m_input.right = true;
+            }
+            else
+            {
+                m_input.left = true;
+            }
+        }
+
+        // Nếu bóng ở trên đầu thì nhảy.
+        if (dy < -JUMP_HEIGHT / 2.f)
+        {
+            m_input.jump = true;
+        }
+
+        return;
+    }
+
+    // =====================================================
+    // ĐỦ GẦN ĐỂ ĐÁ
+    // =====================================================
+
+    if (distance <= KICK_DISTANCE &&
+        std::abs(dy) < 65.f)
     {
         m_state = BotState::KickBall;
         return;
     }
 
-    // =========================
-    // DI CHUYỂN THEO TRỤC X
-    // =========================
+    // =====================================================
+    // DI CHUYỂN
+    // =====================================================
 
     if (dx > STOP_DISTANCE)
     {
@@ -126,46 +281,106 @@ void FSMController::updateChaseBall()
         m_input.left = true;
     }
 
-    // =========================
+    // =====================================================
     // JUMP
-    // =========================
+    // =====================================================
 
-    // Chỉ nhảy khi bóng ở khá gần và đang ở trên đầu
-
-    if (std::abs(dx) < JUMP_DISTANCE &&
+    // Bóng ở trên đầu và gần theo phương X.
+    if (std::abs(dxBall) < JUMP_DISTANCE &&
         dy < -JUMP_HEIGHT)
     {
         m_input.jump = true;
     }
 
-    // =========================
+    // =====================================================
     // DASH
-    // =========================
+    // =====================================================
+    //
+    // Bản cũ:
+    //
+    // distance > 280
+    // &&
+    // abs(ballVel.x) > 30
+    //
+    // => quá khó trigger.
+    //
+    // Bây giờ dash khi:
+    //
+    // 1. Đang cách mục tiêu khá xa
+    // 2. Hoặc bóng đang ở xa và đang chạy nhanh
+    //
+    // Player tự xử lý dash cooldown.
+    //
 
-    if (distance > DASH_DISTANCE &&
-        std::abs(dy) < 80.f &&
-        std::abs(ballVel.x) > 30.f &&
-        m_state != BotState::Defend)
+    bool farFromTarget =
+        std::abs(dx) > DASH_DISTANCE;
+
+    bool ballMovingFast =
+        std::abs(ballVel.x) > 80.f ||
+        std::abs(ballVel.y) > 100.f;
+
+    bool ballFar =
+        distance > 130.f;
+
+    if (farFromTarget &&
+        ballFar)
+    {
+        m_input.dash = true;
+    }
+    else if (ballMovingFast &&
+        ballFar &&
+        std::abs(dx) > 100.f)
     {
         m_input.dash = true;
     }
 }
 
+
+// =========================================================
+// KICK BALL
+// =========================================================
+
 void FSMController::updateKickBall()
 {
-    float playerX = m_player.getPosition().x;
-    float ballX = m_ball.getPosition().x;
-    float playerY = m_player.getPosition().y;
-    float ballY = m_ball.getPosition().y;
+    float playerX =
+        m_player.getPosition().x;
 
-    // =========================
-    // Căn vị trí trước khi đá
-    // =========================
+    float playerY =
+        m_player.getPosition().y;
+
+    float ballX =
+        m_ball.getPosition().x;
+
+    float ballY =
+        m_ball.getPosition().y;
+
+    float dx =
+        ballX - playerX;
+
+    float dy =
+        ballY - playerY;
+
+    // =====================================================
+    // BÓNG QUÁ XA
+    // =====================================================
+    //
+    // Có thể Player đã bỏ lỡ bóng trong lúc chuyển state.
+    //
+
+    if (std::abs(dx) > 70.f ||
+        std::abs(dy) > 80.f)
+    {
+        m_state = BotState::ChaseBall;
+        return;
+    }
+
+    // =====================================================
+    // BÓNG Ở PHÍA SAU
+    // =====================================================
 
     if (m_player.isFacingRight())
     {
-        // Nếu bóng vẫn ở sau lưng thì lùi lại
-        if (ballX < playerX + 15.f)
+        if (ballX < playerX - 5.f)
         {
             m_input.left = true;
             return;
@@ -173,36 +388,72 @@ void FSMController::updateKickBall()
     }
     else
     {
-        // Nếu bóng vẫn ở sau lưng thì tiến thêm
-        if (ballX > playerX - 15.f)
+        if (ballX > playerX + 5.f)
         {
             m_input.right = true;
             return;
         }
     }
 
-    // =========================
-    // Đá
-    // =========================
+    // =====================================================
+    // BÓNG Ở TRÊN CAO
+    // =====================================================
 
-    // Nếu bóng quá cao thì nhảy trước
     if (ballY < playerY - 60.f)
     {
         m_input.jump = true;
+
+        // Không đứng trong KickBall mãi.
+        m_recoverTimer = 0.10f;
+        m_state = BotState::Recover;
+
         return;
     }
 
+    // =====================================================
+    // KICK
+    // =====================================================
+
     m_input.kick = true;
 
-    // Nghỉ một chút sau khi đá
-    m_recoverTimer = 0.25f;
+    // Cho phép chuyển trạng thái sau một khoảng ngắn.
+    m_recoverTimer = 0.18f;
 
     m_state = BotState::Recover;
 }
 
+
+// =========================================================
+// RECOVER
+// =========================================================
+
 void FSMController::updateRecover(float deltaTime)
 {
     m_recoverTimer -= deltaTime;
+
+    // Trong lúc recover vẫn cho bot tiếp tục
+    // hướng về phía bóng một chút.
+    float playerX =
+        m_player.getPosition().x;
+
+    float ballX =
+        m_ball.getPosition().x;
+
+    float dx =
+        ballX - playerX;
+
+    // Không đứng im hoàn toàn sau khi kick.
+    if (std::abs(dx) > 60.f)
+    {
+        if (dx > 0.f)
+        {
+            m_input.right = true;
+        }
+        else
+        {
+            m_input.left = true;
+        }
+    }
 
     if (m_recoverTimer <= 0.f)
     {
@@ -210,32 +461,82 @@ void FSMController::updateRecover(float deltaTime)
     }
 }
 
+
+// =========================================================
+// DEFEND
+// =========================================================
+
 void FSMController::updateDefend()
 {
-    float goalX = DEFEND_X;
+    float goalX =
+        DEFEND_X;
 
-    float playerX = m_player.getPosition().x;
-    float playerY = m_player.getPosition().y;
+    float playerX =
+        m_player.getPosition().x;
 
-    float ballY = m_ball.getPosition().y;
+    float playerY =
+        m_player.getPosition().y;
 
-    if (std::abs(goalX - playerX) > 10.f)
+    float ballX =
+        m_ball.getPosition().x;
+
+    float ballY =
+        m_ball.getPosition().y;
+
+    float dx =
+        goalX - playerX;
+
+    // =====================================================
+    // DI CHUYỂN VỀ VỊ TRÍ PHÒNG THỦ
+    // =====================================================
+
+    if (dx > STOP_DISTANCE)
     {
-        if (playerX < goalX)
-            m_input.right = true;
-        else
-            m_input.left = true;
+        m_input.right = true;
+    }
+    else if (dx < -STOP_DISTANCE)
+    {
+        m_input.left = true;
     }
 
-    if (playerX < goalX)
-        m_input.right = true;
-    else
-        m_input.left = true;
+    // =====================================================
+    // BÓNG Ở GẦN KHUNG THÀNH
+    // =====================================================
 
-    // Nếu bóng bay cao ngay trước khung thành thì nhảy cản
-    if (std::abs(goalX - m_ball.getPosition().x) < 90.f &&
-        ballY < playerY - 70.f)
+    bool ballNearGoal =
+        std::abs(goalX - ballX) < 130.f;
+
+    // =====================================================
+    // NHẢY CẢN BÓNG
+    // =====================================================
+
+    if (ballNearGoal &&
+        ballY < playerY - 60.f)
     {
         m_input.jump = true;
+    }
+
+    // =====================================================
+    // DASH PHÒNG THỦ
+    // =====================================================
+    //
+    // Nếu bóng đang lao về phía khung thành
+    // và Bot còn cách vị trí phòng thủ khá xa,
+    // dùng dash để quay về nhanh.
+    //
+
+    float distanceToGoal =
+        std::abs(goalX - playerX);
+
+    sf::Vector2f ballVel =
+        m_ball.getVelocity();
+
+    bool ballComingFast =
+        ballVel.x > 100.f;
+
+    if (distanceToGoal > 120.f &&
+        ballComingFast)
+    {
+        m_input.dash = true;
     }
 }
