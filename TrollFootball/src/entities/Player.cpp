@@ -405,18 +405,17 @@ void Player::setSkin(const sf::Texture& texture, bool flipHorizontal, float scal
 
 sf::FloatRect Player::getBodyHitbox() const
 {
-    constexpr float width = 75.f;
-    constexpr float height = 160.f;
+   
 
     return
     {
         {
-            position.x - width * 0.5f,
-            position.y - height * 0.5f
+            position.x - Config::WIDTH_BODY_HITBOX * 0.5f,
+            position.y - Config::HEIGHT_BODY_HITBOX * 0.5f
         },
         {
-            width,
-            height
+            Config::WIDTH_BODY_HITBOX,
+            Config::HEIGHT_BODY_HITBOX
         }
     };
 }

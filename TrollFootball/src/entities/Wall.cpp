@@ -1,11 +1,11 @@
 #include "entities/Wall.h"
 #include "core/GameConfig.h"
 
-Wall::Wall(float x)
+Wall::Wall(float x, float y, float width, float height)
 {
     shape.setSize({
-        10.f,
-        Config::WINDOW_HEIGHT
+        width,
+        height
         });
 
 #ifdef _DEBUG
@@ -18,7 +18,7 @@ Wall::Wall(float x)
 
     shape.setPosition({
         x,
-        0.f
+        y
         });
 }
 

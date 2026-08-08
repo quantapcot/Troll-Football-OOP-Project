@@ -76,4 +76,10 @@ namespace Config
 
     constexpr float RIGHT_GOAL_OFFSET_X = 0.f;
     constexpr float RIGHT_GOAL_OFFSET_Y = 53.f;
+
+    constexpr float WALL_THICKNESS = 10.f;
+
+
+    constexpr float WIDTH_BODY_HITBOX = 75.f;
+    constexpr float HEIGHT_BODY_HITBOX = 160.f;
 }

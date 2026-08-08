@@ -68,6 +68,7 @@ private:
     std::unique_ptr<Goal> rightGoal;
     std::unique_ptr<Wall> leftWall;
     std::unique_ptr<Wall> rightWall;
+    std::unique_ptr<Wall> topWall;
 
     // =========================
     // SCORE

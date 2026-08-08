@@ -195,10 +195,31 @@ Game::Game()
         true,
         AssetManager::get().getTexture("rightgoal"));
 
-    leftWall = std::make_unique<Wall>(60.f);
+  
 
+    // Wall trái
+    leftWall = std::make_unique<Wall>(
+        60.f,
+        0.f,
+        Config::WALL_THICKNESS,
+        Config::WINDOW_HEIGHT
+    );
+
+    // Wall phải
     rightWall = std::make_unique<Wall>(
-        Config::WINDOW_WIDTH - 60.f);
+        Config::WINDOW_WIDTH - 60.f,
+        0.f,
+        Config::WALL_THICKNESS,
+        Config::WINDOW_HEIGHT
+    );
+
+    // Wall trên
+    topWall = std::make_unique<Wall>(
+        0.f,
+        0.f,
+        Config::WINDOW_WIDTH,
+        Config::WALL_THICKNESS
+    );
 
     AudioManager::getInstance().playMusic("menu");
 }
@@ -421,6 +442,8 @@ void Game::update(float deltaTime)
         *ball,
         *rightWall);
 
+    Collision::handleBallWall(*ball, *topWall);
+
     leftGoal->update(deltaTime);
     rightGoal->update(deltaTime);
 
@@ -542,6 +565,7 @@ void Game::render()
         window.draw(*rightScoreText);
 
         timer->draw(window);
+        
 
         // Draw GOAL celebration effect overlay
         if (isGoalCelebrating && goalSprite.has_value())
