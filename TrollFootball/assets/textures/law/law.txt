@@ -1,0 +1,26 @@
+========================================
+           LUAT CHOI TROLL FOOTBALL
+========================================
+
+1. MUC TIEU TRON DUA:
+   - Dua bong vao luoi cua doi phuong de ghi diem.
+   - Ket thuc thoi gian tran dau, doi nao ghi nhieu diem hon se gianh chiến thang.
+
+2. DIEU KHIEN CUA THU:
+   * CUA THU 1 (PLAYER 1):
+     - Di chuyen Trai / Phai : Phim A / D
+     - Nhay len              : Phim W
+     - Sut bong              : Phim J
+
+   * CUA THU 2 (PLAYER 2 / BOT):
+     - Di chuyen Trai / Phai : Phim Mui Ten Trai / Phai
+     - Nhay len              : Phim Mui Ten Len
+     - Sut bong              : Phim Numpad 0
+
+3. HIEU UNG BANI THANG:
+   - Khi bong vao luoi, tro choi se tam dung 1 giay de thuc hien hieu ung GOAL!
+   - Sau 1 giay, vi tri bong va cau thu se duoc reset ve vi tri xuat phat.
+
+4. CAI DAT & AM THANH:
+   - Co the tat/bat am thanh va dieu chinh am luong trong Menu Cai dat.
+   - Nhan ESC khi dang choi de Tam dung (Pause) game.

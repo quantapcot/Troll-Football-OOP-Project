@@ -15,11 +15,15 @@
 #include <optional>
 #include "ai/BotController.h"
 #include "ui/CharacterSelectMenu.h"
+#include "ui/SettingsMenu.h"
+#include "ui/RulesScreen.h"
 
 enum class GameState
 {
     MainMenu,
 	CharacterSelect,
+    SettingsMenu,
+    RulesScreen,
     Playing,
     GameOver,
     WinScreen,
@@ -51,6 +55,8 @@ private:
 
     std::unique_ptr<MainMenu> mainMenu;
     std::unique_ptr<CharacterSelectMenu> characterSelectMenu;
+    std::unique_ptr<SettingsMenu> settingsMenu;
+    std::unique_ptr<RulesScreen> rulesScreen;
     // MOI: 3 man hinh UI con lai
     std::unique_ptr<PauseMenu> pauseMenu;
     std::unique_ptr<GameOver> gameOverScreen;

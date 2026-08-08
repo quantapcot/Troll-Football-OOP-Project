@@ -28,7 +28,15 @@ public:
 
     void setMusicVolume(float volume);
 
+    bool isMuted() const { return m_isMuted; }
+    void setMuted(bool mute);
+
+    float getMasterVolume() const { return m_masterVolume; }
+    void setMasterVolume(float volume);
+
 private:
+    bool m_isMuted{ false };
+    float m_masterVolume{ 100.f };
     AudioManager() = default;
     AudioManager(const AudioManager&) = delete;
     AudioManager& operator=(const AudioManager&) = delete;

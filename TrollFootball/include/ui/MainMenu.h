@@ -9,6 +9,7 @@ enum class MainMenuAction
     PlayVsBot,
     PlayVsPlayer,
     CharacterSelect,   // MOI: nut rieng - chi de xem/chon nhan vat truoc, KHONG vao tran
+    Settings,          // MOI: nut cai dat (hinh vuong goc man hinh)
     Exit
 };
 
@@ -37,6 +38,10 @@ private:
     // MOI: nut rieng cho man hinh xem/chon nhan vat
     sf::RectangleShape m_characterSelectButton;
     sf::Text m_characterSelectText;
+
+    // MOI: nut cai dat hinh vuong o goc man hinh
+    sf::RectangleShape m_settingsButton;
+    sf::Text m_settingsText;
 
     sf::RectangleShape m_exitButton;
     sf::Text m_exitText;

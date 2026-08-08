@@ -7,6 +7,7 @@ MainMenu::MainMenu(const sf::Font& font, sf::Vector2u windowSize, const std::str
     , m_vsBotText(font)
     , m_vsPlayerText(font)
     , m_characterSelectText(font)
+    , m_settingsText(font)
     , m_exitText(font)
 {
     //BACKGROUND
@@ -42,6 +43,22 @@ MainMenu::MainMenu(const sf::Font& font, sf::Vector2u windowSize, const std::str
     float titleWidth = m_title.getLocalBounds().size.x;
     // SUA: dung ti le theo windowSize.y thay vi so cung 100.f, de menu con dep tren nhieu do phan giai
     m_title.setPosition({ (windowSize.x - titleWidth) / 2.f, windowSize.y * 0.12f });
+
+	//SETTINGS BUTTON (HINH VUONG GOC MAN HINH)
+    float sqSize = 52.f;
+    float sqX = windowSize.x - sqSize - 25.f;
+    float sqY = 25.f;
+    m_settingsButton.setSize({ sqSize, sqSize });
+    m_settingsButton.setFillColor(sf::Color(150, 30, 30));
+    m_settingsButton.setOutlineColor(sf::Color(255, 215, 0));
+    m_settingsButton.setOutlineThickness(2.f);
+    m_settingsButton.setPosition({ sqX, sqY });
+
+    m_settingsText.setString("SET");
+    m_settingsText.setCharacterSize(20);
+    m_settingsText.setFillColor(sf::Color::White);
+    float sqTextW = m_settingsText.getLocalBounds().size.x;
+    m_settingsText.setPosition({ sqX + (sqSize - sqTextW) / 2.f, sqY + 12.f });
 
 	//BUTTON SCALE
     float buttonWidth = 260.f;
@@ -122,6 +139,11 @@ void MainMenu::updateHover(sf::Vector2f mousePos)
     else
         m_characterSelectButton.setFillColor(sf::Color(150, 30, 30));
 
+    if (m_settingsButton.getGlobalBounds().contains(mousePos))
+        m_settingsButton.setFillColor(sf::Color(200, 50, 50));
+    else
+        m_settingsButton.setFillColor(sf::Color(150, 30, 30));
+
     if (m_exitButton.getGlobalBounds().contains(mousePos))
         m_exitButton.setFillColor(sf::Color(200, 50, 50));
     else
@@ -158,6 +180,11 @@ MainMenuAction MainMenu::handleEvent(const sf::Event& event, const sf::RenderWin
                 AudioManager::getInstance().playSound("button");
                 return MainMenuAction::CharacterSelect;
             }
+            if (m_settingsButton.getGlobalBounds().contains(mousePos))
+            {
+                AudioManager::getInstance().playSound("button");
+                return MainMenuAction::Settings;
+            }
             if (m_exitButton.getGlobalBounds().contains(mousePos))
             {
                 AudioManager::getInstance().playSound("button");
@@ -181,6 +208,8 @@ void MainMenu::draw(sf::RenderWindow& window)
     window.draw(m_vsPlayerText);
     window.draw(m_characterSelectButton);   
     window.draw(m_characterSelectText);     
+    window.draw(m_settingsButton);
+    window.draw(m_settingsText);
     window.draw(m_exitButton);
     window.draw(m_exitText);
 }

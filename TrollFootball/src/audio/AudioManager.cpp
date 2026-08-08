@@ -76,7 +76,6 @@ void AudioManager::stopMusic()
 
 void AudioManager::setSoundVolume(float volume)
 {
-
     for (auto& pair : m_sounds)
         pair.second.setVolume(volume);
 }
@@ -84,4 +83,31 @@ void AudioManager::setSoundVolume(float volume)
 void AudioManager::setMusicVolume(float volume)
 {
     m_music.setVolume(volume);
+}
+
+void AudioManager::setMuted(bool mute)
+{
+    m_isMuted = mute;
+    if (m_isMuted)
+    {
+        setSoundVolume(0.f);
+        setMusicVolume(0.f);
+    }
+    else
+    {
+        setSoundVolume(m_masterVolume);
+        setMusicVolume(m_masterVolume);
+    }
+}
+
+void AudioManager::setMasterVolume(float volume)
+{
+    if (volume < 0.f) volume = 0.f;
+    if (volume > 100.f) volume = 100.f;
+    m_masterVolume = volume;
+    if (!m_isMuted)
+    {
+        setSoundVolume(m_masterVolume);
+        setMusicVolume(m_masterVolume);
+    }
 }

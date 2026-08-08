@@ -129,6 +129,8 @@ Game::Game()
     pauseMenu = std::make_unique<PauseMenu>(*font, window.getSize());
     gameOverScreen = std::make_unique<GameOver>(*font, window.getSize());
     winScreen = std::make_unique<WinScreen>(*font, window.getSize());
+    settingsMenu = std::make_unique<SettingsMenu>(*font, window.getSize());
+    rulesScreen = std::make_unique<RulesScreen>(*font, window.getSize());
     timer = std::make_unique<Timer>(*font, Config::MATCH_SECONDS);
 
     // =========================
@@ -287,6 +289,14 @@ void Game::processEvents()
             {
                 m_currentState = GameState::CharacterSelect;
             }
+            //SETTINGS BUTTON
+            else if (action == MainMenuAction::Settings)
+            {
+                settingsMenu->updateState(
+                    AudioManager::getInstance().isMuted(),
+                    AudioManager::getInstance().getMasterVolume());
+                m_currentState = GameState::SettingsMenu;
+            }
 			//EXIT BUTTON
             else if (action == MainMenuAction::Exit)
             {
@@ -359,6 +369,52 @@ void Game::processEvents()
                 AudioManager::getInstance().stopMusic();
                 AudioManager::getInstance().playMusic("menu");
                 m_currentState = GameState::MainMenu;
+            }
+            break;
+        }
+
+        // SETTINGS MENU
+        case GameState::SettingsMenu:
+        {
+            SettingsMenuAction action = settingsMenu->handleEvent(*event, window);
+
+            if (action == SettingsMenuAction::Rules)
+            {
+                m_currentState = GameState::RulesScreen;
+            }
+            else if (action == SettingsMenuAction::ToggleMute)
+            {
+                bool newMute = !AudioManager::getInstance().isMuted();
+                AudioManager::getInstance().setMuted(newMute);
+                settingsMenu->updateState(newMute, AudioManager::getInstance().getMasterVolume());
+            }
+            else if (action == SettingsMenuAction::VolumeDown)
+            {
+                float curVol = AudioManager::getInstance().getMasterVolume();
+                AudioManager::getInstance().setMasterVolume(curVol - 10.f);
+                settingsMenu->updateState(AudioManager::getInstance().isMuted(), AudioManager::getInstance().getMasterVolume());
+            }
+            else if (action == SettingsMenuAction::VolumeUp)
+            {
+                float curVol = AudioManager::getInstance().getMasterVolume();
+                AudioManager::getInstance().setMasterVolume(curVol + 10.f);
+                settingsMenu->updateState(AudioManager::getInstance().isMuted(), AudioManager::getInstance().getMasterVolume());
+            }
+            else if (action == SettingsMenuAction::Back)
+            {
+                m_currentState = GameState::MainMenu;
+            }
+            break;
+        }
+
+        // RULES SCREEN
+        case GameState::RulesScreen:
+        {
+            RulesScreenAction action = rulesScreen->handleEvent(*event, window);
+
+            if (action == RulesScreenAction::Back)
+            {
+                m_currentState = GameState::SettingsMenu;
             }
             break;
         }
@@ -574,7 +630,7 @@ void Game::render()
         }
     }
 
-	//UI LAYER: DRAW THE CURRENT MENU OR SCREEN BASED ON THE GAME STATE
+	    //UI LAYER: DRAW THE CURRENT MENU OR SCREEN BASED ON THE GAME STATE
     switch (m_currentState)
     {
     case GameState::MainMenu:
@@ -582,6 +638,14 @@ void Game::render()
         break;
     case GameState::CharacterSelect:              
         characterSelectMenu->draw(window);
+        break;
+    case GameState::SettingsMenu:
+        mainMenu->draw(window);
+        settingsMenu->draw(window);
+        break;
+    case GameState::RulesScreen:
+        mainMenu->draw(window);
+        rulesScreen->draw(window);
         break;
     case GameState::PauseMenu:
         pauseMenu->draw(window);
