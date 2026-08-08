@@ -301,10 +301,9 @@ void Player::render(sf::RenderWindow& window)
         auto alpha = static_cast<std::uint8_t>(
             255.f * (trail.life / 0.15f));
 
-        sf::Color trailColor = playerColor;
-        trailColor.a = alpha;
+        
 
-        ghost.setColor(trailColor);
+        
 
         window.draw(ghost);
     }
