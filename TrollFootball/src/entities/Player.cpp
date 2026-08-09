@@ -53,8 +53,49 @@ Player::Player(const ControlScheme& controls,
     
 }
 
+void Player::stun(float durationSeconds)
+{
+    stunTimer = durationSeconds;
+    velocity.x = 0.f;
+    dashing = false;
+    kicking = false;
+}
+
 void Player::update(float deltaTime)
 {
+    // =========================
+    // TRẠNG THÁI CHOÁNG (0.5S)
+    // =========================
+    if (stunTimer > 0.f)
+    {
+        stunTimer -= deltaTime;
+        velocity.x = 0.f;
+        dashing = false;
+        kicking = false;
+
+        // Visual Stun Effect: Nhấp nháy màu đỏ nhạt khi bị choáng
+        if (sprite.has_value())
+        {
+            std::uint8_t alpha = (static_cast<int>(stunTimer * 20.f) % 2 == 0) ? 140 : 255;
+            sprite->setColor(sf::Color(255, 100, 100, alpha));
+        }
+
+        applyGravity(deltaTime);
+        move(deltaTime);
+        handleGroundCollision();
+        handleWallCollision();
+
+        if (sprite.has_value())
+            sprite->setPosition(position);
+
+        return; // ĐỨNG YÊN: Bỏ qua toàn bộ input và hành động khác khi bị choáng
+    }
+
+    if (sprite.has_value())
+    {
+        sprite->setColor(sf::Color::White); // Khôi phục màu bình thường
+    }
+
     if (!aiControlled)
     {
         currentInput.left =
@@ -92,7 +133,6 @@ void Player::update(float deltaTime)
     handleWallCollision();
 
     sprite->setPosition(position);
-    
 }
 
 void Player::updateKick(float deltaTime)

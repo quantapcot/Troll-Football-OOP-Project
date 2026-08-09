@@ -16,6 +16,8 @@ struct Asteroid
     std::optional<sf::Sprite> sprite;
 };
 
+class Player;
+
 class AsteroidManager
 {
 public:
@@ -26,6 +28,7 @@ public:
     void reset();
 
     void update(float deltaTime, float matchElapsedTime);
+    void checkPlayerCollisions(Player& player1, Player& player2);
     void render(sf::RenderWindow& window);
 
 private:

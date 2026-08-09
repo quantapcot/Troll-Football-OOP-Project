@@ -40,11 +40,15 @@ public:
         dashing = false;
         dashTimer = 0.f;
         dashCooldown = 0.f;
+        stunTimer = 0.f;
         onGround = true;
 
         if (sprite)
             sprite->setPosition(position);
     }
+
+    void stun(float durationSeconds = 0.5f);
+    bool isStunned() const { return stunTimer > 0.f; }
 
     void setVelocity(const sf::Vector2f& v)
     {
@@ -202,6 +206,9 @@ private:
     // Cooldown Dash
     float dashCooldown{ 0.f };
     float dashCooldownTime{ 0.5f };
+
+    // STUN EFFECT
+    float stunTimer{ 0.f };
 
     // =========================
     // TRAIL

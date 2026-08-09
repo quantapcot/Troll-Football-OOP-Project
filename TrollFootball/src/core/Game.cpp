@@ -506,8 +506,9 @@ void Game::update(float deltaTime)
         return;
     }
 
-    // Update Thien thach roi ngau nhien
+    // Update Thien thach roi ngau nhien & va cham voi Player
     asteroidManager->update(deltaTime, timer->getElapsedTime());
+    asteroidManager->checkPlayerCollisions(*player1, *player2);
 
     timer->update(deltaTime);
 
