@@ -93,6 +93,34 @@ Game::Game()
         << tex.getSize().y
         << std::endl;
 
+    // =========================
+    // STUN ANIMATION FRAMES
+    // =========================
+
+    AssetManager::get().loadTexture(
+        "stun1",
+        "assets/textures/stunstar/stun1.png"
+    );
+
+    AssetManager::get().loadTexture(
+        "stun2",
+        "assets/textures/stunstar/stun2.png"
+    );
+
+    AssetManager::get().loadTexture(
+        "stun3",
+        "assets/textures/stunstar/stun3.png"
+    );
+
+    AssetManager::get().loadTexture(
+        "stun4",
+        "assets/textures/stunstar/stun4.png"
+    );
+
+    AssetManager::get().loadTexture(
+        "stun5",
+        "assets/textures/stunstar/stun5.png"
+    );
 
     // =========================
     // LOAD FONT

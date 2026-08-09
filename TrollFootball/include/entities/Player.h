@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <optional>
+#include <array>
 
 struct ControlScheme
 {
@@ -158,6 +159,7 @@ private:
     // ===== THÊM =====
     void updateTrail(float deltaTime);
 
+    void updateStun(float deltaTime);
     // =========================
     // COMPONENT
     // =========================
@@ -207,8 +209,24 @@ private:
     float dashCooldown{ 0.f };
     float dashCooldownTime{ 0.5f };
 
+    // =========================
     // STUN EFFECT
+    // =========================
+
     float stunTimer{ 0.f };
+
+    static constexpr int STUN_FRAME_COUNT = 5;
+    static constexpr float STUN_FRAME_DURATION = 0.08f;
+
+    // 5 texture stun riêng biệt
+    std::array<const sf::Texture*, STUN_FRAME_COUNT> stunTextures{};
+
+    // Sprite riêng cho hiệu ứng stun
+    std::optional<sf::Sprite> stunSprite;
+
+    // Animation
+    int stunFrame{ 0 };
+    float stunFrameTimer{ 0.f };
 
     // =========================
     // TRAIL

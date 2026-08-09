@@ -48,7 +48,7 @@ void AsteroidManager::triggerWave()
         return;
 
     // Mỗi đợt rơi từ 7 đến 10 thiên thạch ngẫu nhiên
-    std::uniform_int_distribution<int> countDist(7, 10);
+    std::uniform_int_distribution<int> countDist(5, 8);
     int count = countDist(m_rng);
 
     // Kích thước thiên thạch (~140px, scale = 4.4f)
@@ -93,7 +93,7 @@ void AsteroidManager::triggerWave()
         m_asteroids.push_back(ast);
     }
 
-    std::cout << "[AsteroidManager] Triggered 20 giant 45-degree asteroids!" << std::endl;
+    
 }
 
 void AsteroidManager::update(float deltaTime, float matchElapsedTime)
@@ -181,15 +181,15 @@ void AsteroidManager::checkPlayerCollisions(Player& player1, Player& player2)
         if (astHitbox.findIntersection(p1Hitbox).has_value())
         {
             ast.active = false;
-            player1.stun(0.5f);
-            std::cout << "[Asteroid] Hit Player 1 -> Stunned 0.5s!" << std::endl;
+            player1.stun(1.0f);
+         
         }
         // Va chạm Player 2: Thiên thạch biến mất, Player 2 choáng 0.5s
         else if (astHitbox.findIntersection(p2Hitbox).has_value())
         {
             ast.active = false;
-            player2.stun(0.5f);
-            std::cout << "[Asteroid] Hit Player 2 -> Stunned 0.5s!" << std::endl;
+            player2.stun(1.0f);
+            
         }
     }
 }
