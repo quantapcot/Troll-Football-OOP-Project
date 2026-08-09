@@ -24,6 +24,9 @@ public:
     // Kiểm tra xem thời gian đã hết chưa (đồng nghĩa hết trận)
     bool isTimeUp() const;
 
+    float getElapsedTime() const { return m_totalTime - m_timeLeft; }
+    float getTotalTime() const { return m_totalTime; }
+
     // Reset lại đồng hồ về thời gian ban đầu (dùng khi bắt đầu trận mới)
     void reset();
 

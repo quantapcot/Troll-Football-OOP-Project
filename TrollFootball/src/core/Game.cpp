@@ -81,6 +81,36 @@ Game::Game()
         std::cout << "[Game] Warning: Could not load goalScreen texture!" << std::endl;
     }
 
+    // =========================
+    // ASTEROID TEXTURE & MANAGER
+    // =========================
+    try
+    {
+        AssetManager::get().loadTexture(
+            "asteroid",
+            "assets/textures/asteroid/asteriod.png");
+    }
+    catch (...)
+    {
+        try
+        {
+            AssetManager::get().loadTexture(
+                "asteroid",
+                "assets/textures/asteroid/asteroid.png");
+        }
+        catch (...) {}
+    }
+
+    asteroidManager = std::make_unique<AsteroidManager>();
+    try
+    {
+        asteroidManager->init(AssetManager::get().getTexture("asteroid"));
+    }
+    catch (...)
+    {
+        std::cout << "[Game] Warning: Could not initialize AsteroidManager texture!" << std::endl;
+    }
+
     std::cout << "Background: "
         << tex.getSize().x
         << " x "
@@ -476,6 +506,9 @@ void Game::update(float deltaTime)
         return;
     }
 
+    // Update Thien thach roi ngau nhien
+    asteroidManager->update(deltaTime, timer->getElapsedTime());
+
     timer->update(deltaTime);
 
     player1->update(deltaTime);
@@ -611,7 +644,8 @@ void Game::render()
         leftGoal->render(window);
         rightGoal->render(window);
 
-        
+        // Render Thien thach roi
+        asteroidManager->render(window);
 
         ball->render(window);
 
@@ -691,6 +725,8 @@ void Game::startNewMatch()
     rightScoreText->setString("0");
 
 	timer->reset(); //reset the timer to the initial match duration
+
+    asteroidManager->startMatch(timer->getTotalTime());
 
     resetAfterGoal();
 

@@ -12,6 +12,7 @@
 #include "entities/Ground.h"
 #include "entities/Goal.h"
 #include "entities/Wall.h"
+#include "entities/AsteroidManager.h"
 #include <optional>
 #include "ai/BotController.h"
 #include "ui/CharacterSelectMenu.h"
@@ -64,6 +65,8 @@ private:
 
     // MOI: dong ho dem nguoc, dung de xac dinh luc nao tran dau ket thuc
     std::unique_ptr<Timer> timer;
+
+    std::unique_ptr<AsteroidManager> asteroidManager;
 
     std::unique_ptr<Player> player1;
     std::unique_ptr<Player> player2;
