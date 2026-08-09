@@ -55,61 +55,37 @@ Game::Game()
     // =========================
     AssetManager::get().loadTexture(
         "char_ronaldo",
-        "assets/textures/characters/player1.png");
+        "assets/textures/players/player1.png");
 
     AssetManager::get().loadTexture(
         "char_messi",
-        "assets/textures/characters/player2.png");
+        "assets/textures/players/player2.png");
 
     // =========================
     // GOAL CELEBRATION TEXTURE
     // =========================
-    try
-    {
-        AssetManager::get().loadTexture(
-            "goalScreen",
-            "assets/textures/goalScreen/goalScreen.png");
+   AssetManager::get().loadTexture(
+        "goalScreen",
+        "assets/textures/goalScreen/goalScreen.png");
 
         auto& goalTex = AssetManager::get().getTexture("goalScreen");
         goalSprite.emplace(goalTex);
         auto texSize = static_cast<sf::Vector2f>(goalTex.getSize());
         goalSprite->setOrigin({ texSize.x / 2.f, texSize.y / 2.f });
         goalSprite->setPosition({ Config::WINDOW_WIDTH / 2.f, Config::WINDOW_HEIGHT / 2.f });
-    }
-    catch (...)
-    {
-        std::cout << "[Game] Warning: Could not load goalScreen texture!" << std::endl;
-    }
-
+    
     // =========================
     // ASTEROID TEXTURE & MANAGER
     // =========================
-    try
-    {
-        AssetManager::get().loadTexture(
-            "asteroid",
-            "assets/textures/asteroid/asteriod.png");
-    }
-    catch (...)
-    {
-        try
-        {
-            AssetManager::get().loadTexture(
-                "asteroid",
-                "assets/textures/asteroid/asteroid.png");
-        }
-        catch (...) {}
-    }
-
+    
+    AssetManager::get().loadTexture(
+        "asteroid",
+        "assets/textures/asteroid/asteriod.png");
+    
     asteroidManager = std::make_unique<AsteroidManager>();
-    try
-    {
-        asteroidManager->init(AssetManager::get().getTexture("asteroid"));
-    }
-    catch (...)
-    {
-        std::cout << "[Game] Warning: Could not initialize AsteroidManager texture!" << std::endl;
-    }
+    asteroidManager->init(AssetManager::get().getTexture("asteroid"));
+    
+    
 
     std::cout << "Background: "
         << tex.getSize().x
@@ -151,7 +127,7 @@ Game::Game()
     mainMenu = std::make_unique<MainMenu>(
         *font,
         window.getSize(),
-        "assets/textures/ui/menu.jpg");
+        "assets/textures/ui/menu.png");
 
     // =========================
     // UI Menu 
@@ -174,7 +150,8 @@ Game::Game()
     characterSelectMenu = std::make_unique<CharacterSelectMenu>(
         *font,
         window.getSize(),
-        characterOptions);
+        characterOptions,
+        "assets/textures/ui/menu.png");
 
 
     // =========================

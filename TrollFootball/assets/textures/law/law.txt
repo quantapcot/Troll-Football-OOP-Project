@@ -1,26 +1,28 @@
 ========================================
-           LUAT CHOI TROLL FOOTBALL
+        LUẬT CHƠI TRÔN PHỤT BÔN
 ========================================
 
-1. MUC TIEU TRON DUA:
-   - Dua bong vao luoi cua doi phuong de ghi diem.
-   - Ket thuc thoi gian tran dau, doi nao ghi nhieu diem hon se gianh chiến thang.
+1. MỤC TIÊU:
+   - Đưa bóng vào lưới của đối phương để ghi điểm.
+   - Kết thúc thời gian trận đấu, đội nào ghi nhiều điểm hơn sẽ giành chiến thắng.
 
-2. DIEU KHIEN CUA THU:
-   * CUA THU 1 (PLAYER 1):
-     - Di chuyen Trai / Phai : Phim A / D
-     - Nhay len              : Phim W
-     - Sut bong              : Phim J
+2. ĐIỀU KHIỂN CỦA THỦ:
+   * CẦU THỦ 1 (PLAYER 1):
+     - Di chuyển Trái / Phải : Phím A / D
+     - Nhảy lên              : Phím W
+     - Sút bóng              : Phím J
+     - Lướt                  : Phím C
 
-   * CUA THU 2 (PLAYER 2 / BOT):
-     - Di chuyen Trai / Phai : Phim Mui Ten Trai / Phai
-     - Nhay len              : Phim Mui Ten Len
-     - Sut bong              : Phim Numpad 0
+   * CẦU THỦ 2 (PLAYER 2 / BOT):
+     - Di chuyển Trái / Phải : Phím Mũi tên Trái / Mũi tên Phải
+     - Nhảy lên              : Phím Mũi tên Lên
+     - Sút bóng              : Phím Numpad 0
+     - Lướt                  : Phím Numpad 1
 
-3. HIEU UNG BANI THANG:
-   - Khi bong vao luoi, tro choi se tam dung 1 giay de thuc hien hieu ung GOAL!
-   - Sau 1 giay, vi tri bong va cau thu se duoc reset ve vi tri xuat phat.
+3. HIỆU ỨNG BÀN THẮNG:
+   - Khi bóng vào lưới, trò chơi sẽ tạm dừng 1 giây để thực hiện hiệu ứng GOAL!
+   - Sau 1 giây, vị trí bóng và cầu thủ sẽ được reset về vị trí xuất phát.
 
-4. CAI DAT & AM THANH:
-   - Co the tat/bat am thanh va dieu chinh am luong trong Menu Cai dat.
-   - Nhan ESC khi dang choi de Tam dung (Pause) game.
+4. CÀI ĐẶT & ÂM THANH:
+   - Có thể tắt/bật âm thanh và điều chỉnh âm lượng trong Menu Cài đặt.
+   - Nhấn ESC khi đang chơi để Tạm dừng (Pause) game.

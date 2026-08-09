@@ -67,11 +67,6 @@ void RulesScreen::loadRulesFromFile(const std::string& filePath)
     std::vector<std::string> pathsToTry = {
         filePath,
         "assets/textures/law/law.txt",
-        "textures/law/law.txt",
-        "assets/law/law.txt",
-        "assets/law.txt",
-        "law.txt",
-        "../assets/textures/law/law.txt"
     };
 
     std::string content = "";

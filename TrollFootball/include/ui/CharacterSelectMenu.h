@@ -3,6 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <string>
+#include <optional>
 
 enum class CharacterSelectAction
 {
@@ -24,7 +25,8 @@ class CharacterSelectMenu
 public:
     CharacterSelectMenu(const sf::Font& font,
         sf::Vector2u windowSize,
-        std::vector<CharacterOption> characters);
+        std::vector<CharacterOption> characters,
+        const std::string& backgroundImagePath = "");
 
     CharacterSelectAction handleEvent(const sf::Event& event, const sf::RenderWindow& window);
     void draw(sf::RenderWindow& window);
@@ -47,6 +49,9 @@ public:
 
 private:
     void updateHover(sf::Vector2f mousePos);
+
+    sf::Texture m_backgroundTexture;
+    std::optional<sf::Sprite> m_backgroundSprite;
 
     struct Card
     {

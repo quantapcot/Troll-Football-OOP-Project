@@ -2,15 +2,33 @@
 #include "core/AssetManager.h"
 #include "audio/AudioManager.h"
 #include <algorithm>
+#include <iostream>
 
 CharacterSelectMenu::CharacterSelectMenu(const sf::Font& font,
     sf::Vector2u windowSize,
-    std::vector<CharacterOption> characters)
+    std::vector<CharacterOption> characters,
+    const std::string& backgroundImagePath)
     : m_characters(std::move(characters))
     , m_title(font)
     , m_playText(font)
     , m_backText(font)
 {
+    if (!backgroundImagePath.empty())
+    {
+        if (m_backgroundTexture.loadFromFile(backgroundImagePath))
+        {
+            m_backgroundSprite.emplace(m_backgroundTexture);
+
+            sf::Vector2u textureSize = m_backgroundTexture.getSize();
+            float scaleX = static_cast<float>(windowSize.x) / static_cast<float>(textureSize.x);
+            float scaleY = static_cast<float>(windowSize.y) / static_cast<float>(textureSize.y);
+            m_backgroundSprite->setScale({ scaleX, scaleY });
+        }
+        else
+        {
+            std::cerr << "[CharacterSelectMenu] Khong the load anh nen: " << backgroundImagePath << std::endl;
+        }
+    }
     // TITLE
     m_title.setString("CHOOSE YOUR GOAT");
     m_title.setCharacterSize(48);
@@ -83,7 +101,7 @@ CharacterSelectMenu::CharacterSelectMenu(const sf::Font& font,
     float buttonHeight = 55.f;
 
     m_playButton.setSize({ buttonWidth, buttonHeight });
-    m_playButton.setFillColor(sf::Color(30, 130, 30));
+    m_playButton.setFillColor(sf::Color(150, 30, 30));
     m_playButton.setPosition({
         (windowSize.x - buttonWidth) / 2.f,
         windowSize.y * 0.75f
@@ -134,9 +152,9 @@ void CharacterSelectMenu::updateHover(sf::Vector2f mousePos)
     }
 
     if (m_playButton.getGlobalBounds().contains(mousePos))
-        m_playButton.setFillColor(sf::Color(50, 180, 50));
+        m_playButton.setFillColor(sf::Color(200, 50, 50));
     else
-        m_playButton.setFillColor(sf::Color(30, 130, 30));
+        m_playButton.setFillColor(sf::Color(150, 30, 30));
 
     if (m_backButton.getGlobalBounds().contains(mousePos))
         m_backButton.setFillColor(sf::Color(200, 50, 50));
@@ -187,6 +205,9 @@ CharacterSelectAction CharacterSelectMenu::handleEvent(const sf::Event& event, c
 
 void CharacterSelectMenu::draw(sf::RenderWindow& window)
 {
+    if (m_backgroundSprite.has_value())
+        window.draw(*m_backgroundSprite);
+    
     window.draw(m_title);
 
     for (auto& card : m_cards)
