@@ -11,6 +11,7 @@ SettingsMenu::SettingsMenu(const sf::Font& font, sf::Vector2u windowSize)
     , m_volValueText(font)
     , m_backText(font)
 {
+
     float w = static_cast<float>(windowSize.x);
     float h = static_cast<float>(windowSize.y);
 

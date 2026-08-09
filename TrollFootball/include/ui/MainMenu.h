@@ -8,15 +8,15 @@ enum class MainMenuAction
     None,
     PlayVsBot,
     PlayVsPlayer,
-    CharacterSelect,   // MOI: nut rieng - chi de xem/chon nhan vat truoc, KHONG vao tran
-    Settings,          // MOI: nut cai dat (hinh vuong goc man hinh)
+    CharacterSelect,   
+    Settings,         
     Exit
 };
 
 class MainMenu
 {
 public:
-    MainMenu(const sf::Font& font, sf::Vector2u windowSize, const std::string& backgroundImagePath = "");
+    MainMenu(const sf::Font& font, sf::Vector2u windowSize, const std::string& backgroundImagePath = "", const std::string& settingsIconPath = "");
 
     MainMenuAction handleEvent(const sf::Event& event, const sf::RenderWindow& window);
     void draw(sf::RenderWindow& window);
@@ -26,6 +26,9 @@ private:
 
     sf::Texture m_backgroundTexture;
     std::optional<sf::Sprite> m_backgroundSprite;
+
+    sf::Texture m_settingsIconTexture;
+    std::optional<sf::Sprite> m_settingsIconSprite;
 
     sf::Text m_title;
 

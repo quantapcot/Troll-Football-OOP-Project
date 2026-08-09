@@ -127,7 +127,8 @@ Game::Game()
     mainMenu = std::make_unique<MainMenu>(
         *font,
         window.getSize(),
-        "assets/textures/ui/menu.png");
+        "assets/textures/ui/menu.png",
+        "assets/textures/ui/setting.png");
 
     // =========================
     // UI Menu 

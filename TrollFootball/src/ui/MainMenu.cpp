@@ -2,7 +2,7 @@
 #include "audio/AudioManager.h"
 #include <iostream>
 
-MainMenu::MainMenu(const sf::Font& font, sf::Vector2u windowSize, const std::string& backgroundImagePath)
+MainMenu::MainMenu(const sf::Font& font, sf::Vector2u windowSize, const std::string& backgroundImagePath, const std::string& settingsIconPath)
     : m_title(font)
     , m_vsBotText(font)
     , m_vsPlayerText(font)
@@ -15,8 +15,6 @@ MainMenu::MainMenu(const sf::Font& font, sf::Vector2u windowSize, const std::str
     {
         if (m_backgroundTexture.loadFromFile(backgroundImagePath))
         {
-            // emplace() tao sf::Sprite MOI ben trong optional, bat buoc phai truyen Texture
-            // ngay luc tao vi SFML 3 khong con constructor mac dinh cho sf::Sprite
             m_backgroundSprite.emplace(m_backgroundTexture);
 
             // Phong to/thu nho anh nen sao cho vua khit kich thuoc cua so,
@@ -24,7 +22,7 @@ MainMenu::MainMenu(const sf::Font& font, sf::Vector2u windowSize, const std::str
             sf::Vector2u textureSize = m_backgroundTexture.getSize();
             float scaleX = static_cast<float>(windowSize.x) / static_cast<float>(textureSize.x);
             float scaleY = static_cast<float>(windowSize.y) / static_cast<float>(textureSize.y);
-            m_backgroundSprite->setScale({ scaleX, scaleY }); // setScale SFML 3 chi nhan Vector2f
+            m_backgroundSprite->setScale({ scaleX, scaleY });
         }
         else
         {
@@ -54,11 +52,40 @@ MainMenu::MainMenu(const sf::Font& font, sf::Vector2u windowSize, const std::str
     m_settingsButton.setOutlineThickness(2.f);
     m_settingsButton.setPosition({ sqX, sqY });
 
-    m_settingsText.setString("SET");
-    m_settingsText.setCharacterSize(20);
-    m_settingsText.setFillColor(sf::Color::White);
-    float sqTextW = m_settingsText.getLocalBounds().size.x;
-    m_settingsText.setPosition({ sqX + (sqSize - sqTextW) / 2.f, sqY + 12.f });
+    if (!settingsIconPath.empty())
+    {
+        if (m_settingsIconTexture.loadFromFile(settingsIconPath))
+        {
+            m_settingsIconSprite.emplace(m_settingsIconTexture);
+
+            auto iconSize = m_settingsIconTexture.getSize();
+
+            // Dat origin vao giua icon de de dat vao chinh giua nut hinh vuong
+            m_settingsIconSprite->setOrigin({
+                iconSize.x / 2.f,
+                iconSize.y / 2.f
+                });
+
+            // Scale icon nho hon kich thuoc nut mot chut (chua padding quanh icon)
+            float iconPadding = 10.f;
+            float maxIconDim = sqSize - iconPadding * 2.f;
+            float scale = std::min(
+                maxIconDim / static_cast<float>(iconSize.x),
+                maxIconDim / static_cast<float>(iconSize.y));
+
+            m_settingsIconSprite->setScale({ scale, scale });
+
+            // Dat vi tri vao chinh giua nut Settings
+            m_settingsIconSprite->setPosition({
+                sqX + sqSize / 2.f,
+                sqY + sqSize / 2.f
+                });
+        }
+        else
+        {
+            std::cerr << "[MainMenu] Khong the load icon settings: " << settingsIconPath << std::endl;
+        }
+    }
 
 	//BUTTON SCALE
     float buttonWidth = 260.f;
@@ -200,7 +227,6 @@ void MainMenu::draw(sf::RenderWindow& window)
 {
     if (m_backgroundSprite.has_value())
         window.draw(*m_backgroundSprite);
-
     window.draw(m_title);
     window.draw(m_vsBotButton);
     window.draw(m_vsBotText);
@@ -209,7 +235,8 @@ void MainMenu::draw(sf::RenderWindow& window)
     window.draw(m_characterSelectButton);   
     window.draw(m_characterSelectText);     
     window.draw(m_settingsButton);
-    window.draw(m_settingsText);
+    if (m_settingsIconSprite.has_value())
+        window.draw(*m_settingsIconSprite);
     window.draw(m_exitButton);
     window.draw(m_exitText);
 }
