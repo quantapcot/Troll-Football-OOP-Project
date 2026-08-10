@@ -1,11 +1,10 @@
-﻿cmake_minimum_required(VERSION 3.28)
+cmake_minimum_required(VERSION 3.28)
 
 project(TrollFootball)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Đường dẫn tới SFMLConfig.cmake
 set(CMAKE_PREFIX_PATH $ENV{SFML_DIR})
 
 find_package(SFML 3 REQUIRED COMPONENTS
@@ -15,11 +14,12 @@ find_package(SFML 3 REQUIRED COMPONENTS
     Audio
 )
 
+# Tự động quét toàn bộ source code .cpp trong thư mục src
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS
-    "src/*.cpp"
+    "${CMAKE_SOURCE_DIR}/src/*.cpp"
 )
 
-add_executable(TrollFootball ${SOURCES} "src/core/AssetManager.cpp"  "include/core/Assetmanager.h" "src/ai/RLAgent.cpp")
+add_executable(TrollFootball ${SOURCES})
 
 target_include_directories(TrollFootball PRIVATE
     ${CMAKE_SOURCE_DIR}/include
@@ -35,7 +35,6 @@ target_link_libraries(TrollFootball PRIVATE
 # ============================
 # Tự động copy DLL của SFML
 # ============================
-
 set(SFML_BIN_DIR "$ENV{SFML_DIR}/bin")
 
 file(GLOB SFML_DLLS
@@ -53,7 +52,6 @@ endforeach()
 # ============================
 # Tự động copy thư mục assets
 # ============================
-
 add_custom_command(TARGET TrollFootball POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
         "${CMAKE_SOURCE_DIR}/assets"
