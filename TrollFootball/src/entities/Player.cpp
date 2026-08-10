@@ -45,7 +45,7 @@ Player::Player(const ControlScheme &controls, const sf::Color &color)
   sprite->setOrigin({size.x / 2.f, size.y / 2.f});
 
   // Scale về đúng kích thước nhân vật trong game
-  sprite->setScale({0.18f, 0.18f});
+  sprite->setScale({Config::PLAYER_DEFAULT_SCALE, Config::PLAYER_DEFAULT_SCALE});
 
   // =========================
   // STUN SPRITE
@@ -59,12 +59,10 @@ Player::Player(const ControlScheme &controls, const sf::Color &color)
     stunSprite->setOrigin({stunSize.x / 2.f, stunSize.y / 2.f});
 
     // Scale đủ lớn để hiện rõ trên đầu player
-    stunSprite->setScale({0.5f, 0.5f});
+    stunSprite->setScale({Config::STUN_SPRITE_SCALE, Config::STUN_SPRITE_SCALE});
 
-    // Thực tế: player texture 1080x1920 scale 0.18f
-    // đỉnh đầu sprite = position.y - (1920/2)*0.18 = position.y - 172.8px
     // Đặt stunSprite ngay trên đỉnh đầu sprite player
-    stunSprite->setPosition({position.x, position.y - 85.f});
+    stunSprite->setPosition({position.x, position.y + Config::STUN_HEAD_OFFSET_Y});
   }
 
   // Vị trí ban đầu
@@ -89,9 +87,9 @@ void Player::stun(float durationSeconds) {
     // Cập nhật lại origin sau khi đổi texture
     auto sz = stunTextures[0]->getSize();
     stunSprite->setOrigin({sz.x / 2.f, sz.y / 2.f});
-    stunSprite->setPosition({position.x, position.y - 85.f});
+    stunSprite->setPosition({position.x, position.y + Config::STUN_HEAD_OFFSET_Y});
     std::cout << "[STUN] stunSprite texture set, size=" << sz.x << "x" << sz.y
-              << " pos=" << position.x << "," << (position.y - 85.f)
+              << " pos=" << position.x << "," << (position.y + Config::STUN_HEAD_OFFSET_Y)
               << std::endl;
   } else {
     std::cout << "[STUN] WARNING: stunSprite or stunTextures[0] is null!"
@@ -216,7 +214,7 @@ void Player::updateTrail(float deltaTime) {
   if (trailSpawnTimer >= trailSpawnInterval) {
     trailSpawnTimer = 0.f;
 
-    trails.push_back({position, 0.15f});
+    trails.push_back({position, Config::TRAIL_LIFETIME});
   }
 }
 
@@ -319,7 +317,7 @@ void Player::render(sf::RenderWindow &window) {
     ghost.setPosition(trail.position);
 
     // Trail càng cũ càng trong suốt
-    auto alpha = static_cast<std::uint8_t>(255.f * (trail.life / 0.15f));
+    auto alpha = static_cast<std::uint8_t>(255.f * (trail.life / Config::TRAIL_LIFETIME));
 
     sf::Color ghostColor = sprite->getColor();
     ghostColor.a = alpha;
@@ -344,7 +342,7 @@ void Player::render(sf::RenderWindow &window) {
   if (stunTimer > 0.f && stunSprite) {
     // position.y - 190f: ngay trên đỉnh đầu sprite player (1080x1920, scale
     // 0.18f)
-    stunSprite->setPosition({position.x, position.y - 85.f});
+    stunSprite->setPosition({position.x, position.y + Config::STUN_HEAD_OFFSET_Y});
 
     window.draw(*stunSprite);
   }
@@ -456,7 +454,7 @@ void Player::updateStun(float deltaTime) {
 
   // Vị trí stunSprite: trên đỉnh đầu sprite player (cập nhật mỗi frame)
   if (stunSprite) {
-    stunSprite->setPosition({position.x, position.y - 85.f});
+    stunSprite->setPosition({position.x, position.y + Config::STUN_HEAD_OFFSET_Y});
   }
 
   // Khi vừa hết stun: reset màu

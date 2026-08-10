@@ -187,10 +187,10 @@ private:
     bool kickHit{ false };
 
     float kickTimer{ 0.f };
-    float kickDuration{ 0.18f };
+    float kickDuration{ Config::PLAYER_KICK_DURATION };
 
     float kickCooldown{ 0.f };
-    float kickCooldownTime{ 0.20f };
+    float kickCooldownTime{ Config::PLAYER_KICK_COOLDOWN };
 
     // =========================
     // DASH
@@ -201,13 +201,13 @@ private:
     int dashDirection{ 0 };
 
     float dashTimer{ 0.f };
-    float dashDuration{ 0.15f };
+    float dashDuration{ Config::PLAYER_DASH_DURATION };
 
-    float dashSpeed{ 600.f };
+    float dashSpeed{ Config::PLAYER_DASH_SPEED };
 
     // Cooldown Dash
     float dashCooldown{ 0.f };
-    float dashCooldownTime{ 0.5f };
+    float dashCooldownTime{ Config::PLAYER_DASH_COOLDOWN };
 
     // =========================
     // STUN EFFECT
@@ -215,8 +215,8 @@ private:
 
     float stunTimer{ 0.f };
 
-    static constexpr int STUN_FRAME_COUNT = 5;
-    static constexpr float STUN_FRAME_DURATION = 0.08f;
+    static constexpr int STUN_FRAME_COUNT = Config::STUN_FRAME_COUNT;
+    static constexpr float STUN_FRAME_DURATION = Config::STUN_FRAME_DURATION;
 
     // 5 texture stun riêng biệt
     std::array<const sf::Texture*, STUN_FRAME_COUNT> stunTextures{};
@@ -241,7 +241,7 @@ private:
     std::vector<Trail> trails;
 
     float trailSpawnTimer{ 0.f };
-    float trailSpawnInterval{ 0.025f };
+    float trailSpawnInterval{ Config::TRAIL_SPAWN_INTERVAL };
 
     // =========================
     // CONTROLS

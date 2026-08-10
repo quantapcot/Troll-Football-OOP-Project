@@ -3,33 +3,15 @@
 #include <cmath>
 #include <algorithm>
 
-constexpr float KICK_DISTANCE = 55.f;
-
-// Khoảng cách X mà bot coi như đã đứng đúng vị trí
-constexpr float STOP_DISTANCE = 10.f;
-
-// Jump
-constexpr float JUMP_HEIGHT = 70.f;
-constexpr float JUMP_DISTANCE = 90.f;
-
-// Vị trí phòng thủ
-constexpr float DEFEND_X =
-Config::WINDOW_WIDTH - 220.f;
-
-// =========================
-// DASH
-// =========================
-
-// Không cần đợi tới 280 pixel mới dash.
-// Bot sẽ dash khi thực sự cần tăng tốc.
-constexpr float DASH_DISTANCE = 150.f;
-
-// Khi bóng đang đi nhanh thì dự đoán xa hơn
-constexpr float PREDICT_TIME = 0.18f;
-
-// Khi bóng rất sát người nhưng chưa đá được,
-// bot sẽ cố thoát khỏi trạng thái bị kẹt.
-constexpr float STUCK_DISTANCE = 45.f;
+// FSMController uses constants defined in Config namespace (include/core/GameConfig.h)
+// - Config::AI_KICK_DISTANCE
+// - Config::AI_STOP_DISTANCE
+// - Config::AI_JUMP_HEIGHT
+// - Config::AI_JUMP_DISTANCE
+// - Config::AI_DEFEND_X
+// - Config::AI_DASH_DISTANCE
+// - Config::AI_PREDICT_TIME
+// - Config::AI_STUCK_DISTANCE
 
 
 FSMController::FSMController(
@@ -133,7 +115,7 @@ void FSMController::updateChaseBall()
 
     float ballX =
         ballPos.x +
-        ballVel.x * PREDICT_TIME;
+        ballVel.x * Config::AI_PREDICT_TIME;
 
     float ballY =
         ballPos.y +
@@ -187,13 +169,13 @@ void FSMController::updateChaseBall()
     //
     // Đây là phần sửa lỗi bot đứng đơ.
     //
-    // Không được cứ thấy distance <= KICK_DISTANCE
+    // Không được cứ thấy distance <= Config::AI_KICK_DISTANCE
     // là chuyển sang KickBall.
     //
     // Phải kiểm tra bóng có nằm đúng hướng để đá không.
     //
 
-    if (distance <= STUCK_DISTANCE)
+    if (distance <= Config::AI_STUCK_DISTANCE)
     {
         bool ballInFront;
 
@@ -249,7 +231,7 @@ void FSMController::updateChaseBall()
         }
 
         // Nếu bóng ở trên đầu thì nhảy.
-        if (dy < -JUMP_HEIGHT / 2.f)
+        if (dy < -Config::AI_JUMP_HEIGHT / 2.f)
         {
             m_input.jump = true;
         }
@@ -261,7 +243,7 @@ void FSMController::updateChaseBall()
     // ĐỦ GẦN ĐỂ ĐÁ
     // =====================================================
 
-    if (distance <= KICK_DISTANCE &&
+    if (distance <= Config::AI_KICK_DISTANCE &&
         std::abs(dy) < 65.f)
     {
         m_state = BotState::KickBall;
@@ -272,11 +254,11 @@ void FSMController::updateChaseBall()
     // DI CHUYỂN
     // =====================================================
 
-    if (dx > STOP_DISTANCE)
+    if (dx > Config::AI_STOP_DISTANCE)
     {
         m_input.right = true;
     }
-    else if (dx < -STOP_DISTANCE)
+    else if (dx < -Config::AI_STOP_DISTANCE)
     {
         m_input.left = true;
     }
@@ -286,8 +268,8 @@ void FSMController::updateChaseBall()
     // =====================================================
 
     // Bóng ở trên đầu và gần theo phương X.
-    if (std::abs(dxBall) < JUMP_DISTANCE &&
-        dy < -JUMP_HEIGHT)
+    if (std::abs(dxBall) < Config::AI_JUMP_DISTANCE &&
+        dy < -Config::AI_JUMP_HEIGHT)
     {
         m_input.jump = true;
     }
@@ -313,7 +295,7 @@ void FSMController::updateChaseBall()
     //
 
     bool farFromTarget =
-        std::abs(dx) > DASH_DISTANCE;
+        std::abs(dx) > Config::AI_DASH_DISTANCE;
 
     bool ballMovingFast =
         std::abs(ballVel.x) > 80.f ||
@@ -469,7 +451,7 @@ void FSMController::updateRecover(float deltaTime)
 void FSMController::updateDefend()
 {
     float goalX =
-        DEFEND_X;
+        Config::AI_DEFEND_X_OFFSET;
 
     float playerX =
         m_player.getPosition().x;
@@ -490,11 +472,11 @@ void FSMController::updateDefend()
     // DI CHUYỂN VỀ VỊ TRÍ PHÒNG THỦ
     // =====================================================
 
-    if (dx > STOP_DISTANCE)
+    if (dx > Config::AI_STOP_DISTANCE)
     {
         m_input.right = true;
     }
-    else if (dx < -STOP_DISTANCE)
+    else if (dx < -Config::AI_STOP_DISTANCE)
     {
         m_input.left = true;
     }

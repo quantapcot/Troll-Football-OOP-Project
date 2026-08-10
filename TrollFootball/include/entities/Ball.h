@@ -102,5 +102,5 @@ private:
     float rotation{ 0.f };
 
     // Hệ số chuyển vận tốc ngang -> tốc độ xoay
-    float rotationFactor{ 0.3f };
+    float rotationFactor{ Config::BALL_ROTATION_FACTOR };
 };

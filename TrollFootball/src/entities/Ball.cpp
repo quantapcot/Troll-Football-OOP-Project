@@ -30,7 +30,7 @@ Ball::Ball()
         });
 
     // Scale tạm, lát sẽ chỉnh nếu cần
-    sprite->setScale({ 0.08f, 0.08f });
+    sprite->setScale({ Config::BALL_DEFAULT_SCALE, Config::BALL_DEFAULT_SCALE });
 
     sprite->setRotation(
         sf::degrees(0.f)
@@ -39,7 +39,7 @@ Ball::Ball()
     position =
     {
         Config::WINDOW_WIDTH / 2.f,
-        200.f
+        Config::BALL_START_Y
     };
 
     sprite->setPosition(position);
@@ -57,8 +57,8 @@ void Ball::update(float deltaTime)
     // AIR DRAG
     // =========================
 
-    velocity.x *= 0.998f;
-    velocity.y *= 0.9995f;
+    velocity.x *= Config::BALL_AIR_DRAG_X;
+    velocity.y *= Config::BALL_AIR_DRAG_Y;
 
     // =========================
     // UPDATE POSITION
@@ -77,13 +77,13 @@ void Ball::update(float deltaTime)
     {
         position.y = groundY;
 
-        velocity.y *= -(Config::BALL_BOUNCE * 0.92f);
+        velocity.y *= -(Config::BALL_BOUNCE * Config::BALL_BOUNCE_DAMPING);
 
-        if (std::abs(velocity.y) < 30.f)
+        if (std::abs(velocity.y) < Config::BALL_VERTICAL_STOP_THRESHOLD)
         {
             velocity.y = 0.f;
             // Ma sát khi bóng nằm trên mặt đất
-            velocity.x *= 0.985f;
+            velocity.x *= Config::BALL_GROUND_FRICTION;
         }
     }
 
@@ -91,7 +91,7 @@ void Ball::update(float deltaTime)
     // STOP SMALL HORIZONTAL SPEED
     // =========================
 
-    if (std::abs(velocity.x) < 5.f)
+    if (std::abs(velocity.x) < Config::BALL_HORIZONTAL_STOP_THRESHOLD)
     {
         velocity.x = 0.f;
     }

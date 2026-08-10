@@ -48,17 +48,17 @@ void AsteroidManager::triggerWave()
         return;
 
     // Mỗi đợt rơi từ 7 đến 10 thiên thạch ngẫu nhiên
-    std::uniform_int_distribution<int> countDist(5, 8);
+    std::uniform_int_distribution<int> countDist(Config::ASTEROID_MIN_COUNT, Config::ASTEROID_MAX_COUNT);
     int count = countDist(m_rng);
 
     // Kích thước thiên thạch (~140px, scale = 4.4f)
-    const float targetScale = 4.4f;
+    const float targetScale = Config::ASTEROID_SCALE;
 
     std::uniform_real_distribution<float> startXDist(-350.f, Config::WINDOW_WIDTH * 0.55f);
     std::uniform_real_distribution<float> startYDist(-300.f, -80.f);
     // Tốc độ rơi giảm xuống 2/3 so với trước (từ 520-780 => 345-520)
-    std::uniform_real_distribution<float> speedDist(345.f, 520.f);
-    std::uniform_real_distribution<float> delayDist(0.0f, 1.4f);
+    std::uniform_real_distribution<float> speedDist(Config::ASTEROID_MIN_SPEED, Config::ASTEROID_MAX_SPEED);
+    std::uniform_real_distribution<float> delayDist(0.0f, Config::ASTEROID_MAX_SPAWN_DELAY);
 
     for (int i = 0; i < count; ++i)
     {
@@ -181,14 +181,14 @@ void AsteroidManager::checkPlayerCollisions(Player& player1, Player& player2)
         if (astHitbox.findIntersection(p1Hitbox).has_value())
         {
             ast.active = false;
-            player1.stun(1.0f);
+            player1.stun(Config::ASTEROID_STUN_DURATION);
          
         }
         // Va chạm Player 2: Thiên thạch biến mất, Player 2 choáng 0.5s
         else if (astHitbox.findIntersection(p2Hitbox).has_value())
         {
             ast.active = false;
-            player2.stun(1.0f);
+            player2.stun(Config::ASTEROID_STUN_DURATION);
             
         }
     }
