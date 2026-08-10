@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <string>
+#include <ui/IScreen.h>
 
 enum class GameOverAction
 {
@@ -10,7 +11,7 @@ enum class GameOverAction
 };
 
 // Màn hình hiện ra khi người chơi THUA trận
-class GameOver
+class GameOver : public IScreen
 {
 public:
     GameOver(const sf::Font& font, sf::Vector2u windowSize);
@@ -20,7 +21,7 @@ public:
     void setFinalScore(int myScore, int opponentScore);
 
     GameOverAction handleEvent(const sf::Event& event, const sf::RenderWindow& window);
-    void draw(sf::RenderWindow& window);
+    void draw(sf::RenderWindow& window) override;
 
 private:
     void updateHover(sf::Vector2f mousePos);

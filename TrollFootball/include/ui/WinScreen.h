@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <string>
+#include <ui/IScreen.h>
 
 enum class WinScreenAction
 {
@@ -14,7 +15,7 @@ enum class WinScreenAction
 // 1. Nội dung/màu sắc khác nhau hoàn toàn (chiến thắng vs thất bại)
 // 2. Sau này dễ thêm hiệu ứng riêng cho từng màn hình (confetti khi thắng, không cần khi thua...)
 //    mà không sợ ảnh hưởng lẫn nhau
-class WinScreen
+class WinScreen : public IScreen
 {
 public:
     WinScreen(const sf::Font& font, sf::Vector2u windowSize);
@@ -26,7 +27,7 @@ public:
     void setWinnerLabel(const std::string& label);
 
     WinScreenAction handleEvent(const sf::Event& event, const sf::RenderWindow& window);
-    void draw(sf::RenderWindow& window);
+    void draw(sf::RenderWindow& window) override;
 
 private:
     void updateHover(sf::Vector2f mousePos);

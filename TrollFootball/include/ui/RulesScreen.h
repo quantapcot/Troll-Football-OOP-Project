@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <string>
+#include <ui/IScreen.h>
 
 enum class RulesScreenAction
 {
@@ -8,7 +9,7 @@ enum class RulesScreenAction
     Back   // Quay lai Settings Menu
 };
 
-class RulesScreen
+class RulesScreen : public IScreen
 {
 public:
     RulesScreen(const sf::Font& font, sf::Vector2u windowSize);
@@ -16,7 +17,7 @@ public:
     void loadRulesFromFile(const std::string& filePath = "assets/textures/law/law.txt");
 
     RulesScreenAction handleEvent(const sf::Event& event, const sf::RenderWindow& window);
-    void draw(sf::RenderWindow& window);
+    void draw(sf::RenderWindow& window) override;
 
 private:
     void updateHover(sf::Vector2f mousePos);

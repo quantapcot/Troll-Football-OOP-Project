@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <optional>
+#include <ui/IScreen.h>
 
 enum class CharacterSelectAction
 {
@@ -20,7 +21,7 @@ struct CharacterOption
 	bool defaultFacesRight; //Facing direction of the character's default sprite (true for right, false for left)
 };
 
-class CharacterSelectMenu
+class CharacterSelectMenu : public IScreen
 {
 public:
     CharacterSelectMenu(const sf::Font& font,
@@ -29,7 +30,8 @@ public:
         const std::string& backgroundImagePath = "");
 
     CharacterSelectAction handleEvent(const sf::Event& event, const sf::RenderWindow& window);
-    void draw(sf::RenderWindow& window);
+
+    void draw(sf::RenderWindow& window) override;
 
     const CharacterOption& getSelectedCharacter() const
     {

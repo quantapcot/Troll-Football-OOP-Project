@@ -1,5 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <ui/IScreen.h>
 
 enum class PauseMenuAction
 {
@@ -11,7 +12,7 @@ enum class PauseMenuAction
 
 // PauseMenu là 1 lớp phủ (overlay) hiển thị ĐÈ LÊN màn hình gameplay khi người chơi bấm Pause
 // Vì vậy nó cần 1 nền mờ (semi-transparent) để người chơi vẫn thấy mờ mờ trận đấu phía sau
-class PauseMenu
+class PauseMenu : public IScreen
 {
 public:
     PauseMenu(const sf::Font& font, sf::Vector2u windowSize);
@@ -19,7 +20,7 @@ public:
     PauseMenuAction handleEvent(const sf::Event& event, const sf::RenderWindow& window);
 
     // Vẽ lớp phủ mờ + 3 nút lựa chọn
-    void draw(sf::RenderWindow& window);
+    void draw(sf::RenderWindow& window) override;
 
 private:
     void updateHover(sf::Vector2f mousePos);

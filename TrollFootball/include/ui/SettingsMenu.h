@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <optional>
+#include <ui/IScreen.h>
 
 enum class SettingsMenuAction
 {
@@ -12,14 +13,14 @@ enum class SettingsMenuAction
     Back          // Quay lai Main Menu
 };
 
-class SettingsMenu
+class SettingsMenu : public IScreen
 {
 public:
     SettingsMenu(const sf::Font& font, sf::Vector2u windowSize);
 
     SettingsMenuAction handleEvent(const sf::Event& event, const sf::RenderWindow& window);
     void updateState(bool isMuted, float volumeLevel);
-    void draw(sf::RenderWindow& window);
+    void draw(sf::RenderWindow& window) override;
 
 private:
     void updateHover(sf::Vector2f mousePos);

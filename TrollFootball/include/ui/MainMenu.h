@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <optional>
 #include <string>
+#include <ui/IScreen.h>
 
 enum class MainMenuAction
 {
@@ -13,13 +14,16 @@ enum class MainMenuAction
     Exit
 };
 
-class MainMenu
+class MainMenu : public IScreen
 {
 public:
-    MainMenu(const sf::Font& font, sf::Vector2u windowSize, const std::string& backgroundImagePath = "", const std::string& settingsIconPath = "");
+    MainMenu(const sf::Font& font, sf::Vector2u windowSize,
+        const std::string& backgroundImagePath = "",
+        const std::string& settingsIconPath = "");
 
     MainMenuAction handleEvent(const sf::Event& event, const sf::RenderWindow& window);
-    void draw(sf::RenderWindow& window);
+
+    void draw(sf::RenderWindow& window) override;
 
 private:
     void updateHover(sf::Vector2f mousePos);

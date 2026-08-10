@@ -18,6 +18,7 @@
 #include "ui/CharacterSelectMenu.h"
 #include "ui/SettingsMenu.h"
 #include "ui/RulesScreen.h"
+#include <unordered_map>
 
 enum class GameState
 {
@@ -78,6 +79,8 @@ private:
     std::unique_ptr<Wall> leftWall;
     std::unique_ptr<Wall> rightWall;
     std::unique_ptr<Wall> topWall;
+
+	std::unordered_map<GameState, std::vector<IScreen*>> m_screens;
 
     // =========================
     // SCORE

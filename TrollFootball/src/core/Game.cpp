@@ -168,6 +168,7 @@ Game::Game()
     rulesScreen = std::make_unique<RulesScreen>(*font, window.getSize());
     timer = std::make_unique<Timer>(*font, Config::MATCH_SECONDS);
 
+
     // =========================
     // CHOOSING CHARACTER MENU
     // =========================
@@ -181,6 +182,16 @@ Game::Game()
         window.getSize(),
         characterOptions,
         "assets/textures/ui/menu.png");
+
+    m_screens[GameState::MainMenu] = { mainMenu.get() };
+    m_screens[GameState::CharacterSelect] = { characterSelectMenu.get() };
+    m_screens[GameState::PauseMenu] = { pauseMenu.get() };
+    m_screens[GameState::GameOver] = { gameOverScreen.get() };
+    m_screens[GameState::WinScreen] = { winScreen.get() };
+
+    // 2 state nay can ve 2 lop CHONG LEN NHAU: nen MainMenu truoc, roi panel rieng de len tren
+    m_screens[GameState::SettingsMenu] = { mainMenu.get(), settingsMenu.get() };
+    m_screens[GameState::RulesScreen] = { mainMenu.get(), rulesScreen.get() };
 
 
     // =========================
@@ -672,34 +683,12 @@ void Game::render()
         }
     }
 
-	    //UI LAYER: DRAW THE CURRENT MENU OR SCREEN BASED ON THE GAME STATE
-    switch (m_currentState)
+	//UI LAYER: DRAW THE CURRENT MENU OR SCREEN BASED ON THE GAME STATE
+    auto it = m_screens.find(m_currentState);
+    if (it != m_screens.end())
     {
-    case GameState::MainMenu:
-        mainMenu->draw(window);
-        break;
-    case GameState::CharacterSelect:              
-        characterSelectMenu->draw(window);
-        break;
-    case GameState::SettingsMenu:
-        mainMenu->draw(window);
-        settingsMenu->draw(window);
-        break;
-    case GameState::RulesScreen:
-        mainMenu->draw(window);
-        rulesScreen->draw(window);
-        break;
-    case GameState::PauseMenu:
-        pauseMenu->draw(window);
-        break;
-    case GameState::GameOver:
-        gameOverScreen->draw(window);
-        break;
-    case GameState::WinScreen:
-        winScreen->draw(window);
-        break;
-    default:
-		break; // Playing: no additional UI overlay
+        for (IScreen* screen : it->second)
+            screen->draw(window);
     }
 
     window.display();
