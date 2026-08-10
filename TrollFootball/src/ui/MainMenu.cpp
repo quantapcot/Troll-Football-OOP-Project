@@ -39,7 +39,7 @@ MainMenu::MainMenu(const sf::Font& font, sf::Vector2u windowSize, const std::str
     m_title.setOutlineThickness(3.f);
 
     float titleWidth = m_title.getLocalBounds().size.x;
-    // SUA: dung ti le theo windowSize.y thay vi so cung 100.f, de menu con dep tren nhieu do phan giai
+    //dung ti le theo windowSize.y de menu con dep tren nhieu do phan giai
     m_title.setPosition({ (windowSize.x - titleWidth) / 2.f, windowSize.y * 0.12f });
 
 	//SETTINGS BUTTON (HINH VUONG GOC MAN HINH)

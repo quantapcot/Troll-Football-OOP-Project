@@ -6,11 +6,11 @@
 enum class SettingsMenuAction
 {
     None,
-    Rules,        // Xem luat choi
-    ToggleMute,   // Tat / bat am thanh
-    VolumeDown,   // Giam am luong
-    VolumeUp,     // Tang am luong
-    Back          // Quay lai Main Menu
+    Rules,      
+    ToggleMute,  
+    VolumeDown,  
+    VolumeUp,    
+    Back          
 };
 
 class SettingsMenu : public IScreen
@@ -30,15 +30,12 @@ private:
 
     sf::Text m_titleText;
 
-    // Nut 1: Luat choi
     sf::RectangleShape m_rulesButton;
     sf::Text m_rulesText;
 
-    // Nut 2: Tat/Bat am thanh
     sf::RectangleShape m_muteButton;
     sf::Text m_muteText;
 
-    // Nut 2b: Chinh am luong (-) (+)
     sf::RectangleShape m_volDownButton;
     sf::Text m_volDownText;
 
@@ -47,7 +44,6 @@ private:
 
     sf::Text m_volValueText;
 
-    // Nut 3: Quay lai
     sf::RectangleShape m_backButton;
     sf::Text m_backText;
 };

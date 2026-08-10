@@ -6,11 +6,11 @@ ScoreBoard::ScoreBoard(const sf::Font& font, const std::string& teamAName, const
     , m_teamBName(teamBName)
     , m_scoreA(0)
     , m_scoreB(0)
-    , m_text(font) // Bắt buộc truyền Font ở initializer list vì sf::Text không còn ctor mặc định
+    , m_text(font)
 {
     m_text.setCharacterSize(28);
     m_text.setFillColor(sf::Color::Yellow);
-    m_text.setPosition({ 20.f, 20.f }); // setPosition SFML 3 chỉ nhận Vector2f
+    m_text.setPosition({ 20.f, 20.f });
 
     updateDisplayText();
 }

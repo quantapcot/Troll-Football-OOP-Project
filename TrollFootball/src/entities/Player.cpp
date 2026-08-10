@@ -316,7 +316,6 @@ void Player::render(sf::RenderWindow &window) {
 
     ghost.setPosition(trail.position);
 
-    // Trail càng cũ càng trong suốt
     auto alpha = static_cast<std::uint8_t>(255.f * (trail.life / Config::TRAIL_LIFETIME));
 
     sf::Color ghostColor = sprite->getColor();

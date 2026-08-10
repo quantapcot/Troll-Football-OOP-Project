@@ -277,16 +277,7 @@ void FSMController::updateChaseBall()
     // =====================================================
     // DASH
     // =====================================================
-    //
-    // Bản cũ:
-    //
-    // distance > 280
-    // &&
-    // abs(ballVel.x) > 30
-    //
-    // => quá khó trigger.
-    //
-    // Bây giờ dash khi:
+    // Dash khi:
     //
     // 1. Đang cách mục tiêu khá xa
     // 2. Hoặc bóng đang ở xa và đang chạy nhanh

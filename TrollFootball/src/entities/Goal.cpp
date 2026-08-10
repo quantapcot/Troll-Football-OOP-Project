@@ -89,8 +89,7 @@ Goal::Goal(float x,
     // CROSSBAR
     //=========================
 
-    // THÊM BIẾN NÀY ĐỂ TỰ DO KÉO DÀI THANH ĐỎ
-    // Tăng số 140.f lên nếu muốn thanh đỏ dài ra thêm, giảm đi nếu nó bị lố ra ngoài
+    // THÊM BIẾN NÀY ĐỂ TỰ DO KÉO DÀI THANH ĐỎ (xà ngang)
     float crossbarWidth = 100.f;
 
     crossbar.setSize({ crossbarWidth, 14.f });

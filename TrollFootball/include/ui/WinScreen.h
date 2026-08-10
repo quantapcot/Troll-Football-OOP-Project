@@ -10,11 +10,6 @@ enum class WinScreenAction
     MainMenu
 };
 
-// Màn hình hiện ra khi người chơi THẮNG trận
-// Cấu trúc gần như giống hệt GameOver, nhưng tách class riêng vì:
-// 1. Nội dung/màu sắc khác nhau hoàn toàn (chiến thắng vs thất bại)
-// 2. Sau này dễ thêm hiệu ứng riêng cho từng màn hình (confetti khi thắng, không cần khi thua...)
-//    mà không sợ ảnh hưởng lẫn nhau
 class WinScreen : public IScreen
 {
 public:
@@ -22,8 +17,7 @@ public:
 
     void setFinalScore(int myScore, int opponentScore);
 
-    // MOI: dat noi dung tieu de theo TEN NGUOI THANG CU THE, vd "PLAYER 1 THANG!"
-    // Goi ham nay TRUOC hoac SAU setFinalScore deu duoc, khong anh huong lan nhau
+	// NAME OF THE WINNER (PLAYER 1 or PLAYER 2)
     void setWinnerLabel(const std::string& label);
 
     WinScreenAction handleEvent(const sf::Event& event, const sf::RenderWindow& window);
@@ -34,7 +28,7 @@ private:
 
     sf::RectangleShape m_overlay;
 
-    sf::Text m_titleText;  // "CHIEN THANG!"
+    sf::Text m_titleText;  // "VICTORY!"
     sf::Text m_scoreText;
 
     sf::RectangleShape m_restartButton;

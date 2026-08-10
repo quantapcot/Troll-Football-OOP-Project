@@ -47,16 +47,15 @@ void AsteroidManager::triggerWave()
     if (!m_hasTexture)
         return;
 
-    // Mỗi đợt rơi từ 7 đến 10 thiên thạch ngẫu nhiên
     std::uniform_int_distribution<int> countDist(Config::ASTEROID_MIN_COUNT, Config::ASTEROID_MAX_COUNT);
     int count = countDist(m_rng);
 
-    // Kích thước thiên thạch (~140px, scale = 4.4f)
+    // Kích thước thiên thạch
     const float targetScale = Config::ASTEROID_SCALE;
 
     std::uniform_real_distribution<float> startXDist(-350.f, Config::WINDOW_WIDTH * 0.55f);
     std::uniform_real_distribution<float> startYDist(-300.f, -80.f);
-    // Tốc độ rơi giảm xuống 2/3 so với trước (từ 520-780 => 345-520)
+    // Tốc độ rơi
     std::uniform_real_distribution<float> speedDist(Config::ASTEROID_MIN_SPEED, Config::ASTEROID_MAX_SPEED);
     std::uniform_real_distribution<float> delayDist(0.0f, Config::ASTEROID_MAX_SPAWN_DELAY);
 

@@ -6,7 +6,7 @@
 enum class RulesScreenAction
 {
     None,
-    Back   // Quay lai Settings Menu
+    Back
 };
 
 class RulesScreen : public IScreen

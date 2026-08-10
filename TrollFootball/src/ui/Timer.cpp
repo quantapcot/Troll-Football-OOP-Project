@@ -7,16 +7,11 @@ Timer::Timer(const sf::Font& font, float totalSeconds)
     : m_totalTime(totalSeconds)
     , m_timeLeft(totalSeconds)
     , m_isPaused(false)
-    // SFML 3: sf::Text KHÔNG còn constructor mặc định, bắt buộc truyền Font ngay ở đây.
-    // Nếu không có dòng này, code sẽ báo lỗi biên dịch vì trình biên dịch không biết
-    // khởi tạo m_text (khai báo trong Timer.h) bằng cách nào.
     , m_text(font)
 {
     m_text.setCharacterSize(40);
     m_text.setFillColor(sf::Color::White);
 
-    // setPosition ở SFML 3 CHỈ nhận 1 tham số kiểu sf::Vector2f, không còn overload (x, y) nữa
-    // => truyền dạng brace-init {x, y} để trình biên dịch tự tạo Vector2f
     m_text.setPosition({ 690.f, 45.f });
 
     updateDisplayText();

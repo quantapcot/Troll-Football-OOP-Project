@@ -42,11 +42,9 @@ private:
     sf::RectangleShape m_vsPlayerButton;
     sf::Text m_vsPlayerText;
 
-    // MOI: nut rieng cho man hinh xem/chon nhan vat
     sf::RectangleShape m_characterSelectButton;
     sf::Text m_characterSelectText;
 
-    // MOI: nut cai dat hinh vuong o goc man hinh
     sf::RectangleShape m_settingsButton;
     sf::Text m_settingsText;
 

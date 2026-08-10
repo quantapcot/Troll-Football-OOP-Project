@@ -4,11 +4,9 @@
 static void setupButton(sf::RectangleShape& box, sf::Text& text, const std::string& label,
     float x, float y, sf::Color color)
 {
-    // Lưu ý: text đã được các constructor bên ngoài khởi tạo với Font từ trước
-    // (vì sf::Text không còn ctor mặc định), hàm này chỉ chỉnh nội dung/vị trí thôi.
     box.setSize(sf::Vector2f(260.f, 55.f));
     box.setFillColor(color);
-    box.setPosition({ x, y }); // setPosition SFML 3 chỉ nhận Vector2f
+    box.setPosition({ x, y }); 
 
     text.setString(label);
     text.setCharacterSize(22);
