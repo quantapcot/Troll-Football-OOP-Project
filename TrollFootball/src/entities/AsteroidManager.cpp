@@ -1,6 +1,7 @@
 #include "entities/AsteroidManager.h"
 #include "entities/Player.h"
 #include "core/GameConfig.h"
+#include <audio/AudioManager.h>
 #include <algorithm>
 #include <cmath>
 #include <iostream>
@@ -46,6 +47,8 @@ void AsteroidManager::triggerWave()
 {
     if (!m_hasTexture)
         return;
+
+	AudioManager::getInstance().playSound("asteroid");
 
     std::uniform_int_distribution<int> countDist(Config::ASTEROID_MIN_COUNT, Config::ASTEROID_MAX_COUNT);
     int count = countDist(m_rng);
@@ -181,14 +184,14 @@ void AsteroidManager::checkPlayerCollisions(Player& player1, Player& player2)
         {
             ast.active = false;
             player1.stun(Config::ASTEROID_STUN_DURATION);
-         
+			AudioManager::getInstance().playSound("stun");
         }
         // Va chạm Player 2: Thiên thạch biến mất, Player 2 choáng 0.5s
         else if (astHitbox.findIntersection(p2Hitbox).has_value())
         {
             ast.active = false;
             player2.stun(Config::ASTEROID_STUN_DURATION);
-            
+            AudioManager::getInstance().playSound("stun");
         }
     }
 }

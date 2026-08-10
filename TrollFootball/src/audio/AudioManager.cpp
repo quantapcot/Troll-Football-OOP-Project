@@ -11,7 +11,9 @@ bool AudioManager::loadAll()
         {"goal",      "assets/sounds/goal.wav"},
         {"whistle",   "assets/sounds/whistle.wav"},
         {"button",    "assets/sounds/button.wav"},
-        {"countdown", "assets/sounds/countdown.wav"}
+        {"countdown", "assets/sounds/countdown.wav"},
+        {"asteroid",  "assets/sounds/asteroid.wav"},
+        {"stun",      "assets/sounds/stun.wav"}
     };
 	//FIND THE SOUND FILES IN THE ASSETS FOLDER
     for (auto& pair : soundFiles)
