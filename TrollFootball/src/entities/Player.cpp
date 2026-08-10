@@ -65,6 +65,23 @@ Player::Player(const ControlScheme &controls, const sf::Color &color)
     stunSprite->setPosition({position.x, position.y + Config::STUN_HEAD_OFFSET_Y});
   }
 
+  // =========================
+  // SHOE SPRITE INITIALIZATION
+  // =========================
+  try {
+    if (playerColor == sf::Color::Red) {
+      shoeSprite.emplace(AssetManager::get().getTexture("shoePlayer1"));
+      shoeSprite->setTextureRect(sf::IntRect({ 478, 875 }, { 128, 62 }));
+      shoeSprite->setOrigin({ 20.f, 40.f });
+    } else {
+      shoeSprite.emplace(AssetManager::get().getTexture("shoePlayer2"));
+      shoeSprite->setTextureRect(sf::IntRect({ 455, 865 }, { 132, 59 }));
+      shoeSprite->setOrigin({ 20.f, 40.f });
+    }
+  } catch (...) {
+    std::cout << "[Player] Warning: Could not load shoe texture!" << std::endl;
+  }
+
   // Vị trí ban đầu
   position = {100.f, Config::GROUND_Y - Config::PLAYER_HALF_HEIGHT};
 
@@ -345,6 +362,35 @@ void Player::render(sf::RenderWindow &window) {
 
     window.draw(*stunSprite);
   }
+
+  // =========================
+  // SHOE KICK ANIMATION
+  // =========================
+  if (kicking && shoeSprite.has_value()) {
+    float progress = 1.0f - std::clamp(kickTimer / kickDuration, 0.0f, 1.0f);
+    float swing = std::sin(progress * 3.14159265f); // 0.0 -> 1.0 -> 0.0
+
+    // Scale giày tỉ lệ nhỏ vừa bằng đúng bàn chân nhân vật (~28px)
+    float shoeScale = 0.22f;
+    float scaleX = facingRight ? shoeScale : -shoeScale;
+    shoeSprite->setScale({ scaleX, shoeScale });
+
+    // Vị trí bắt đầu cực thấp ở sát dưới đất/bàn chân
+    float baseX = facingRight ? (position.x + 12.f) : (position.x - 12.f);
+    float baseY = position.y + 60.f; // Xuất phát sát dưới mặt cỏ
+
+    // Quỹ đạo sút bổng: Bắt đầu sát đất rồi vung cao nảy lên không trung như ban đầu
+    float forwardOffset = facingRight ? (45.f * swing) : (-45.f * swing);
+    float upwardOffset = -50.f * swing; // Vung cao lên không trung như ban đầu
+
+    shoeSprite->setPosition({ baseX + forwardOffset, baseY + upwardOffset });
+
+    // Góc xoay sút vổng mạnh mẽ lên trên (-75 deg khi quay phải, +75 deg khi quay trái)
+    float rotAngle = facingRight ? (-75.f * swing) : (75.f * swing);
+    shoeSprite->setRotation(sf::degrees(rotAngle));
+
+    window.draw(*shoeSprite);
+  }
 }
 
 sf::FloatRect Player::getKickHitbox() const {
@@ -353,10 +399,11 @@ sf::FloatRect Player::getKickHitbox() const {
 
   float x;
 
+  // Đẩy Hitbox sút ra phía trước tương ứng với chiếc giày vung cao
   if (facingRight) {
-    x = position.x + Config::PLAYER_HALF_WIDTH;
+    x = position.x + Config::PLAYER_HALF_WIDTH + 10.f;
   } else {
-    x = position.x - Config::PLAYER_HALF_WIDTH - Config::WIDTH_KICK_HITBOX;
+    x = position.x - Config::PLAYER_HALF_WIDTH - Config::WIDTH_KICK_HITBOX - 10.f;
   }
 
   return sf::FloatRect({x, position.y - Config::PLAYER_HALF_HEIGHT + 45.f},

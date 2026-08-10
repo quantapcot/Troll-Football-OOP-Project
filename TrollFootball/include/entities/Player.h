@@ -165,6 +165,7 @@ private:
     // =========================
 
     std::optional<sf::Sprite> sprite;
+    std::optional<sf::Sprite> shoeSprite;
     sf::Color playerColor;
 
     // =========================

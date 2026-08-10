@@ -31,6 +31,14 @@ Game::Game()
         "assets/textures/players/player2.png");
 
     AssetManager::get().loadTexture(
+        "shoePlayer1",
+        "assets/textures/shoe_kick/shoePlayer1.png");
+
+    AssetManager::get().loadTexture(
+        "shoePlayer2",
+        "assets/textures/shoe_kick/shoePlayer2.png");
+
+    AssetManager::get().loadTexture(
         "ball",
         "assets/textures/balls/ball.png");
 
