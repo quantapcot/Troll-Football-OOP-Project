@@ -99,8 +99,8 @@ MainMenu::MainMenu(const sf::Font& font, sf::Vector2u windowSize, const std::str
     m_vsBotButton.setFillColor(sf::Color(150, 30, 30));
     m_vsBotButton.setPosition({ centerX, firstButtonY });
 
-    m_vsBotText.setString("VS BOT");
-    m_vsBotText.setCharacterSize(24);
+    m_vsBotText.setString("PLAY VS AI");
+    m_vsBotText.setCharacterSize(22);
     m_vsBotText.setFillColor(sf::Color::White);
     m_vsBotText.setPosition({
         centerX + (buttonWidth - m_vsBotText.getLocalBounds().size.x) / 2.f,
@@ -113,12 +113,12 @@ MainMenu::MainMenu(const sf::Font& font, sf::Vector2u windowSize, const std::str
     m_vsPlayerButton.setFillColor(sf::Color(150, 30, 30));
     m_vsPlayerButton.setPosition({ centerX, secondButtonY });
 
-    m_vsPlayerText.setString("VS PLAYER");
-    m_vsPlayerText.setCharacterSize(24);
+    m_vsPlayerText.setString("PLAY VS PLAYER");
+    m_vsPlayerText.setCharacterSize(20);
     m_vsPlayerText.setFillColor(sf::Color::White);
     m_vsPlayerText.setPosition({
         centerX + (buttonWidth - m_vsPlayerText.getLocalBounds().size.x) / 2.f,
-        secondButtonY + 15.f
+        secondButtonY + 16.f
         });
 
     //CHOOSE CHARACTER
@@ -126,12 +126,12 @@ MainMenu::MainMenu(const sf::Font& font, sf::Vector2u windowSize, const std::str
     m_characterSelectButton.setSize(sf::Vector2f(buttonWidth, buttonHeight));
     m_characterSelectButton.setFillColor(sf::Color(150, 30, 30));
     m_characterSelectButton.setPosition({ centerX, thirdButtonY });
-    m_characterSelectText.setString("CHARACTERS");
-    m_characterSelectText.setCharacterSize(24);
+    m_characterSelectText.setString("SELECT CHARACTER");
+    m_characterSelectText.setCharacterSize(20);
     m_characterSelectText.setFillColor(sf::Color::White);
     m_characterSelectText.setPosition({
         centerX + (buttonWidth - m_characterSelectText.getLocalBounds().size.x) / 2.f,
-        thirdButtonY + 15.f
+        thirdButtonY + 16.f
         });
 
     //EXIT

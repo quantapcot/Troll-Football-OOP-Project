@@ -137,34 +137,6 @@ void Goal::render(sf::RenderWindow & window)
     // =========================
     if (sprite)
         window.draw(*sprite);
-
-#ifdef _DEBUG
-
-    // =========================
-    // GOAL TRIGGER - XANH LÁ
-    // =========================
-    goalTrigger.setFillColor(
-        sf::Color(0, 255, 0, 80));
-
-    window.draw(goalTrigger);
-
-    // =========================
-    // CROSSBAR - ĐỎ
-    // =========================
-    crossbar.setFillColor(
-        sf::Color(255, 0, 0, 150));
-
-    window.draw(crossbar);
-
-    // =========================
-    // BACK WALL - XANH DƯƠNG
-    // =========================
-    backWall.setFillColor(
-        sf::Color(0, 0, 255, 150));
-
-    window.draw(backWall);
-
-#endif
 }
 
 bool Goal::contains(const Ball& ball) const

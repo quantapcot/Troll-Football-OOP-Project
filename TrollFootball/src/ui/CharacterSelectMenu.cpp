@@ -30,7 +30,7 @@ CharacterSelectMenu::CharacterSelectMenu(const sf::Font& font,
         }
     }
     // TITLE
-    m_title.setString("CHOOSE YOUR GOAT");
+    m_title.setString("SELECT CHARACTER");
     m_title.setCharacterSize(48);
     m_title.setFillColor(sf::Color::White);
     m_title.setOutlineColor(sf::Color::Black);
@@ -107,7 +107,7 @@ CharacterSelectMenu::CharacterSelectMenu(const sf::Font& font,
         windowSize.y * 0.75f
         });
 
-    m_playText.setString("PLAY ");
+    m_playText.setString("PLAY");
     m_playText.setCharacterSize(26);
     m_playText.setFillColor(sf::Color::White);
 

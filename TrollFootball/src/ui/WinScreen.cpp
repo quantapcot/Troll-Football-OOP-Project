@@ -43,7 +43,7 @@ WinScreen::WinScreen(const sf::Font& font, sf::Vector2u windowSize)
 
 void WinScreen::setFinalScore(int myScore, int opponentScore)
 {
-    std::string display = "TI SO: " + std::to_string(myScore) + " - " + std::to_string(opponentScore);
+    std::string display = "SCORE: " + std::to_string(myScore) + " - " + std::to_string(opponentScore);
     m_scoreText.setString(display);
 
     float textWidth = m_scoreText.getLocalBounds().size.x;

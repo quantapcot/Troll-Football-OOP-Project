@@ -346,39 +346,6 @@ void Player::render(sf::RenderWindow &window) {
 
     window.draw(*stunSprite);
   }
-
-#ifdef _DEBUG
-
-  auto body = getBodyHitbox();
-
-  sf::RectangleShape rect;
-
-  rect.setPosition(body.position);
-
-  rect.setSize(body.size);
-
-  rect.setFillColor(sf::Color(0, 255, 0, 80));
-
-  window.draw(rect);
-
-#endif
-
-#ifdef _DEBUG
-
-  if (kicking) {
-    sf::RectangleShape hitbox;
-
-    auto rect = getKickHitbox();
-
-    hitbox.setPosition(rect.position);
-    hitbox.setSize(rect.size);
-
-    hitbox.setFillColor(sf::Color(255, 255, 0, 80));
-
-    window.draw(hitbox);
-  }
-
-#endif
 }
 
 sf::FloatRect Player::getKickHitbox() const {

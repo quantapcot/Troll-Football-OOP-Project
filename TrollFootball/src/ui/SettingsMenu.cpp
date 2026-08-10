@@ -50,7 +50,7 @@ SettingsMenu::SettingsMenu(const sf::Font& font, sf::Vector2u windowSize)
     m_rulesButton.setFillColor(sf::Color(150, 30, 30));
     m_rulesButton.setPosition({ btnX, startY });
 
-    m_rulesText.setString("GAME RULES");
+    m_rulesText.setString("RULES");
     m_rulesText.setCharacterSize(22);
     m_rulesText.setFillColor(sf::Color::White);
     float rTextW = m_rulesText.getLocalBounds().size.x;
@@ -62,7 +62,7 @@ SettingsMenu::SettingsMenu(const sf::Font& font, sf::Vector2u windowSize)
     m_muteButton.setFillColor(sf::Color(150, 30, 30));
     m_muteButton.setPosition({ btnX, muteY });
 
-    m_muteText.setString("AUDIO: ON");
+    m_muteText.setString("SOUND ON");
     m_muteText.setCharacterSize(22);
     m_muteText.setFillColor(sf::Color::White);
     float mTextW = m_muteText.getLocalBounds().size.x;
@@ -113,11 +113,11 @@ void SettingsMenu::updateState(bool isMuted, float volumeLevel)
 {
     if (isMuted)
     {
-        m_muteText.setString("AUDIO: OFF (MUTED)");
+        m_muteText.setString("SOUND OFF");
     }
     else
     {
-        m_muteText.setString("AUDIO: ON");
+        m_muteText.setString("SOUND ON");
     }
     float mTextW = m_muteText.getLocalBounds().size.x;
     float btnX = m_muteButton.getPosition().x;

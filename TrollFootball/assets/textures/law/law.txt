@@ -1,28 +1,45 @@
-========================================
-        LUẬT CHƠI TRÔN PHỤT BÔN
-========================================
+GAME MODES
+----------------------------------------
+1. PLAY VS AI
+- Player 1 plays against the computer-controlled opponent.
 
-1. MỤC TIÊU:
-   - Đưa bóng vào lưới của đối phương để ghi điểm.
-   - Kết thúc thời gian trận đấu, đội nào ghi nhiều điểm hơn sẽ giành chiến thắng.
+2. PLAY VS PLAYER
+- Two human players play against each other.
 
-2. ĐIỀU KHIỂN CỦA THỦ:
-   * CẦU THỦ 1 (PLAYER 1):
-     - Di chuyển Trái / Phải : Phím A / D
-     - Nhảy lên              : Phím W
-     - Sút bóng              : Phím J
-     - Lướt                  : Phím C
+----------------------------------------
+CHARACTER SELECTION
+----------------------------------------
+- Before the match starts, players can select their characters.
 
-   * CẦU THỦ 2 (PLAYER 2 / BOT):
-     - Di chuyển Trái / Phải : Phím Mũi tên Trái / Mũi tên Phải
-     - Nhảy lên              : Phím Mũi tên Lên
-     - Sút bóng              : Phím Numpad 0
-     - Lướt                  : Phím Numpad 1
+----------------------------------------
+CONTROLS
+----------------------------------------
+PLAYER 1:
+- Move Left: A
+- Move Right: D
+- Jump: W
+- Kick: J
+- Dash: C
 
-3. HIỆU ỨNG BÀN THẮNG:
-   - Khi bóng vào lưới, trò chơi sẽ tạm dừng 1 giây để thực hiện hiệu ứng GOAL!
-   - Sau 1 giây, vị trí bóng và cầu thủ sẽ được reset về vị trí xuất phát.
+PLAYER 2:
+- Move Left: Left Arrow
+- Move Right: Right Arrow
+- Jump: Up Arrow
+- Kick: Numpad 0
+- Dash: Numpad 1
 
-4. CÀI ĐẶT & ÂM THANH:
-   - Có thể tắt/bật âm thanh và điều chỉnh âm lượng trong Menu Cài đặt.
-   - Nhấn ESC khi đang chơi để Tạm dừng (Pause) game.
+----------------------------------------
+MATCH RULES
+----------------------------------------
+- Each match lasts 1 minute 30 seconds (90 seconds).
+- The player who scores the most goals when the time runs out wins.
+- If both players have the same number of goals, the match ends in a draw.
+- Random meteors can fall during the match.
+- Meteors can hit players and temporarily stun them.
+- Players must avoid the falling meteors while trying to score goals.
+
+----------------------------------------
+PAUSE
+----------------------------------------
+- Press ESC during the match to open the Pause Menu.
+- The Pause Menu allows the player to resume the match or leave the match.

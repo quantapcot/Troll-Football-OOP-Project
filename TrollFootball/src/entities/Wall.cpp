@@ -8,13 +8,8 @@ Wall::Wall(float x, float y, float width, float height)
         height
         });
 
-#ifdef _DEBUG
-    shape.setFillColor(
-        sf::Color(255, 0, 255, 120));
-#else
     shape.setFillColor(
         sf::Color::Transparent);
-#endif
 
     shape.setPosition({
         x,
