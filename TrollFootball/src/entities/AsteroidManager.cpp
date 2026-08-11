@@ -1,6 +1,7 @@
 #include "entities/AsteroidManager.h"
 #include "entities/Player.h"
 #include "core/GameConfig.h"
+#include "physics/Collision.h"
 #include <audio/AudioManager.h>
 #include <algorithm>
 #include <cmath>
@@ -166,33 +167,11 @@ void AsteroidManager::update(float deltaTime, float matchElapsedTime)
 
 void AsteroidManager::checkPlayerCollisions(Player& player1, Player& player2)
 {
-    if (!m_hasTexture)
-        return;
-
-    sf::FloatRect p1Hitbox = player1.getBodyHitbox();
-    sf::FloatRect p2Hitbox = player2.getBodyHitbox();
-
+    if (!m_hasTexture) return;
     for (auto& ast : m_asteroids)
     {
-        if (!ast.active || ast.spawnDelay > 0.f || !ast.sprite.has_value())
-            continue;
-
-        sf::FloatRect astHitbox = ast.sprite->getGlobalBounds();
-
-        // Va chạm Player 1: Thiên thạch biến mất, Player 1 choáng 0.5s
-        if (astHitbox.findIntersection(p1Hitbox).has_value())
-        {
-            ast.active = false;
-            player1.stun(Config::ASTEROID_STUN_DURATION);
-			AudioManager::getInstance().playSound("stun");
-        }
-        // Va chạm Player 2: Thiên thạch biến mất, Player 2 choáng 0.5s
-        else if (astHitbox.findIntersection(p2Hitbox).has_value())
-        {
-            ast.active = false;
-            player2.stun(Config::ASTEROID_STUN_DURATION);
-            AudioManager::getInstance().playSound("stun");
-        }
+        Collision::handlePlayerAsteroid(player1, ast);
+        Collision::handlePlayerAsteroid(player2, ast);
     }
 }
 

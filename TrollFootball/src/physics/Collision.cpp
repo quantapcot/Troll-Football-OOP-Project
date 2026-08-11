@@ -4,6 +4,7 @@
 #include "entities/Ball.h"
 #include "entities/Wall.h"
 #include "core/GameConfig.h"
+#include "entities/AsteroidManager.h"
 
 #include <cmath>
 
@@ -389,4 +390,25 @@ void Collision::handleBallWall(
 
         ball.setPosition(pos);
         ball.setVelocity(vel);
+}
+
+
+
+
+// va chạm giữa thiên thạch và người chơi
+
+void Collision::handlePlayerAsteroid(Player& player, Asteroid& asteroid)
+{
+    if (!asteroid.active || asteroid.spawnDelay > 0.f || !asteroid.sprite.has_value())
+        return;
+
+    sf::FloatRect astHitbox = asteroid.sprite->getGlobalBounds();
+    sf::FloatRect playerHitbox = player.getBodyHitbox();
+
+    if (!astHitbox.findIntersection(playerHitbox).has_value())
+        return;
+
+    asteroid.active = false;
+    player.stun(Config::ASTEROID_STUN_DURATION);
+    AudioManager::getInstance().playSound("stun");
 }
