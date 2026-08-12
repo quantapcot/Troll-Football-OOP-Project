@@ -54,6 +54,10 @@ private:
     GameState m_currentState{ GameState::MainMenu };
 
     bool m_isVsBot{ false };
+    bool m_pendingVsBot{ false };
+
+    int m_selectingPlayer{ 1 };        //1 = đang chọn cho Player1, 2 = Player2
+    std::string m_p1TextureKey;        //lưu tạm lựa chọn của Player1
 
     std::unique_ptr<MainMenu> mainMenu;
     std::unique_ptr<CharacterSelectMenu> characterSelectMenu;

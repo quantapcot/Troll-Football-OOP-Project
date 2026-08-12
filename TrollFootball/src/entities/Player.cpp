@@ -14,10 +14,10 @@ Player::Player(const ControlScheme &controls, const sf::Color &color)
 
   // Chọn texture theo Player
   if (playerColor == sf::Color::Red) {
-    sprite.emplace(AssetManager::get().getTexture("player1"));
-
-  } else {
-    sprite.emplace(AssetManager::get().getTexture("player2"));
+      sprite.emplace(AssetManager::get().getTexture("char_ronaldo"));
+  }
+  else {
+      sprite.emplace(AssetManager::get().getTexture("char_messi"));
   }
 
   // =========================
@@ -410,19 +410,14 @@ sf::FloatRect Player::getKickHitbox() const {
                        {Config::WIDTH_KICK_HITBOX, Config::HEIGHT_KICK_HITBOX});
 }
 
-void Player::setSkin(const sf::Texture &texture, bool flipHorizontal,
-                     float scale) {
-  sprite.emplace(texture);
+void Player::setSkin(const sf::Texture& texture, bool flipHorizontal, float scale) {
+    sprite.emplace(texture);
+    auto size = sprite->getTexture().getSize();
+    sprite->setOrigin({ size.x / 2.f, size.y / 2.f });
 
-  auto size = sprite->getTexture().getSize();
-
-  sprite->setOrigin({size.x / 2.f, size.y / 2.f});
-
-  // flipHorizontal = true -> dao scale.x am de lat nguoc anh qua truc doc
-  float scaleX = flipHorizontal ? -scale : scale;
-
-  sprite->setScale({scaleX, scale});
-  sprite->setPosition(position);
+    float scaleX = flipHorizontal ? -scale : scale;
+    sprite->setScale({ scaleX, scale });
+    sprite->setPosition(position);
 }
 
 sf::FloatRect Player::getBodyHitbox() const {

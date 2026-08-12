@@ -22,13 +22,6 @@ Game::Game()
     // =========================
     // LOAD TEXTURES
     // =========================
-    AssetManager::get().loadTexture(
-        "player1",
-        "assets/textures/players/player1.png");
-
-    AssetManager::get().loadTexture(
-        "player2",
-        "assets/textures/players/player2.png");
 
     AssetManager::get().loadTexture(
         "shoePlayer1",
@@ -68,6 +61,14 @@ Game::Game()
     AssetManager::get().loadTexture(
         "char_messi",
         "assets/textures/players/player2.png");
+
+	AssetManager::get().loadTexture(
+		"char_modric",
+		"assets/textures/players/player3.png");
+
+	AssetManager::get().loadTexture(
+		"char_ninja",
+		"assets/textures/players/player4.png");
 
     // =========================
     // GOAL CELEBRATION TEXTURE
@@ -181,8 +182,10 @@ Game::Game()
     // CHOOSING CHARACTER MENU
     // =========================
     std::vector<CharacterOption> characterOptions = {
-		{ "Ronaldo", "player1", true  },   //Origin player1.png facing RIGHT
-		{ "Messi",   "player2", false }    //origin player2.png facing LEFT
+        { "Ronaldo", "char_ronaldo" },
+        { "Messi",   "char_messi"   },
+        { "Modric",  "char_modric"  },
+        { "Ninja",   "char_ninja"   }
     };
 
     characterSelectMenu = std::make_unique<CharacterSelectMenu>(
@@ -319,32 +322,23 @@ void Game::processEvents()
         case GameState::MainMenu:
         {
             MainMenuAction action = mainMenu->handleEvent(*event, window);
-            //VS PLAYER BUTTON
+
             if (action == MainMenuAction::PlayVsPlayer)
             {
-                m_isVsBot = false;
-                player2->setAIControlled(false);
-                botController.reset();
-                startNewMatch();
-                m_currentState = GameState::Playing;
-            }
-			//VS BOT BUTTON
-            else if (action == MainMenuAction::PlayVsBot)
-            {
-                m_isVsBot = true;
-                player2->setAIControlled(true);
-
-                botController = std::make_unique<BotController>(*player2, *ball);
-
-                startNewMatch();
-                m_currentState = GameState::Playing;
-            }
-			//Character Select Button
-            else if (action == MainMenuAction::CharacterSelect)
-            {
+                m_pendingVsBot = false;
+                m_selectingPlayer = 1;
+                characterSelectMenu->setTitle("CHOOSE YOUR GOAT - PLAYER 1");
+                characterSelectMenu->setPlayButtonLabel("NEXT");
                 m_currentState = GameState::CharacterSelect;
             }
-            //SETTINGS BUTTON
+            else if (action == MainMenuAction::PlayVsBot)
+            {
+                m_pendingVsBot = true;
+                m_selectingPlayer = 1;
+                characterSelectMenu->setTitle("CHOOSE YOUR GOAT - PLAYER 1");
+                characterSelectMenu->setPlayButtonLabel("NEXT");
+                m_currentState = GameState::CharacterSelect;
+            }
             else if (action == MainMenuAction::Settings)
             {
                 settingsMenu->updateState(
@@ -352,7 +346,6 @@ void Game::processEvents()
                     AudioManager::getInstance().getMasterVolume());
                 m_currentState = GameState::SettingsMenu;
             }
-			//EXIT BUTTON
             else if (action == MainMenuAction::Exit)
             {
                 window.close();
@@ -367,20 +360,50 @@ void Game::processEvents()
 
             if (action == CharacterSelectAction::Confirm)
             {
-                const CharacterOption& mine = characterSelectMenu->getSelectedCharacter();
-                const CharacterOption& opponent = characterSelectMenu->getOpponentCharacter();
+                const CharacterOption& chosen = characterSelectMenu->getSelectedCharacter();
 
-                bool flipMine = !mine.defaultFacesRight;
-                player1->setSkin(AssetManager::get().getTexture(mine.textureKey), flipMine);
+                if (m_selectingPlayer == 1)
+                {
+                    //Luu lai lua chon Player1, chuyen sang buoc chon Player2
+                    m_p1TextureKey = chosen.textureKey;
 
-                bool flipOpponent = opponent.defaultFacesRight;
-                player2->setSkin(AssetManager::get().getTexture(opponent.textureKey), flipOpponent);
+                    m_selectingPlayer = 2;
+                    characterSelectMenu->setTitle("CHOOSE YOUR GOAT - PLAYER 2");
+                    characterSelectMenu->setPlayButtonLabel("PLAY");
+                }
+                else
+                {
+                    const sf::Texture& p1Texture = AssetManager::get().getTexture(m_p1TextureKey);
+                    const sf::Texture& p2Texture = AssetManager::get().getTexture(chosen.textureKey);
 
-                m_currentState = GameState::MainMenu;
+                    player1->setSkin(p1Texture, false); // Player1 quay phai
+                    player2->setSkin(p2Texture, true);  // Player2 quay trai
+
+                    m_isVsBot = m_pendingVsBot;
+                    player2->setAIControlled(m_isVsBot);
+
+                    if (m_isVsBot)
+                        botController = std::make_unique<BotController>(*player2, *ball);
+                    else
+                        botController.reset();
+
+                    startNewMatch();
+                    m_currentState = GameState::Playing;
+                }
             }
             else if (action == CharacterSelectAction::Back)
             {
-                m_currentState = GameState::MainMenu;
+                if (m_selectingPlayer == 2)
+                {
+                    // Quay lai buoc chon Player1 thay vi ve MainMenu
+                    m_selectingPlayer = 1;
+                    characterSelectMenu->setTitle("CHOOSE YOUR GOAT - PLAYER 1");
+                    characterSelectMenu->setPlayButtonLabel("NEXT");
+                }
+                else
+                {
+                    m_currentState = GameState::MainMenu;
+                }
             }
             break;
         }

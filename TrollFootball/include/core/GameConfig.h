@@ -146,4 +146,44 @@ namespace Config
     constexpr float GRAVITY = 1200.f;
     constexpr float MATCH_SECONDS = 90.f;
     constexpr float WALL_THICKNESS = 10.f;
+
+	// =====================================================
+	// CHARACTER SELECT MENU
+	// =====================================================
+
+    constexpr float CHAR_SELECT_TITLE_Y_RATIO = 0.10f;
+
+    constexpr float CHAR_CARD_SIZE = 140.f;
+    constexpr float CHAR_CARD_SPACING = 40.f;
+    constexpr float CHAR_CARD_PADDING = 16.f;
+    constexpr float CHAR_CARD_Y_RATIO = 0.32f;
+    constexpr float CHAR_CARD_NAME_OFFSET_Y = 8.f;
+
+    constexpr float CHAR_STATS_PANEL_WIDTH_RATIO = 0.6f;
+    constexpr float CHAR_STATS_PANEL_HEIGHT_RATIO = 0.16f;
+    constexpr float CHAR_STATS_PANEL_OFFSET_Y = 50.f; // khoang cach tu duoi card den panel
+
+    constexpr float CHAR_PLAY_BUTTON_WIDTH = 200.f;
+    constexpr float CHAR_PLAY_BUTTON_HEIGHT = 55.f;
+    constexpr float CHAR_PLAY_BUTTON_Y_RATIO = 0.75f;
+
+    constexpr float CHAR_BACK_BUTTON_WIDTH = 160.f;
+    constexpr float CHAR_BACK_BUTTON_HEIGHT = 50.f;
+    constexpr float CHAR_BACK_BUTTON_X = 40.f;
+
+    // =====================================================
+    // MAIN MENU
+    // =====================================================
+
+    constexpr float MAIN_MENU_TITLE_Y_RATIO = 0.12f;
+
+    constexpr float MAIN_MENU_BUTTON_WIDTH = 260.f;
+    constexpr float MAIN_MENU_BUTTON_HEIGHT = 55.f;
+    constexpr float MAIN_MENU_BUTTON_SPACING = 68.f;
+    constexpr float MAIN_MENU_FIRST_BUTTON_Y_RATIO = 0.40f;
+
+    constexpr float MAIN_MENU_SETTINGS_ICON_SIZE = 52.f;
+    constexpr float MAIN_MENU_SETTINGS_MARGIN = 25.f;
+    constexpr float MAIN_MENU_SETTINGS_ICON_PADDING = 10.f;
+    constexpr float MAIN_MENU_SETTINGS_OUTLINE_THICKNESS = 2.f;
 }

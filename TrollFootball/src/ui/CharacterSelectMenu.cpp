@@ -1,6 +1,7 @@
 #include "ui/CharacterSelectMenu.h"
 #include "core/AssetManager.h"
 #include "audio/AudioManager.h"
+#include "core/GameConfig.h"
 #include <algorithm>
 #include <iostream>
 
@@ -8,10 +9,13 @@ CharacterSelectMenu::CharacterSelectMenu(const sf::Font& font,
     sf::Vector2u windowSize,
     std::vector<CharacterOption> characters,
     const std::string& backgroundImagePath)
-    : m_characters(std::move(characters))
+    : m_windowSize(windowSize)
+    , m_characters(std::move(characters))
     , m_title(font)
     , m_playText(font)
     , m_backText(font)
+    , m_statsPanel(font, { windowSize.x * Config::CHAR_STATS_PANEL_WIDTH_RATIO,
+                            windowSize.y * Config::CHAR_STATS_PANEL_HEIGHT_RATIO })
 {
     if (!backgroundImagePath.empty())
     {
@@ -37,18 +41,18 @@ CharacterSelectMenu::CharacterSelectMenu(const sf::Font& font,
     m_title.setOutlineThickness(3.f);
 
     float titleWidth = m_title.getLocalBounds().size.x;
-    m_title.setPosition({ (windowSize.x - titleWidth) / 2.f, windowSize.y * 0.10f });
+    m_title.setPosition({ (windowSize.x - titleWidth) / 2.f, windowSize.y * Config::CHAR_SELECT_TITLE_Y_RATIO });
 
     // ----- PLAYER CARDS -----
-    constexpr float cardSize = 140.f;
-    constexpr float cardSpacing = 40.f;
-    constexpr float cardPadding = 16.f;
+    constexpr float cardSize = Config::CHAR_CARD_SIZE;
+    constexpr float cardSpacing = Config::CHAR_CARD_SPACING;
+    constexpr float cardPadding = Config::CHAR_CARD_PADDING;
 
     float totalWidth = m_characters.size() * cardSize
         + (m_characters.empty() ? 0.f : (m_characters.size() - 1) * cardSpacing);
 
     float startX = (windowSize.x - totalWidth) / 2.f;
-    float cardY = windowSize.y * 0.32f;
+    float cardY = windowSize.y * Config::CHAR_CARD_Y_RATIO;
 
     m_cards.reserve(m_characters.size());
 
@@ -93,18 +97,27 @@ CharacterSelectMenu::CharacterSelectMenu(const sf::Font& font,
         m_cards.push_back(std::move(card));
     }
 
-	//DEFAULT SELECTED INDEX:
+    // ----- VI TRI PANEL MO TA CHI SO -----
+    float descPanelWidth = windowSize.x * Config::CHAR_STATS_PANEL_WIDTH_RATIO;
+    float descPanelX = (windowSize.x - descPanelWidth) / 2.f;
+    float descPanelY = cardY + cardSize + Config::CHAR_STATS_PANEL_OFFSET_Y;
+    m_statsPanel.setPosition({ descPanelX, descPanelY });
+
+    //DEFAULT SELECTED INDEX:
     m_selectedIndex = m_characters.empty() ? -1 : 0;
 
+    if (m_selectedIndex >= 0)
+        m_statsPanel.setCharacter(m_characters[static_cast<std::size_t>(m_selectedIndex)]);
+
     //PLAY BUTTON
-    float buttonWidth = 200.f;
-    float buttonHeight = 55.f;
+    float buttonWidth = Config::CHAR_PLAY_BUTTON_WIDTH;
+    float buttonHeight = Config::CHAR_PLAY_BUTTON_HEIGHT;
 
     m_playButton.setSize({ buttonWidth, buttonHeight });
     m_playButton.setFillColor(sf::Color(150, 30, 30));
     m_playButton.setPosition({
         (windowSize.x - buttonWidth) / 2.f,
-        windowSize.y * 0.75f
+        windowSize.y * Config::CHAR_PLAY_BUTTON_Y_RATIO
         });
 
     m_playText.setString("PLAY");
@@ -118,11 +131,11 @@ CharacterSelectMenu::CharacterSelectMenu(const sf::Font& font,
         });
 
     // ----- Nut QUAY LAI -----
-    m_backButton.setSize({ 160.f, 50.f });
+    m_backButton.setSize({ Config::CHAR_BACK_BUTTON_WIDTH, Config::CHAR_BACK_BUTTON_HEIGHT });
     m_backButton.setFillColor(sf::Color(150, 30, 30));
     m_backButton.setPosition({
-        40.f,
-        windowSize.y * 0.75f + 3.f
+        Config::CHAR_BACK_BUTTON_X,
+        windowSize.y * Config::CHAR_PLAY_BUTTON_Y_RATIO + 3.f
         });
 
     m_backText.setString("BACK");
@@ -182,6 +195,7 @@ CharacterSelectAction CharacterSelectMenu::handleEvent(const sf::Event& event, c
                 {
                     m_selectedIndex = static_cast<int>(i);
                     AudioManager::getInstance().playSound("button");
+                    m_statsPanel.setCharacter(m_characters[i]);
                     return CharacterSelectAction::None;
                 }
             }
@@ -217,9 +231,28 @@ void CharacterSelectMenu::draw(sf::RenderWindow& window)
         window.draw(card.nameText);
     }
 
+    m_statsPanel.draw(window);
+
     window.draw(m_playButton);
     window.draw(m_playText);
 
     window.draw(m_backButton);
     window.draw(m_backText);
+}
+
+void CharacterSelectMenu::setTitle(const std::string& text)
+{
+    m_title.setString(text);
+    float titleWidth = m_title.getLocalBounds().size.x;
+    m_title.setPosition({ (m_windowSize.x - titleWidth) / 2.f, m_title.getPosition().y });
+}
+
+void CharacterSelectMenu::setPlayButtonLabel(const std::string& text)
+{
+    m_playText.setString(text);
+    float playTextWidth = m_playText.getLocalBounds().size.x;
+    m_playText.setPosition({
+        m_playButton.getPosition().x + (m_playButton.getSize().x - playTextWidth) / 2.f,
+        m_playButton.getPosition().y + 12.f
+        });
 }

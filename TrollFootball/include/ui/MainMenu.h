@@ -9,7 +9,6 @@ enum class MainMenuAction
     None,
     PlayVsBot,
     PlayVsPlayer,
-    CharacterSelect,   
     Settings,         
     Exit
 };
@@ -41,9 +40,6 @@ private:
 
     sf::RectangleShape m_vsPlayerButton;
     sf::Text m_vsPlayerText;
-
-    sf::RectangleShape m_characterSelectButton;
-    sf::Text m_characterSelectText;
 
     sf::RectangleShape m_settingsButton;
     sf::Text m_settingsText;

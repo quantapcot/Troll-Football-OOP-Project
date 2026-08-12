@@ -37,7 +37,9 @@ sf::Texture& AssetManager::getTexture(const std::string& name)
 
     if (it == textures.end())
     {
-        std::cout << "Texture NOT FOUND: " << name << std::endl;
+        std::cout << "Texture NOT FOUND: " << name << ". Available keys: ";
+        for (auto& [key, tex] : textures) std::cout << key << " ";
+        std::cout << std::endl;
         throw std::runtime_error("Texture not found: " + name);
     }
 

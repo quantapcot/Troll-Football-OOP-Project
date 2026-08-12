@@ -5,6 +5,8 @@
 #include <string>
 #include <optional>
 #include <ui/IScreen.h>
+#include <ui/CharacterStatsPanel.h>
+
 
 enum class CharacterSelectAction
 {
@@ -18,7 +20,11 @@ struct CharacterOption
 {
     std::string displayName;
     std::string textureKey;
-	bool defaultFacesRight; //Facing direction of the character's default sprite (true for right, false for left)
+    int speed = 0;
+    int jump = 0;
+    int kick = 0;
+    int stunCooldown = 0;
+    std::string description;
 };
 
 class CharacterSelectMenu : public IScreen
@@ -46,7 +52,9 @@ public:
 
         return m_characters[opponentIndex];
     }
-
+    
+    void setTitle(const std::string& text);
+    void setPlayButtonLabel(const std::string& text);
 
 
 private:
@@ -78,4 +86,8 @@ private:
 
     sf::RectangleShape m_backButton;
     sf::Text m_backText;
+
+    sf::Vector2u m_windowSize;
+
+    CharacterStatsPanel m_statsPanel;
 };

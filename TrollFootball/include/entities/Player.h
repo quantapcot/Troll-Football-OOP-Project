@@ -86,13 +86,7 @@ public:
         aiControlled = value;
     }
 
-    
-    // ===== MOI: doi texture/skin cua nhan vat =====
-    // faceRight: true = giu nguyen chieu goc cua anh (mac dinh coi anh goc quay PHAI),
-    //            false = lat nguoc ngang (mirror) de nhan vat quay TRAI
-    // scale: he so phong to/thu nho, mac dinh 0.18f giong luc khoi tao Player ban dau
-    // ===== MOI: doi texture/skin cua nhan vat =====
-    // flipHorizontal: true = lat nguoc anh theo chieu ngang (mirror truc X), false = giu nguyen anh goc
+    //Doi skin cua nhan vat
     void setSkin(const sf::Texture& texture, bool flipHorizontal = false, float scale = 0.18f);
 
     bool isAIControlled() const
