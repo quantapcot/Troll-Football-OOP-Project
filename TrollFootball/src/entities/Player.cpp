@@ -20,50 +20,7 @@ Player::Player(const ControlScheme &controls, const sf::Color &color)
       sprite.emplace(AssetManager::get().getTexture("char_messi"));
   }
 
-  // =========================
-  // LOAD STUN EFFECT
-  // =========================
 
-  AssetManager &assets = AssetManager::get();
-
-  stunTextures[0] = &assets.getTexture("stun1");
-
-  stunTextures[1] = &assets.getTexture("stun2");
-
-  stunTextures[2] = &assets.getTexture("stun3");
-
-  stunTextures[3] = &assets.getTexture("stun4");
-
-  stunTextures[4] = &assets.getTexture("stun5");
-
-  // Lấy kích thước ảnh
-  auto size = sprite->getTexture().getSize();
-  std::cout << "Player texture size: " << size.x << " x " << size.y
-            << std::endl;
-
-  // Đặt tâm Sprite
-  sprite->setOrigin({size.x / 2.f, size.y / 2.f});
-
-  // Scale về đúng kích thước nhân vật trong game
-  sprite->setScale({Config::PLAYER_DEFAULT_SCALE, Config::PLAYER_DEFAULT_SCALE});
-
-  // =========================
-  // STUN SPRITE
-  // =========================
-
-  if (!stunTextures.empty()) {
-    stunSprite.emplace(*stunTextures[0]);
-
-    auto stunSize = stunTextures[0]->getSize();
-
-    stunSprite->setOrigin({stunSize.x / 2.f, stunSize.y / 2.f});
-
-    // Scale đủ lớn để hiện rõ trên đầu player
-    stunSprite->setScale({Config::STUN_SPRITE_SCALE, Config::STUN_SPRITE_SCALE});
-
-    // Đặt stunSprite ngay trên đỉnh đầu sprite player
-    stunSprite->setPosition({position.x, position.y + Config::STUN_HEAD_OFFSET_Y});
-  }
 
   // =========================
   // SHOE SPRITE INITIALIZATION
@@ -89,29 +46,17 @@ Player::Player(const ControlScheme &controls, const sf::Color &color)
 }
 
 void Player::stun(float durationSeconds) {
-  stunTimer = durationSeconds;
-
-  // Reset animation về frame đầu
-  stunFrameTimer = 0.f;
-  stunFrame = 0;
-
-  std::cout << "[STUN] stun() called. stunSprite has_value="
-            << stunSprite.has_value() << " stunTextures[0]=" << stunTextures[0]
-            << " stunTimer=" << stunTimer << std::endl;
-
-  if (stunSprite && stunTextures[0]) {
-    stunSprite->setTexture(*stunTextures[0], true); // resetRect=true
-    // Cập nhật lại origin sau khi đổi texture
-    auto sz = stunTextures[0]->getSize();
-    stunSprite->setOrigin({sz.x / 2.f, sz.y / 2.f});
-    stunSprite->setPosition({position.x, position.y + Config::STUN_HEAD_OFFSET_Y});
-    std::cout << "[STUN] stunSprite texture set, size=" << sz.x << "x" << sz.y
-              << " pos=" << position.x << "," << (position.y + Config::STUN_HEAD_OFFSET_Y)
-              << std::endl;
-  } else {
-    std::cout << "[STUN] WARNING: stunSprite or stunTextures[0] is null!"
-              << std::endl;
+  // Tùy chỉnh duration dựa trên stunCooldown (Stun Recovery) của character.
+  // Base stat = 5 -> hệ số 1.0. Stat 10 -> hệ số 0.75. Stat 1 -> hệ số 1.25.
+  float durationModifier = 1.0f;
+  if (m_characterStats.stunCooldown > 0) {
+      durationModifier = 0.8f + (5 - m_characterStats.stunCooldown) * 0.05f; 
+      // stat = 9 -> 0.8 + (-4)*0.05 = 0.6
+      // Let's use simpler: 1.0f - (stat - 5) * 0.05f.
+      // Stat 5 -> 1.0. Stat 10 -> 0.75. Stat 1 -> 1.2.
+      durationModifier = 1.0f - (m_characterStats.stunCooldown - 5) * 0.05f;
   }
+  stunEffect.start(durationSeconds * durationModifier);
 
   // Hiệu ứng đỏ ngay lập tức khi bị stun
   if (sprite) {
@@ -127,8 +72,19 @@ void Player::update(float deltaTime) {
   // =========================
   // TRẠNG THÁI CHOÁNG (1.0S)
   // =========================
-  if (stunTimer > 0.f) {
-    updateStun(deltaTime);
+  if (stunEffect.isActive()) {
+    stunEffect.update(deltaTime);
+    stunEffect.setPosition(position);
+
+    // Flash đỏ/cam theo nhịp để tạo hiệu ứng giật
+    if (sprite) {
+      const float FLASH_INTERVAL = 0.1f;
+      int flashTick = static_cast<int>(stunEffect.getRemainingTime() / FLASH_INTERVAL);
+      if (flashTick % 2 == 0)
+        sprite->setColor(sf::Color(255, 80, 80, 255)); // Đỏ
+      else
+        sprite->setColor(sf::Color(255, 180, 80, 255)); // Cam
+    }
 
     // Trong thời gian stun:
     // không di chuyển, không kick, không jump, không dash
@@ -354,14 +310,7 @@ void Player::render(sf::RenderWindow &window) {
   // =========================
   // STUN EFFECT
   // =========================
-
-  if (stunTimer > 0.f && stunSprite) {
-    // position.y - 190f: ngay trên đỉnh đầu sprite player (1080x1920, scale
-    // 0.18f)
-    stunSprite->setPosition({position.x, position.y + Config::STUN_HEAD_OFFSET_Y});
-
-    window.draw(*stunSprite);
-  }
+  stunEffect.render(window);
 
   // =========================
   // SHOE KICK ANIMATION
@@ -420,53 +369,36 @@ void Player::setSkin(const sf::Texture& texture, bool flipHorizontal, float scal
     sprite->setPosition(position);
 }
 
+void Player::setCharacterStats(const CharacterOption& option) {
+    m_characterStats = option;
+
+    // Stat 5 is average (multiplier 1.0). Each point above/below alters by 5%.
+    float speedMultiplier = 0.8f + (option.speed - 5) * 0.05f;
+    float jumpMultiplier = 0.8f + (option.jump - 5) * 0.05f;
+
+    moveSpeed = Config::PLAYER_SPEED * speedMultiplier;
+    jumpForce = Config::PLAYER_JUMP_FORCE * jumpMultiplier;
+}
+
+float Player::getKickForceX() const {
+    float modifier = 1.0f;
+    if (m_characterStats.kick > 0) {
+        modifier = 0.8f + (m_characterStats.kick - 5) * 0.05f;
+    }
+    return Config::PLAYER_KICK_FORCE_X * modifier;
+}
+
+float Player::getKickForceY() const {
+    float modifier = 1.0f;
+    if (m_characterStats.kick > 0) {
+        modifier = 0.8f + (m_characterStats.kick - 5) * 0.05f;
+    }
+    return Config::PLAYER_KICK_FORCE_Y * modifier;
+}
+
 sf::FloatRect Player::getBodyHitbox() const {
   return {{position.x - Config::WIDTH_BODY_HITBOX * 0.5f,
            position.y - Config::HEIGHT_BODY_HITBOX * 0.5f},
           {Config::WIDTH_BODY_HITBOX, Config::HEIGHT_BODY_HITBOX}};
 }
-
-void Player::updateStun(float deltaTime) {
-  if (stunTimer <= 0.f)
-    return;
-
-  stunTimer -= deltaTime;
-
-  // Flash đỏ/cam theo nhịp để tạo hiệu ứng giật
-  if (sprite) {
-    const float FLASH_INTERVAL = 0.1f;
-    int flashTick = static_cast<int>(stunTimer / FLASH_INTERVAL);
-    if (flashTick % 2 == 0)
-      sprite->setColor(sf::Color(255, 80, 80, 255)); // Đỏ
-    else
-      sprite->setColor(sf::Color(255, 180, 80, 255)); // Cam
-  }
-
-  stunFrameTimer += deltaTime;
-
-  if (stunFrameTimer >= STUN_FRAME_DURATION) {
-    stunFrameTimer = 0.f;
-
-    stunFrame++;
-
-    if (stunFrame >= STUN_FRAME_COUNT)
-      stunFrame = 0;
-
-    if (stunSprite && stunTextures[stunFrame]) {
-      stunSprite->setTexture(*stunTextures[stunFrame], true);
-      // Cập nhật origin sau khi đổi texture
-      auto sz = stunTextures[stunFrame]->getSize();
-      stunSprite->setOrigin({sz.x / 2.f, sz.y / 2.f});
-    }
-  }
-
-  // Vị trí stunSprite: trên đỉnh đầu sprite player (cập nhật mỗi frame)
-  if (stunSprite) {
-    stunSprite->setPosition({position.x, position.y + Config::STUN_HEAD_OFFSET_Y});
-  }
-
-  // Khi vừa hết stun: reset màu
-  if (stunTimer <= 0.f && sprite) {
-    sprite->setColor(sf::Color::White);
-  }
-}
+

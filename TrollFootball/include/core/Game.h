@@ -57,7 +57,7 @@ private:
     bool m_pendingVsBot{ false };
 
     int m_selectingPlayer{ 1 };        //1 = đang chọn cho Player1, 2 = Player2
-    std::string m_p1TextureKey;        //lưu tạm lựa chọn của Player1
+    CharacterOption m_p1Option;        //lưu tạm lựa chọn của Player1
 
     std::unique_ptr<MainMenu> mainMenu;
     std::unique_ptr<CharacterSelectMenu> characterSelectMenu;

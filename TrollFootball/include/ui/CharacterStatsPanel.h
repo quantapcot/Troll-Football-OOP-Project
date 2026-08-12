@@ -27,5 +27,6 @@ private:
     sf::RectangleShape m_background;
     sf::Text m_nameText;
     sf::Text m_descriptionText;
-    sf::Text m_statsText;
+    sf::Text m_statsLabelText;
+    sf::Text m_statsValueText;
 };

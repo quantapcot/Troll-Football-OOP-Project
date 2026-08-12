@@ -113,11 +113,36 @@ CharacterSelectMenu::CharacterSelectMenu(const sf::Font& font,
     float buttonWidth = Config::CHAR_PLAY_BUTTON_WIDTH;
     float buttonHeight = Config::CHAR_PLAY_BUTTON_HEIGHT;
 
+    // Tính toán tọa độ Y chung cho cả 2 nút (Nâng cao lên một chút)
+    float buttonY = descPanelY + 260.f + 10.f; // Dưới panel 10px
+
+    // Tính toán biên 2 bên (cách mép màn hình một khoảng nhỏ)
+    float sideMargin = windowSize.x * 0.08f; // 8% chiều rộng màn hình
+
+    // ----- Nut QUAY LAI (BACK) - BÊN TRÁI -----
+    m_backButton.setSize({ buttonWidth, buttonHeight });
+    m_backButton.setFillColor(sf::Color(150, 30, 30));
+    m_backButton.setPosition({
+        sideMargin, // Sát lề trái màn hình
+        buttonY
+        });
+
+    m_backText.setString("BACK");
+    m_backText.setCharacterSize(26);
+    m_backText.setFillColor(sf::Color::White);
+
+    float backTextWidth = m_backText.getLocalBounds().size.x;
+    m_backText.setPosition({
+        m_backButton.getPosition().x + (buttonWidth - backTextWidth) / 2.f,
+        m_backButton.getPosition().y + 12.f
+        });
+
+    // ----- Nut TIẾP TỤC (PLAY) - BÊN PHẢI -----
     m_playButton.setSize({ buttonWidth, buttonHeight });
     m_playButton.setFillColor(sf::Color(150, 30, 30));
     m_playButton.setPosition({
-        (windowSize.x - buttonWidth) / 2.f,
-        windowSize.y * Config::CHAR_PLAY_BUTTON_Y_RATIO
+        windowSize.x - sideMargin - buttonWidth, // Sát lề phải màn hình
+        buttonY
         });
 
     m_playText.setString("PLAY");
@@ -128,24 +153,6 @@ CharacterSelectMenu::CharacterSelectMenu(const sf::Font& font,
     m_playText.setPosition({
         m_playButton.getPosition().x + (buttonWidth - playTextWidth) / 2.f,
         m_playButton.getPosition().y + 12.f
-        });
-
-    // ----- Nut QUAY LAI -----
-    m_backButton.setSize({ Config::CHAR_BACK_BUTTON_WIDTH, Config::CHAR_BACK_BUTTON_HEIGHT });
-    m_backButton.setFillColor(sf::Color(150, 30, 30));
-    m_backButton.setPosition({
-        Config::CHAR_BACK_BUTTON_X,
-        windowSize.y * Config::CHAR_PLAY_BUTTON_Y_RATIO + 3.f
-        });
-
-    m_backText.setString("BACK");
-    m_backText.setCharacterSize(22);
-    m_backText.setFillColor(sf::Color::White);
-
-    float backTextWidth = m_backText.getLocalBounds().size.x;
-    m_backText.setPosition({
-        m_backButton.getPosition().x + (m_backButton.getSize().x - backTextWidth) / 2.f,
-        m_backButton.getPosition().y + 10.f
         });
 }
 

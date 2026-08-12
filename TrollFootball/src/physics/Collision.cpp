@@ -185,6 +185,74 @@ void Collision::handlePlayerBall(Player& player, Ball& ball)
     ball.setVelocity(newVelocity);
 }
 
+void Collision::handlePlayersBall(Player& p1, Player& p2, Ball& ball)
+{
+    sf::Vector2f ballPos = ball.getPosition();
+    float radius = ball.getRadius();
+
+    // Helper lambda để tính penetration của 1 Player
+    auto calcOverlap = [&](Player& p, float& pen, sf::Vector2f& norm) {
+        sf::FloatRect rect = p.getBodyHitbox();
+        float closestX = std::clamp(ballPos.x, rect.position.x, rect.position.x + rect.size.x);
+        float closestY = std::clamp(ballPos.y, rect.position.y, rect.position.y + rect.size.y);
+        
+        float dx = ballPos.x - closestX;
+        float dy = ballPos.y - closestY;
+        float distSq = dx * dx + dy * dy;
+
+        if (distSq > radius * radius) {
+            pen = 0.f;
+            return;
+        }
+
+        if (distSq < 0.0001f) {
+            float cX = rect.position.x + rect.size.x * 0.5f;
+            float cY = rect.position.y + rect.size.y * 0.5f;
+            float dirX = ballPos.x - cX;
+            float dirY = ballPos.y - cY;
+            if (std::abs(dirX) > std::abs(dirY)) {
+                dx = (dirX >= 0.f) ? 1.f : -1.f;
+                dy = 0.f;
+            } else {
+                dx = 0.f;
+                dy = (dirY >= 0.f) ? 1.f : -1.f;
+            }
+            distSq = 1.f;
+        }
+
+        float dist = std::sqrt(distSq);
+        norm = sf::Vector2f(dx / dist, dy / dist);
+        pen = radius - dist;
+    };
+
+    float pen1 = 0.f, pen2 = 0.f;
+    sf::Vector2f norm1, norm2;
+    calcOverlap(p1, pen1, norm1);
+    calcOverlap(p2, pen2, norm2);
+
+    // KHI CẢ HAI ĐỀU ĐANG ĐÈ LÊN BÓNG
+    if (pen1 > 0.f && pen2 > 0.f) {
+        // Tính Dot product để xem 2 hướng đẩy bóng có ngược chiều nhau không
+        float dot = norm1.x * norm2.x + norm1.y * norm2.y;
+        
+        if (dot < -0.5f) {
+            // Bóng bị kẹp chặt giữa 2 player (ngược hướng nhau)
+            // Áp dụng "Squirting": Đẩy bóng vọt lên trên (Trục Y âm)
+            ball.addPosition(sf::Vector2f(0.f, -std::max(pen1, pen2) - 10.f));
+            
+            sf::Vector2f vel = ball.getVelocity();
+            vel.y = std::min(vel.y, -350.f); // Cho bóng nảy lên trên một chút để thoát hẳn
+            ball.setVelocity(vel);
+            return;
+        }
+    }
+
+    // Nếu không bị ép cứng, fallback xử lý độc lập từng người
+    // (Bảo toàn 100% logic sút bóng/bump bóng cũ)
+    if (pen1 > 0.f) handlePlayerBall(p1, ball);
+    if (pen2 > 0.f) handlePlayerBall(p2, ball);
+}
+
 void Collision::handleKick(Player& player, Ball& ball)
 {
     if (!player.isKicking())
@@ -199,15 +267,15 @@ void Collision::handleKick(Player& player, Ball& ball)
     if (player.isFacingRight())
     {
         ball.addVelocity({
-            Config::PLAYER_KICK_FORCE_X,
-            Config::PLAYER_KICK_FORCE_Y
+            player.getKickForceX(),
+            player.getKickForceY()
             });
     }
     else
     {
         ball.addVelocity({
-            -Config::PLAYER_KICK_FORCE_X,
-            Config::PLAYER_KICK_FORCE_Y
+            -player.getKickForceX(),
+            player.getKickForceY()
             });
     }
 

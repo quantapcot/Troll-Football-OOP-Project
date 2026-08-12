@@ -182,10 +182,10 @@ Game::Game()
     // CHOOSING CHARACTER MENU
     // =========================
     std::vector<CharacterOption> characterOptions = {
-        { "Ronaldo", "char_ronaldo" },
-        { "Messi",   "char_messi"   },
-        { "Modric",  "char_modric"  },
-        { "Ninja",   "char_ninja"   }
+        { "Ronaldo", "char_ronaldo", 7, 3, 9, 4, "Strong Kick and Speed.\nWeak Jump and Recovery." },
+        { "Messi",   "char_messi",   9, 3, 5, 8, "Strong Speed and Recovery.\nWeak Kick and Jump." },
+        { "Modric",  "char_modric",  5, 4, 8, 7, "Strong Kick and Recovery.\nWeak Speed and Jump." },
+        { "Ninja",   "char_ninja",   9, 9, 3, 3, "Strong Jump and Speed.\nWeak Kick and Recovery." }
     };
 
     characterSelectMenu = std::make_unique<CharacterSelectMenu>(
@@ -365,7 +365,7 @@ void Game::processEvents()
                 if (m_selectingPlayer == 1)
                 {
                     //Luu lai lua chon Player1, chuyen sang buoc chon Player2
-                    m_p1TextureKey = chosen.textureKey;
+                    m_p1Option = chosen;
 
                     m_selectingPlayer = 2;
                     characterSelectMenu->setTitle("CHOOSE YOUR GOAT - PLAYER 2");
@@ -373,11 +373,15 @@ void Game::processEvents()
                 }
                 else
                 {
-                    const sf::Texture& p1Texture = AssetManager::get().getTexture(m_p1TextureKey);
+                    const sf::Texture& p1Texture = AssetManager::get().getTexture(m_p1Option.textureKey);
                     const sf::Texture& p2Texture = AssetManager::get().getTexture(chosen.textureKey);
 
                     player1->setSkin(p1Texture, false); // Player1 quay phai
                     player2->setSkin(p2Texture, true);  // Player2 quay trai
+
+                    // Áp dụng stats
+                    player1->setCharacterStats(m_p1Option);
+                    player2->setCharacterStats(chosen);
 
                     m_isVsBot = m_pendingVsBot;
                     player2->setAIControlled(m_isVsBot);
@@ -583,24 +587,19 @@ void Game::update(float deltaTime)
     rightGoal->update(deltaTime);
 
     // =========================
-    // COLLISION PLAYER 1
+    // COLLISION PLAYER - PLAYER
+    // (Đẩy nhau ra trước để có không gian cho bóng)
     // =========================
-
-    Collision::handlePlayerBall(*player1, *ball);
-    Collision::handleKick(*player1, *ball);
-
-    // =========================
-    // COLLISION PLAYER 2
-    // =========================
-
-    Collision::handlePlayerBall(*player2, *ball);
-    Collision::handleKick(*player2, *ball);
-
-    // =========================
-    // COLLISION PLAYER 1 VS PLAYER 2
-    // =========================
-
     Collision::handlePlayerPlayer(*player1, *player2);
+
+    // =========================
+    // COLLISION PLAYERS - BALL
+    // =========================
+    Collision::handlePlayersBall(*player1, *player2, *ball);
+
+    // Xử lý sút bóng độc lập
+    Collision::handleKick(*player1, *ball);
+    Collision::handleKick(*player2, *ball);
 
     // =========================
     // GOAL

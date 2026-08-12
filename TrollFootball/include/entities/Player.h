@@ -6,6 +6,8 @@
 #include <vector>
 #include <optional>
 #include <array>
+#include "entities/Stun.h"
+#include "ui/CharacterSelectMenu.h"
 
 struct ControlScheme
 {
@@ -41,7 +43,7 @@ public:
         dashing = false;
         dashTimer = 0.f;
         dashCooldown = 0.f;
-        stunTimer = 0.f;
+        stunEffect.start(0.f);
         onGround = true;
 
         if (sprite)
@@ -49,7 +51,7 @@ public:
     }
 
     void stun(float durationSeconds = 0.5f);
-    bool isStunned() const { return stunTimer > 0.f; }
+    bool isStunned() const { return stunEffect.isActive(); }
 
     void setVelocity(const sf::Vector2f& v)
     {
@@ -88,6 +90,8 @@ public:
 
     //Doi skin cua nhan vat
     void setSkin(const sf::Texture& texture, bool flipHorizontal = false, float scale = 0.18f);
+
+    void setCharacterStats(const CharacterOption& option);
 
     bool isAIControlled() const
     {
@@ -130,6 +134,9 @@ public:
 
     sf::FloatRect getKickHitbox() const;
     sf::FloatRect getBodyHitbox() const;
+
+    float getKickForceX() const;
+    float getKickForceY() const;
 private:
 
     // =========================
@@ -152,8 +159,6 @@ private:
 
     // ===== THÊM =====
     void updateTrail(float deltaTime);
-
-    void updateStun(float deltaTime);
     // =========================
     // COMPONENT
     // =========================
@@ -208,20 +213,7 @@ private:
     // STUN EFFECT
     // =========================
 
-    float stunTimer{ 0.f };
-
-    static constexpr int STUN_FRAME_COUNT = Config::STUN_FRAME_COUNT;
-    static constexpr float STUN_FRAME_DURATION = Config::STUN_FRAME_DURATION;
-
-    // 5 texture stun riêng biệt
-    std::array<const sf::Texture*, STUN_FRAME_COUNT> stunTextures{};
-
-    // Sprite riêng cho hiệu ứng stun
-    std::optional<sf::Sprite> stunSprite;
-
-    // Animation
-    int stunFrame{ 0 };
-    float stunFrameTimer{ 0.f };
+    Stun stunEffect;
 
     // =========================
     // TRAIL
@@ -249,4 +241,5 @@ private:
 
     InputCommand currentInput;
 
+    CharacterOption m_characterStats;
 };
